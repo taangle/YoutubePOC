@@ -11,7 +11,7 @@ const httpOptions = {
     //TODO: figure out authorization
     headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        //'Authorization': 'MmAs9L8lPoV68999zqnf1yUT'
+        //'Authorization': 'Bearer '
     })
 
 }
@@ -28,21 +28,21 @@ export class YtService {
     //get main playlist
     getPlaylistItems(): Observable<PlaylistItemListResponse> {
 
-        return this.http.get<PlaylistItemListResponse>(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet&playlistId=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG').pipe(catchError(this.handleError)); //fixed to one playlist
+        return this.http.get<PlaylistItemListResponse>(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet&playlistId=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG&maxResults=50').pipe(catchError(this.handleError)); //fixed to one playlist
 
     }
 
     //GET
-    /*getPlaylistItem(id: string): Observable<PlaylistItem> {
+    getPlaylistItem(id: string): Observable<PlaylistItemListResponse> {
 
-
+        return this.http.get<PlaylistItemListResponse>(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet&id=' + id).pipe(catchError(this.handleError));
 
     }
 
     //PUT
-    updatePlaylistItem(item: PlaylistItem): Observable<any> {
+    /*updatePlaylistItem(item: PlaylistItem): Observable<any> {
 
-
+        return this.http.put(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet');
 
     }
 

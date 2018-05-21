@@ -12,7 +12,7 @@ import { PlaylistItemListResponse } from '../playlistItemListResponse';
 export class YtComponent implements OnInit {
 
     playlistItems: PlaylistItem[];
-    //playlistItemListResponse: PlaylistItemListResponse;
+    playlistItemListResponse: PlaylistItemListResponse;
 
     constructor(private ytService: YtService) { }
 
@@ -24,8 +24,25 @@ export class YtComponent implements OnInit {
 
     getPlaylistItems(): void {
 
-        this.ytService.getPlaylistItems().subscribe(playlistItemListResponse => this.playlistItems = playlistItemListResponse.items); //TODO: can't get Observable to map to respective class/interface
+        this.ytService.getPlaylistItems().subscribe(playlistItemListResponse => { this.playlistItemListResponse = playlistItemListResponse; this.playlistItems = this.playlistItemListResponse.items });
 
     }
+
+    /*addPlaylistItem(id: string): void {
+
+        id = id.trim();
+        if (!id) {
+            return;
+        }
+        this.ytService.addPlaylistItem({ id } as PlaylistItem).subscribe(playlistItem => { this.playlistItems.push(playlistItem) });
+
+    }
+
+    deletePlaylistItem(item: PlaylistItem): void {
+
+        this.playlistItems = this.playlistItems.filter(video => video !== item);
+        this.ytService.deletePlaylistItem(item).subscribe();
+
+    }*/
 
 }

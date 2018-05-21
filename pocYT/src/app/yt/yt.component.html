@@ -1,3 +1,13 @@
-﻿<p>
-  {{playlistItems}}
-</p>
+﻿<ol>
+  <li *ngFor="let item of playlistItems">
+    <a routerLink="/video/{{item.id}}">
+      {{item.snippet.title}}
+    </a>
+  </li>
+</ol>
+
+<div>
+  <label>Video ID:
+    <input #videoId />
+  </label>
+</div>
