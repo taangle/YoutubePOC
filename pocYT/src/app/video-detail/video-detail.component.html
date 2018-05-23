@@ -1,6 +1,7 @@
 ﻿<div *ngIf="item">
   <h2>{{item.snippet.title}}</h2>
   <ul>
+    <!--more info can be displayed as needed-->
     <li>Description: <pre>{{item.snippet.description}}</pre></li>
     <li>Published: {{item.snippet.publishedAt}}</li>
     <li>Channel Title: {{item.snippet.channelTitle}}</li>
@@ -9,7 +10,7 @@
   </ul>
   <div>
     <label>
-      <input [(ngModel)]="item.snippet.position" placeholder="playlist position" />
+      <input [(ngModel)]="item.snippet.position" placeholder="Enter New Position" />
     </label>
   </div>
 </div>

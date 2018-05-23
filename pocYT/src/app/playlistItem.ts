@@ -1,25 +1,25 @@
 ﻿export class PlaylistItem {
 
-    kind: string;
-    etag: string;
+    kind: string; //youtube#playlistItem
+    etag: string; //etag
     id: string;
     snippet: {
-        publishedAt: string;
+        publishedAt: string; //datetime
         channelId: string;
         title: string;
         description: string;
         thumbnails: {
-            default: {
+            default: { //only default thumbnail; other resolutions are available
                 url: string;
-                width: number;
-                height: number;
+                width: number; //uint
+                height: number; //uint
             };
         };
         channelTitle: string;
         playlistId: string;
-        position: number;
+        position: number; //uint
         resourceId: {
-            kind: string;
+            kind: string; //usually youtube#video
             videoId: string;
         };
     };
@@ -28,7 +28,7 @@
         startAt: string;
         endAt: string;
         note: string;
-        videoPublishedAt: string;
+        videoPublishedAt: string; //datetime
     };
     status: {
         privacyStatus: string;

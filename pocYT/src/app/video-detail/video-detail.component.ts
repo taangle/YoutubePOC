@@ -22,9 +22,10 @@ export class VideoDetailComponent implements OnInit {
 
   }
 
+    //passes a PlaylistItem's ID to a GET request, which returns a PlaylistItemListResponse; first (usually only) element in playlistItemListResponse is stored in item and its info is displayed on page
   getPlaylistItem(): void {
 
-      const id = this.route.snapshot.paramMap.get('id');
+      const id = this.route.snapshot.paramMap.get('id'); //ID also stored in PlaylistItem (i.e. item.id) so it can be pulled from there alternatively
       this.ytService.getPlaylistItem(id).subscribe(playlistItemListResponse => this.item = playlistItemListResponse.items[0]);
 
   }
@@ -35,10 +36,13 @@ export class VideoDetailComponent implements OnInit {
 
   }
 
-  /*savePlaylistItem(): void {
+    //passes the PlaylistItem on the page to a PUT request and returns to main page; currently only allows user to update item's position in playlist
+  savePlaylistItem(): void {
+
+      this.ytService.setAccessToken(); //makes user sign-in if they click Save button while unauthenticated
 
       this.ytService.updatePlaylistItem(this.item).subscribe(() => this.goBack());
 
-  }*/
+  }
 
 }
