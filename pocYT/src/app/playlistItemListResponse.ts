@@ -10,6 +10,6 @@ export class PlaylistItemListResponse {
         totalResults: number; //int
         resultsPerPage: number; //int
     };
-    items: PlaylistItem[];
+    items: PlaylistItem[]; //resource array
 
 }
