@@ -39,8 +39,6 @@ export class VideoDetailComponent implements OnInit {
     //passes the PlaylistItem on the page to a PUT request and returns to main page; currently only allows user to update item's position in playlist
   savePlaylistItem(): void {
 
-      this.ytService.setAccessToken(); //makes user sign-in if they click Save button while unauthenticated
-
       this.ytService.updatePlaylistItem(this.item).subscribe(() => this.goBack());
 
   }

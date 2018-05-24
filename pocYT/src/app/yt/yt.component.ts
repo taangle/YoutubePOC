@@ -24,24 +24,25 @@ export class YtComponent implements OnInit {
 
     ngOnInit() {
 
-        this.getPlaylistItems();
+        if (this.ytService.playlistId) {
+            this.getPlaylistItems(this.ytService.playlistId);
+        }
 
     }
 
     //GET request, which returns a PlaylistItemListResponse; playlistItemListResponse.items is stored in playlistItems and its elements are displayed on page
-    getPlaylistItems(): void {
+    getPlaylistItems(id: string): void {
 
-        this.ytService.getPlaylistItems().subscribe(playlistItemListResponse => {
+        this.ytService.getPlaylistItems(id).subscribe(playlistItemListResponse => {
             this.playlistItemListResponse = playlistItemListResponse;
             this.playlistItems = this.playlistItemListResponse.items;
+            this.ytService.playlistId = id;
         });
 
     }
 
     //passes a new video ID to a POST request, which returns a PlaylistItem; playlistItem is added to end of playlist
     addPlaylistItem(id: string): void {
-
-        this.ytService.setAccessToken(); //makes user sign-in if they click Save button while unauthenticated
 
         id = id.trim();
         if (!id) {
@@ -60,12 +61,10 @@ export class YtComponent implements OnInit {
     //passes a PlaylistItem to a DELETE request, which returns a PlaylistItem; playlist has playlistItem filtered from it to reflect deletion
     deletePlaylistItem(item: PlaylistItem): void {
 
-        this.ytService.setAccessToken(); //makes user sign-in if they click Save button while unauthenticated
-
         this.ytService.deletePlaylistItem(item.id).subscribe(playlistItem => {
             //has to refresh display list if playlist has 50+ videos; currently, makes another GET call
             if (this.playlistItems.length >= 50) {
-                this.getPlaylistItems();
+                this.getPlaylistItems(this.ytService.playlistId);
             } else {
                 this.playlistItems = this.playlistItems.filter(video => video !== item);
             }

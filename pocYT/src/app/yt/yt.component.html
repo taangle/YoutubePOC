@@ -1,17 +1,24 @@
-﻿<ol start="0"> <!--list starts at 0; deal with it-->
-  <!--lists titles of all PlaylistItems in playlist; each can be clicked for more information or deleted by clicking their respective Delete button-->
-  <li *ngFor="let item of playlistItems">
-    <a routerLink="/video/{{item.id}}">
-      {{item.snippet.title}}
-    </a>
-    <button (click)="deletePlaylistItem(item)">Delete</button>
-  </li>
-</ol>
+﻿<label>Playlist ID:
+  <input #playlistId />
+</label>
+<button (click)="getPlaylistItems(playlistId.value); playlistId.value=''">Show Playlist</button>
 
-<div>
-  <label>Video ID:
-    <input #videoId />
-  </label>
-  <!--adds new PlaylistItem to end of playlist based on video ID and clears input-->
-  <button (click)="addPlaylistItem(videoId.value); videoId.value=''">Add Video</button>
+<div *ngIf="playlistItems">
+  <ol start="0"> <!--list starts at 0; deal with it-->
+    <!--lists titles of all PlaylistItems in playlist; each can be clicked for more information or deleted by clicking their respective Delete button-->
+    <li *ngFor="let item of playlistItems">
+      <a routerLink="/video/{{item.id}}">
+        {{item.snippet.title}}
+      </a>
+      <button (click)="deletePlaylistItem(item)">Delete</button>
+    </li>
+  </ol>
+
+  <div>
+    <label>Video ID:
+      <input #videoId />
+    </label>
+    <!--adds new PlaylistItem to end of playlist based on video ID and clears input-->
+    <button (click)="addPlaylistItem(videoId.value); videoId.value=''">Add Video</button>
+  </div>
 </div>

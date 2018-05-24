@@ -21,6 +21,7 @@ const httpOptions = {
 })
 export class YtService {
 
+    public playlistId: string;
     private ytUrl = 'https://www.googleapis.com/youtube/v3/playlistItems'; //API base URL for playlistItem requests
 
     constructor(private http: HttpClient, private authService: AuthService) { }
@@ -41,10 +42,10 @@ export class YtService {
     }
 
     //GET request for main playlist; can only receive up to 50 PlaylistItems at once
-    getPlaylistItems(): Observable<PlaylistItemListResponse> {
+    getPlaylistItems(id: string): Observable<PlaylistItemListResponse> {
 
         //currently, only displays one playlist, cannot display videos beyond initial 50, and only returns snippet data
-        return this.http.get<PlaylistItemListResponse>(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet&playlistId=PLT102V9pILBXPp5OU4jI05YLcFpTYtx0h&maxResults=50').pipe(catchError(this.handleError));
+        return this.http.get<PlaylistItemListResponse>(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet&playlistId=' + id + '&maxResults=50').pipe(catchError(this.handleError));
 
     }
 
@@ -59,12 +60,14 @@ export class YtService {
     //PUT request for existing PlaylistItem
     updatePlaylistItem(item: PlaylistItem): Observable<any> {
 
+        this.setAccessToken(); //makes user sign-in if they click Save button while unauthenticated
+
         //currently, only updates item's position; potential to change contentDetails data
         return this.http.put(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet', {
             "id": item.id,
             "snippet":
             {
-                "playlistId": "PLT102V9pILBXPp5OU4jI05YLcFpTYtx0h",
+                "playlistId": this.playlistId,
                 "position": item.snippet.position,
                 "resourceId":
                 {
@@ -79,11 +82,13 @@ export class YtService {
     //POST request for new PlaylistItem using its video ID
     addPlaylistItem(id: string): Observable<PlaylistItem> {
 
+        this.setAccessToken(); //makes user sign-in if they click Save button while unauthenticated
+
         //currently, only adds to one playlist and only adds snippet data; potential to add contentDetails data, status data
         return this.http.post<PlaylistItem>(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet', {
             "snippet":
             {
-                "playlistId": "PLT102V9pILBXPp5OU4jI05YLcFpTYtx0h",
+                "playlistId": this.playlistId,
                 "resourceId": 
                 {
                     "kind": "youtube#video",
@@ -96,6 +101,8 @@ export class YtService {
 
     //DELETE request for existing PlaylistItem using its ID
     deletePlaylistItem(id: string): Observable<PlaylistItem> {
+
+        this.setAccessToken(); //makes user sign-in if they click Save button while unauthenticated
 
         //deletes from any playlist (if user has proper permissions) since ID is unique to each PlaylistItem
         return this.http.delete<PlaylistItem>(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&id=' + id, httpOptions).pipe(catchError(this.handleError));
