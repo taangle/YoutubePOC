@@ -7,6 +7,6 @@ Allows GET, POST, PUT, DELETE requests on videos/data in a single playlist on a 
 
 Notes
 - **Requires ng-gapi package**
-- Playlist ID example: https://www.youtube.com/playlist?list=**PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG
-- Video ID example: https://www.youtube.com/watch?v=**dQw4w9WgXcQ
+- Playlist ID example: **PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG** from https://www.youtube.com/playlist?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG
+- Video ID example: **dQw4w9WgXcQ** from https://www.youtube.com/watch?v=dQw4w9WgXcQ
 - Errors are displayed in the console, currently; status codes are returned from calls to YouTube API
