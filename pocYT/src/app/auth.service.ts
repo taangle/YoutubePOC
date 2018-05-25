@@ -10,7 +10,7 @@ import GoogleUser = gapi.auth2.GoogleUser;
 })
 export class AuthService {
 
-    public static SESSION_STORAGE_KEY: string = 'accessToken';
+    public static SESSION_STORAGE_KEY: string = 'accessToken'; //currently, can't tell when token expires
     private user: GoogleUser;
 
     constructor(private googleAuth: GoogleAuthService) { }

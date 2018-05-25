@@ -21,7 +21,8 @@ const httpOptions = {
 })
 export class YtService {
 
-    public playlistId: string;
+    public playlistId: string; //holds current playlist ID
+    public pageToken: string = ''; //holds current page in current playlist
     private ytUrl = 'https://www.googleapis.com/youtube/v3/playlistItems'; //API base URL for playlistItem requests
 
     constructor(private http: HttpClient, private authService: AuthService) { }
@@ -42,10 +43,10 @@ export class YtService {
     }
 
     //GET request for main playlist; can only receive up to 50 PlaylistItems at once
-    getPlaylistItems(id: string): Observable<PlaylistItemListResponse> {
+    getPlaylistItems(playlistId: string): Observable<PlaylistItemListResponse> {
 
-        //currently, only displays one playlist, cannot display videos beyond initial 50, and only returns snippet data
-        return this.http.get<PlaylistItemListResponse>(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet&playlistId=' + id + '&maxResults=50').pipe(catchError(this.handleError));
+        //currently, only returns snippet data; pageToken not needed for request to be "complete", so keeping the parameter there makes sure user stays on the correct playlist page
+        return this.http.get<PlaylistItemListResponse>(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet&playlistId=' + playlistId + '&maxResults=50&pageToken=' + this.pageToken).pipe(catchError(this.handleError));
 
     }
 
@@ -67,7 +68,7 @@ export class YtService {
             "id": item.id,
             "snippet":
             {
-                "playlistId": this.playlistId,
+                "playlistId": item.snippet.playlistId,
                 "position": item.snippet.position,
                 "resourceId":
                 {
@@ -80,11 +81,11 @@ export class YtService {
     }
 
     //POST request for new PlaylistItem using its video ID
-    addPlaylistItem(id: string): Observable<PlaylistItem> {
+    addPlaylistItem(videoId: string): Observable<PlaylistItem> {
 
         this.setAccessToken(); //makes user sign-in if they click Save button while unauthenticated
 
-        //currently, only adds to one playlist and only adds snippet data; potential to add contentDetails data, status data
+        //currently, only adds snippet data; potential to add contentDetails data, status data
         return this.http.post<PlaylistItem>(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet', {
             "snippet":
             {
@@ -92,7 +93,7 @@ export class YtService {
                 "resourceId": 
                 {
                     "kind": "youtube#video",
-                    "videoId": id
+                    "videoId": videoId
                 }
             }
         }, httpOptions).pipe(catchError(this.handleError));
@@ -106,6 +107,15 @@ export class YtService {
 
         //deletes from any playlist (if user has proper permissions) since ID is unique to each PlaylistItem
         return this.http.delete<PlaylistItem>(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&id=' + id, httpOptions).pipe(catchError(this.handleError));
+
+    }
+
+    //requires user to sign in if a token has been set but they are still unauthorized (e.g. wrong user, token expiration)
+    handleAuthError(error: any): void {
+
+        if (error == 401) {
+            this.authService.signIn();
+        }
 
     }
 
@@ -147,7 +157,7 @@ export class YtService {
 
         }
 
-        return throwError('Something bad happened; please try again later.');
+        return throwError(`${error.status}`);
 
     }
 

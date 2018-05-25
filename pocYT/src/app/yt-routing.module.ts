@@ -5,8 +5,8 @@ import { YtComponent } from './yt/yt.component';
 import { VideoDetailComponent } from './video-detail/video-detail.component';
 
 const routes: Routes = [
-    { path: '', redirectTo: 'list', pathMatch: 'full' }, //default
-    { path: 'list', component: YtComponent }, //main playlist
+    { path: '', redirectTo: 'playlist', pathMatch: 'full' }, //default
+    { path: 'playlist', component: YtComponent }, //main playlist
     { path: 'video/:id', component: VideoDetailComponent } //individual video
 ];
 
