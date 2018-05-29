@@ -10,7 +10,7 @@ import GoogleUser = gapi.auth2.GoogleUser;
 })
 export class AuthService {
 
-    public static SESSION_STORAGE_KEY: string = 'accessToken';
+    public static SESSION_STORAGE_KEY: string = 'accessToken'; //currently, can't tell when token expires
     private user: GoogleUser;
 
     constructor(private googleAuth: GoogleAuthService) { }
@@ -20,7 +20,7 @@ export class AuthService {
         let token: string = sessionStorage.getItem(AuthService.SESSION_STORAGE_KEY);
         if (!token) {
 
-            throw new Error("no token set, authentication required"); //throws error the first time; should be ok after (until token expiration) since the token is stored in YtService for requests
+            throw new Error("No token set; authentication required."); //throws error the first time; should be ok after (until token expiration) since the token is stored in YtService for requests
 
         }
         return sessionStorage.getItem(AuthService.SESSION_STORAGE_KEY);
@@ -29,7 +29,9 @@ export class AuthService {
 
     public signIn(): void {
 
-        this.googleAuth.getAuth().subscribe((auth) => { auth.signIn().then(res => this.signInSuccessHandler(res)); });
+        this.googleAuth.getAuth().subscribe((auth) => {
+            auth.signIn().then(res => this.signInSuccessHandler(res));
+        });
 
     }
 

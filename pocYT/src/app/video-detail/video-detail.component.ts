@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 
 import { PlaylistItem } from '../playlistItem';
 import { YtService } from '../yt.service';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-video-detail',
@@ -14,7 +15,7 @@ export class VideoDetailComponent implements OnInit {
 
     @Input() item: PlaylistItem;
 
-  constructor(private route: ActivatedRoute, private ytService: YtService, private location: Location) { }
+  constructor(private route: ActivatedRoute, private ytService: YtService, private authService: AuthService, private location: Location) { }
 
   ngOnInit() {
 
@@ -39,9 +40,13 @@ export class VideoDetailComponent implements OnInit {
     //passes the PlaylistItem on the page to a PUT request and returns to main page; currently only allows user to update item's position in playlist
   savePlaylistItem(): void {
 
-      this.ytService.setAccessToken(); //makes user sign-in if they click Save button while unauthenticated
-
-      this.ytService.updatePlaylistItem(this.item).subscribe(() => this.goBack());
+      this.ytService.updatePlaylistItem(this.item).subscribe(() => {
+          //navigates user back to playlist page if user lands on a detail page independently (without routing)
+          if (!this.ytService.playlistId) {
+              this.ytService.playlistId = this.item.snippet.playlistId;
+          }
+          this.goBack();
+      }, error => this.ytService.handleAuthError(error));
 
   }
 

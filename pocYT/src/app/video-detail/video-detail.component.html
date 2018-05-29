@@ -3,14 +3,16 @@
   <ul>
     <!--more info can be displayed as needed-->
     <li>Description: <pre>{{item.snippet.description}}</pre></li>
-    <li>Published: {{item.snippet.publishedAt}}</li>
-    <li>Channel Title: {{item.snippet.channelTitle}}</li>
-    <li>Channel ID: {{item.snippet.channelId}}</li>
     <li>Video ID: {{item.snippet.resourceId.videoId}}</li>
+    <li>Unique Item ID: {{item.id}}</li>
+    <!--EEEE: day of week; MMMM d y: date; h:mm:ss a: time; zzzz: time zone-->
+    <li>Added to Playlist on: {{item.snippet.publishedAt | date : 'EEEE, MMMM d, y, h:mm:ss a (zzzz)'}}</li>
+    <li>Playlist by: {{item.snippet.channelTitle}} ({{item.snippet.channelId}})</li>
   </ul>
   <div>
     <label>
-      <input [(ngModel)]="item.snippet.position" placeholder="Enter New Position" />
+      <!--+/-1 differentiates between display and array position; instantly commits position change to item object, so the updated position can be pulled when user clicks Save-->
+      <input [value]="item.snippet.position+1" (input)="item.snippet.position=$event.target.value-1" placeholder="Enter New Position" />
     </label>
   </div>
 </div>
