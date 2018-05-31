@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { catchError, map, tap, retry } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 
 import { AuthService } from './auth.service';
 import { PlaylistItem } from './playlistItem';
@@ -27,16 +27,17 @@ export class YtService {
 
     constructor(private http: HttpClient, private authService: AuthService) { }
 
-    //gets access token from authService and stores it as an HttpHeader to be used with non-GET requests while user is signed in to Google/YouTube; prompts user to sign in if they are unauthenticated
+    //gets access token from authService and stores it as an HttpHeader to be used with non-GET requests while user is signed in to Google/YouTube; clears access token if user has signed out
     setAccessToken(): void {
 
         try {
 
-            httpOptions.headers = httpOptions.headers.set('Authorization', 'Bearer ' + this.authService.getToken()); //currently, no sign-in button and no way to sign out
+            httpOptions.headers = httpOptions.headers.set('Authorization', 'Bearer ' + this.authService.getToken());
 
-        } catch (Error) { //authService throws Error if there is no access token
+        } catch (Error) { //authService throws Error if there is no access token, i.e. user is signed-out
 
-            this.authService.signIn(); //currently, Error still shows up in console the first time this happens and the user must click their button again after signing in
+            httpOptions.headers = httpOptions.headers.delete('Authorization');
+            console.error('Please sign in');
 
         }
 
@@ -61,7 +62,7 @@ export class YtService {
     //PUT request for existing PlaylistItem
     updatePlaylistItem(item: PlaylistItem): Observable<any> {
 
-        this.setAccessToken(); //makes user sign-in if they click Save button while unauthenticated
+        this.setAccessToken();
 
         //currently, only updates item's position; potential to change contentDetails data
         return this.http.put(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet', {
@@ -83,7 +84,7 @@ export class YtService {
     //POST request for new PlaylistItem using its video ID
     addPlaylistItem(videoId: string): Observable<PlaylistItem> {
 
-        this.setAccessToken(); //makes user sign-in if they click Save button while unauthenticated
+        this.setAccessToken();
 
         //currently, only adds snippet data; potential to add contentDetails data, status data
         return this.http.post<PlaylistItem>(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet', {
@@ -103,7 +104,7 @@ export class YtService {
     //DELETE request for existing PlaylistItem using its ID
     deletePlaylistItem(id: string): Observable<PlaylistItem> {
 
-        this.setAccessToken(); //makes user sign-in if they click Save button while unauthenticated
+        this.setAccessToken();
 
         //deletes from any playlist (if user has proper permissions) since ID is unique to each PlaylistItem
         return this.http.delete<PlaylistItem>(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&id=' + id, httpOptions).pipe(catchError(this.handleError));
@@ -113,13 +114,16 @@ export class YtService {
     //requires user to sign in if a token has been set but they are still unauthorized (e.g. wrong user, token expiration)
     handleAuthError(error: any): void {
 
-        if (error == 401) {
-            this.authService.signIn();
+        //checks if user is unauthorized and if an access token exists, i.e. user is signed-in
+        if (error == 401 && httpOptions.headers.get('Authorization')) {
+
+            console.error('You\'re either unauthorized to edit this playlist or your access has expired; please sign in with the correct YouTube account.');
+
         }
 
     }
 
-    //this error handler does not/cannot return the actual message body of the error
+    //console error handler
     private handleError(error: HttpErrorResponse) {
 
         if (error.error instanceof ErrorEvent) {
@@ -130,30 +134,7 @@ export class YtService {
         } else {
 
             //server-side error handler
-            switch (error.status) {
-
-                case 400: {
-                    console.error(`Backend returned code ${error.status}: Invalid Entry`);
-                    break;
-                }
-                case 401: {
-                    console.error(`Backend returned code ${error.status}: Unauthorized`);
-                    break;
-                }
-                case 403: {
-                    console.error(`Backend returned code ${error.status}: Forbidden`);
-                    break;
-                }
-                case 404: {
-                    console.error(`Backend returned code ${error.status}: Not Found`);
-                    break;
-                }
-                default: {
-                    console.error(`Backend returned code ${error.status}; body was: ${error.error.message}`);
-                    break;
-                }
-
-            }
+            console.error(`Backend returned code ${error.status}: ${error.error.error.message}`); //format is HttpErrorResponse.JSON_response_body.error_field.error_message_field
 
         }
 
