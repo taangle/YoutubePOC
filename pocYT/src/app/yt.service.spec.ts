@@ -291,6 +291,7 @@ describe('YtService', () => {
         );
 
         const request = httpTestingController.expectOne(POSTurl);
+        expect(request.request.method).toEqual('POST');
 
         const expectedResponse = new HttpResponse(
           {
@@ -298,7 +299,7 @@ describe('YtService', () => {
             statusText: 'OK',
             body: postPlaylistItem
           }
-        )
+        );
 
         request.event(expectedResponse);
       });
@@ -307,5 +308,70 @@ describe('YtService', () => {
 
   describe('DELETE', () => {
 
+    describe('deletePlaylistItem', () => {
+      let deletePlaylistItem: PlaylistItem;
+      let playlistItemIdStub: string;
+      let DELETEurl: string;
+
+      beforeEach(() => {
+        playlistItemIdStub = 'id_stub';
+        DELETEurl = ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&id=' + playlistItemIdStub;
+        deletePlaylistItem = {
+          kind: 'string', //youtube#playlistItem
+          etag: 'string', //etag
+          id: playlistItemIdStub,
+          snippet: {
+              publishedAt: 'string', //datetime
+              channelId: 'string',
+              title: 'string',
+              description: 'string',
+              thumbnails: {
+                  default: { //only default thumbnail; other resolutions are available
+                      url: 'string',
+                      width: 1, //uint
+                      height: 1, //uint
+                  },
+              },
+              channelTitle: 'string',
+              playlistId: 'string',
+              position: 1, //uint
+              resourceId: {
+                  kind: 'string', //usually youtube#video
+                  videoId: 'string'
+              },
+          },
+          contentDetails: {
+              videoId: 'string',
+              startAt: 'string',
+              endAt: 'string',
+              note: 'string',
+              videoPublishedAt: 'string' //datetime
+          },
+          status: {
+              privacyStatus: 'string',
+          }
+        };
+      });
+
+      it('requests than an item be deleted and returns it', () => {
+        testedYtService.deletePlaylistItem(playlistItemIdStub).subscribe(
+          (response) => {
+            expect(response).toBe(deletePlaylistItem);
+          }
+        );
+
+        const request = httpTestingController.expectOne(DELETEurl)
+        expect(request.request.method).toEqual('DELETE');
+
+        const expectedResponse = new HttpResponse(
+          {
+            status: 200,
+            statusText: 'OK',
+            body: deletePlaylistItem
+          }
+        );
+        request.event(expectedResponse);
+      })
+    });
   });
 });
