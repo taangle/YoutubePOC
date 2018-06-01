@@ -124,16 +124,47 @@ describe('YtService', () => {
     });
   
     describe('getPlaylistItem', () => {
-      let expectedPlaylistItemResponse: PlaylistItem;
-      let unexpectedPlaylistItemResponse;
+      let expectedListResponse: PlaylistItemListResponse;
+      let expectedItemResponse: PlaylistItem;
+      let unexpectedItemResponse: PlaylistItem;
       let playlistItemIdStub = "playlist_item_id";
       let GETPlayistItemUrl = ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet&id=' + playlistItemIdStub;
 
+      beforeEach(() => {
+        expectedListResponse = new PlaylistItemListResponse();
+        expectedItemResponse = new PlaylistItem();
+        expectedItemResponse.id = 'item_id';
+        unexpectedItemResponse = new PlaylistItem();
+        unexpectedItemResponse.id = 'unexpected_id';
+        expectedListResponse.items = [expectedItemResponse];
+      });
+
+      it('returns expected playlist item (multiple calls)', () => {
+        let timesToTest = 50;
+
+        for (let i = 0; i < timesToTest; i++) {
+          testedYtService.getPlaylistItem(playlistItemIdStub).subscribe(
+            (response: PlaylistItemListResponse) => {
+              expect(response.items[0]).toBe(expectedItemResponse);
+            },
+            fail
+          );
+        }
+
+        const requests = httpTestingController.match(GETPlayistItemUrl);
+        expect(requests.length).toEqual(timesToTest);
+
+        for (let i = 0; i < timesToTest; i++) {
+          requests[i].flush(expectedItemResponse);
+        }
+      });
     });
   });
 
   describe('PUT', () => {
-
+    describe('updatePlaylistItem', () => {
+      
+    })
   });
 
   describe('POST', () => {
