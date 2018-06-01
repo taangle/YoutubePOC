@@ -33,6 +33,11 @@ export class YtComponent implements OnInit {
     //GET request, which returns a PlaylistItemListResponse; playlistItemListResponse.items is stored in playlistItems and its elements are displayed on page
     getPlaylistItems(playlistId: string): void {
 
+        playlistId = playlistId.trim();
+        if (!playlistId) {
+            return;
+        }
+
         this.ytService.getPlaylistItems(playlistId).subscribe(playlistItemListResponse => {
             this.playlistItemListResponse = playlistItemListResponse;
             this.playlistItems = this.playlistItemListResponse.items;
@@ -65,14 +70,14 @@ export class YtComponent implements OnInit {
     //passes a PlaylistItem to a DELETE request, which returns a PlaylistItem; playlist has playlistItem filtered from it to reflect deletion
     deletePlaylistItem(item: PlaylistItem): void {
 
-        this.ytService.deletePlaylistItem(item.id).subscribe(playlistItem => {
+        this.ytService.deletePlaylistItem(item.id).subscribe(() => {
             if (this.playlistItems.length >= 50) {
                 this.getPlaylistItems(this.ytService.playlistId); //has to refresh display list if deleting from full page; currently, makes another GET call
             } else {
                 this.playlistItems = this.playlistItems.filter(video => video !== item);
                 this.playlistItemListResponse.pageInfo.totalResults -= 1; //updates display total to reflect actual total
-                var pageIndex = this.playlistItemListResponse.pageInfo.totalResults - this.playlistItems.length;
-                for (var i = 0; i < this.playlistItems.length; ++i) {
+                let pageIndex: number = this.playlistItemListResponse.pageInfo.totalResults - this.playlistItems.length;
+                for (let i: number = 0; i < this.playlistItems.length; ++i) {
                     this.playlistItems[i].snippet.position = pageIndex; //updates display list numbers without doing another GET call
                     pageIndex++;
                 }

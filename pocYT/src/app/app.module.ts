@@ -5,10 +5,11 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { YtRoutingModule } from './/yt-routing.module';
-import { YtComponent } from './yt/yt.component';;
-import { VideoDetailComponent } from './video-detail/video-detail.component'
+import { YtComponent } from './yt/yt.component';
+import { VideoDetailComponent } from './video-detail/video-detail.component';
+import { AuthComponent } from './auth/auth.component';
 
-import { GoogleApiModule, GoogleApiService, GoogleAuthService, NgGapiClientConfig, NG_GAPI_CONFIG, GoogleApiConfig } from "ng-gapi";
+import { GoogleApiModule, GoogleApiService, GoogleAuthService, NgGapiClientConfig, NG_GAPI_CONFIG, GoogleApiConfig } from "ng-gapi";;
 
 //personal client ID, required YouTube discovery doc, YouTube authentication scope for OAuth2
 let gapiClientConfig: NgGapiClientConfig = {
@@ -21,7 +22,8 @@ let gapiClientConfig: NgGapiClientConfig = {
   declarations: [
       AppComponent,
       YtComponent,
-      VideoDetailComponent
+      VideoDetailComponent,
+      AuthComponent
     ],
   imports: [
       BrowserModule,

@@ -4,7 +4,6 @@ import { Location } from '@angular/common';
 
 import { PlaylistItem } from '../playlistItem';
 import { YtService } from '../yt.service';
-import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-video-detail',
@@ -15,7 +14,7 @@ export class VideoDetailComponent implements OnInit {
 
     @Input() item: PlaylistItem;
 
-  constructor(private route: ActivatedRoute, private ytService: YtService, private authService: AuthService, private location: Location) { }
+  constructor(private route: ActivatedRoute, private ytService: YtService, private location: Location) { }
 
   ngOnInit() {
 
