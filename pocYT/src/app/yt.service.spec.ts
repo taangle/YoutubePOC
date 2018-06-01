@@ -6,6 +6,7 @@ import { YtService, httpOptions } from './yt.service';
 import { AuthService } from './auth.service';
 import { PlaylistItemListResponse } from './playlistItemListResponse';
 import { PlaylistItem } from './playlistItem';
+import { HttpResponse } from '@angular/common/http';
 
 describe('YtService', () => {
   let testedYtService: YtService;
@@ -51,14 +52,15 @@ describe('YtService', () => {
       expect(httpOptions.headers.get('Authorization')).toContain(stubToken);  
     });
 
-    it('calls the authService signIn if getToken throws error', () => {
+    it('deletes the Authorization header if the authService throws an error', () => {
       authServiceSpy.getToken.and.throwError("error");
       testedYtService.setAccessToken();
-      expect(authServiceSpy.signIn).toHaveBeenCalled();
+      expect(httpOptions.headers.has('Authorization')).toBe(false);
     });
   });
 
   describe('GET', () => {
+
     describe('getPlaylistItems', () => {
       let expectedPlaylistResponse: PlaylistItemListResponse;
       let unexpectedPlaylistResponse;
@@ -162,16 +164,148 @@ describe('YtService', () => {
   });
 
   describe('PUT', () => {
+
     describe('updatePlaylistItem', () => {
-      
-    })
+      let PUTurl: string;
+      let updatePlaylistItem: PlaylistItem;
+
+      beforeEach(() => {
+        PUTurl = ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet';
+        updatePlaylistItem = {
+          kind: 'string', //youtube#playlistItem
+          etag: 'string', //etag
+          id: 'string',
+          snippet: {
+              publishedAt: 'string', //datetime
+              channelId: 'string',
+              title: 'string',
+              description: 'string',
+              thumbnails: {
+                  default: { //only default thumbnail; other resolutions are available
+                      url: 'string',
+                      width: 1, //uint
+                      height: 1, //uint
+                  },
+              },
+              channelTitle: 'string',
+              playlistId: 'string',
+              position: 1, //uint
+              resourceId: {
+                  kind: 'string', //usually youtube#video
+                  videoId: 'string'
+              },
+          },
+          contentDetails: {
+              videoId: 'string',
+              startAt: 'string',
+              endAt: 'string',
+              note: 'string',
+              videoPublishedAt: 'string' //datetime
+          },
+          status: {
+              privacyStatus: 'string',
+          }
+        };
+      });
+
+      it('requests an update to a play list item and returns it', () => {
+        testedYtService.updatePlaylistItem(updatePlaylistItem).subscribe(
+          (data) => {
+            expect(data).toEqual(updatePlaylistItem);
+          }
+        );
+
+        const request = httpTestingController.expectOne(PUTurl);
+        expect(request.request.method).toEqual('PUT');
+
+        const expectedResponse = new HttpResponse(
+          {
+            status: 200,
+            statusText: 'OK',
+            body: updatePlaylistItem
+          }
+        );
+        request.event(expectedResponse);
+      });
+    });
   });
 
   describe('POST', () => {
 
+    describe('addPlaylistItem', () => {
+      let videoIdStub: string;
+      let postPlaylistItem: PlaylistItem;
+      let POSTurl: string;
+
+      beforeEach(() => {
+        POSTurl = ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet';
+        videoIdStub = 'video_id_stub';
+        postPlaylistItem = {
+          kind: 'string', //youtube#playlistItem
+          etag: 'string', //etag
+          id: 'string',
+          snippet: {
+              publishedAt: 'string', //datetime
+              channelId: 'string',
+              title: 'string',
+              description: 'string',
+              thumbnails: {
+                  default: { //only default thumbnail; other resolutions are available
+                      url: 'string',
+                      width: 1, //uint
+                      height: 1, //uint
+                  },
+              },
+              channelTitle: 'string',
+              playlistId: 'string',
+              position: 1, //uint
+              resourceId: {
+                  kind: 'string', //usually youtube#video
+                  videoId: videoIdStub
+              },
+          },
+          contentDetails: {
+              videoId: 'string',
+              startAt: 'string',
+              endAt: 'string',
+              note: 'string',
+              videoPublishedAt: 'string' //datetime
+          },
+          status: {
+              privacyStatus: 'string',
+          }
+        }
+      });
+      
+      // this has to be here otherwise some weird error with no stacktrace happens...
+      xit('um', () => {
+        expect(true).toBe(true);
+      });
+
+      it('requests that an item be added and returns it', () => {
+        testedYtService.addPlaylistItem(videoIdStub).subscribe(
+          (response) => {
+            expect(response).toBe(postPlaylistItem);
+          },
+          fail
+        );
+
+        const request = httpTestingController.expectOne(POSTurl);
+
+        const expectedResponse = new HttpResponse(
+          {
+            status: 200,
+            statusText: 'OK',
+            body: postPlaylistItem
+          }
+        )
+
+        request.event(expectedResponse);
+      });
+    });
   });
 
-  describe('DELETE', () => [
+  describe('DELETE', () => {
 
-  ])
+  });
 });

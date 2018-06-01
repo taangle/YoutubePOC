@@ -1,4 +1,3 @@
-/*
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { YtComponent } from './yt.component';
@@ -20,8 +19,7 @@ describe('YtComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  xit('should create', () => {
     expect(component).toBeTruthy();
   });
 });
-*/
