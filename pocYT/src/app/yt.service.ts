@@ -37,7 +37,6 @@ export class YtService {
         } catch (Error) { //authService throws Error if there is no access token, i.e. user is signed-out
 
             httpOptions.headers = httpOptions.headers.delete('Authorization');
-            console.error('Please sign in');
 
         }
 
@@ -111,34 +110,58 @@ export class YtService {
 
     }
 
-    //requires user to sign in if a token has been set but they are still unauthorized (e.g. wrong user, token expiration)
-    handleAuthError(error: any): void {
+    //error handler that provides user-friendly advice/details for common error codes
+    giveErrorSolution(error: any): string {
 
-        //checks if user is unauthorized and if an access token exists, i.e. user is signed-in
-        if (error == 401 && httpOptions.headers.get('Authorization')) {
+        let errorSolutionText: string;
 
-            console.error('You\'re either unauthorized to edit this playlist or your access has expired; please sign in with the correct YouTube account.');
+        if (error.match(/(.*)400(.*)/)) {
+
+            errorSolutionText = 'Please enter a valid value.';
+
+        } else if (error.match(/(.*)401(.*)/)) {
+
+            //checks if user is unauthorized and if an access token exists, i.e. user is signed-in
+            if (httpOptions.headers.get('Authorization')) {
+                errorSolutionText = 'You\'re either unauthorized to edit this playlist or your access has expired; please sign in with the correct YouTube account.';
+            } else {
+                errorSolutionText = 'Please sign in.';
+            }
+
+        } else if (error.match(/(.*)403(.*)/)) {
+
+            errorSolutionText = 'I don\'t know what you\'re trying to do, but you can\'t do it.'; //forbidden
+
+        } else if (error.match(/(.*)404(.*)/)) {
+
+            errorSolutionText = 'Try another value.';
 
         }
 
+        return errorSolutionText;
+
     }
 
-    //console error handler
+    //error handler that provides status code and message details
     private handleError(error: HttpErrorResponse) {
+
+        let errorText: string;
 
         if (error.error instanceof ErrorEvent) {
 
             //client-side error handler
             console.error('An error occurred:', error.error.message);
+            errorText = error.error.message;
 
         } else {
 
             //server-side error handler
             console.error(`Backend returned code ${error.status}: ${error.error.error.message}`); //format is HttpErrorResponse.JSON_response_body.error_field.error_message_field
+            errorText = `${error.status} - ${error.error.error.message}`;
 
         }
 
-        return throwError(`${error.status}`);
+        return throwError(errorText);
 
     }
 

@@ -14,6 +14,8 @@ export class YtComponent implements OnInit {
 
     playlistItems: PlaylistItem[];
     playlistItemListResponse: PlaylistItemListResponse;
+    error: string;
+    errorSolution: string;
 
     constructor(private ytService: YtService, private gapiService: GoogleApiService) {
 
@@ -42,6 +44,9 @@ export class YtComponent implements OnInit {
             this.playlistItemListResponse = playlistItemListResponse;
             this.playlistItems = this.playlistItemListResponse.items;
             this.ytService.playlistId = playlistId; //waits for valid response, and then stores given playlist ID
+        }, error => {
+            this.errorSolution = this.ytService.giveErrorSolution(error);
+            this.error = error;
         });
 
     }
@@ -63,7 +68,10 @@ export class YtComponent implements OnInit {
             } else {
                 this.getPlaylistItems(this.ytService.playlistId); //has to refresh display list if adding to full page; currently, makes another GET call
             }
-        }, error => this.ytService.handleAuthError(error));
+        }, error => {
+            this.errorSolution = this.ytService.giveErrorSolution(error);
+            this.error = error;
+        });
 
     }
 
@@ -82,29 +90,45 @@ export class YtComponent implements OnInit {
                     pageIndex++;
                 }
             }
-        }, error => this.ytService.handleAuthError(error));
+        }, error => {
+            this.errorSolution = this.ytService.giveErrorSolution(error);
+            this.error = error;
+        });
 
     }
 
-    //saves pageToken and moves to previous playlist page
+    //saves pageToken and moves to previous playlist page (requires another GET request with specified pageToken)
     toPrevPage(): void {
 
         this.ytService.pageToken = this.playlistItemListResponse.prevPageToken;
         this.ytService.getPlaylistItems(this.ytService.playlistId).subscribe(playlistItemListResponse => {
             this.playlistItemListResponse = playlistItemListResponse;
             this.playlistItems = this.playlistItemListResponse.items;
+        }, error => {
+            this.errorSolution = this.ytService.giveErrorSolution(error);
+            this.error = error;
         });
 
     }
 
-    //saves pageToken and moves to next playlist page
+    //saves pageToken and moves to next playlist page (requires another GET request with specified pageToken)
     toNextPage(): void {
 
         this.ytService.pageToken = this.playlistItemListResponse.nextPageToken;
         this.ytService.getPlaylistItems(this.ytService.playlistId).subscribe(playlistItemListResponse => {
             this.playlistItemListResponse = playlistItemListResponse;
             this.playlistItems = this.playlistItemListResponse.items;
+        }, error => {
+            this.errorSolution = this.ytService.giveErrorSolution(error);
+            this.error = error;
         });
+
+    }
+
+    clearErrors(): void {
+
+        this.error = null;
+        this.errorSolution = null;
 
     }
 

@@ -14,6 +14,9 @@ export class VideoDetailComponent implements OnInit {
 
     @Input() item: PlaylistItem;
 
+    error: string;
+    errorSolution: string;
+
   constructor(private route: ActivatedRoute, private ytService: YtService, private location: Location) { }
 
   ngOnInit() {
@@ -26,7 +29,10 @@ export class VideoDetailComponent implements OnInit {
   getPlaylistItem(): void {
 
       const id = this.route.snapshot.paramMap.get('id'); //ID also stored in PlaylistItem (i.e. item.id) so it can be pulled from there alternatively
-      this.ytService.getPlaylistItem(id).subscribe(playlistItemListResponse => this.item = playlistItemListResponse.items[0]);
+      this.ytService.getPlaylistItem(id).subscribe(playlistItemListResponse => this.item = playlistItemListResponse.items[0], error => {
+          this.errorSolution = this.ytService.giveErrorSolution(error);
+          this.error = error;
+      });
 
   }
 
@@ -45,7 +51,10 @@ export class VideoDetailComponent implements OnInit {
               this.ytService.playlistId = this.item.snippet.playlistId;
           }
           this.goBack();
-      }, error => this.ytService.handleAuthError(error));
+      }, error => {
+          this.errorSolution = this.ytService.giveErrorSolution(error);
+          this.error = error;
+      });
 
   }
 
