@@ -23,3 +23,10 @@
 
 <button (click)="goBack()">Go Back</button>
 <button (click)="savePlaylistItem()">Save</button>
+
+<div *ngIf="error">
+  <pre>{{error}}</pre>
+</div>
+<div *ngIf="errorSolution">
+  <i>{{errorSolution}}</i>
+</div>

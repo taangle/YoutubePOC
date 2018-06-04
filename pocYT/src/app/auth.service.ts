@@ -1,4 +1,4 @@
-﻿//from ng-gapi (rubenCodeforges) docs
+﻿//mostly from ng-gapi (rubenCodeforges) docs
 
 import { Injectable } from '@angular/core';
 
@@ -32,7 +32,7 @@ export class AuthService {
 
         this.googleAuth.getAuth().subscribe((auth) => {
             auth.signIn().then(res => this.signInSuccessHandler(res));
-        });
+        }, error => this.handleAuthError(error));
 
     }
 
@@ -40,7 +40,7 @@ export class AuthService {
 
         this.googleAuth.getAuth().subscribe((auth) => {
             auth.signOut().then(() => this.signOutSuccessHandler());
-        });
+        }, error => this.handleAuthError(error));
 
     }
 
@@ -73,6 +73,13 @@ export class AuthService {
         this.user = null;
         sessionStorage.removeItem(AuthService.SESSION_STORAGE_KEY);
         AuthService.IS_SIGNED_IN = this.isSignedIn(); //should become false
+
+    }
+
+    //unsure what form authentication error takes
+    private handleAuthError(error: any) {
+
+        console.error(error);
 
     }
 
