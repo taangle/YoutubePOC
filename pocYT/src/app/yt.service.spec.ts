@@ -374,4 +374,6 @@ describe('YtService', () => {
       })
     });
   });
+
+  // no unit tests for error handling because it only prints to the console right now
 });

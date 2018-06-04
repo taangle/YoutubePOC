@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { YtComponent } from './yt.component';
 
@@ -8,7 +9,11 @@ describe('YtComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ YtComponent ]
+      declarations: [ YtComponent ],
+      imports: [RouterTestingModule],
+      providers: [
+        
+      ]
     })
     .compileComponents();
   }));
@@ -19,7 +24,9 @@ describe('YtComponent', () => {
     fixture.detectChanges();
   });
 
-  xit('should create', () => {
+  // I think the components aren't being created because the
+  // TestBed wasn't configured with all the providers they require
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 });
