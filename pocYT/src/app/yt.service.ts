@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
 import { PlaylistItem } from './playlistItem';
 import { PlaylistItemListResponse } from './playlistItemListResponse';
 
-const httpOptions = {
+export const httpOptions = {
 
     headers: new HttpHeaders({
         'Content-Type': 'application/json',
