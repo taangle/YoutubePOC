@@ -22,7 +22,6 @@ describe('YtService', () => {
       imports: [HttpClientTestingModule],
       providers: [
         YtService,
-        // Mock AuthService provider
         {
           provide: AuthService,
           useValue: authServiceSpy
@@ -37,6 +36,11 @@ describe('YtService', () => {
 
   afterEach(() => {
     httpTestingController.verify();
+
+    authServiceSpy = null;
+    testedYtService = null;
+    httpClient = null;
+    httpTestingController = null;
   });
 
   it('is created', () => {
@@ -127,27 +131,25 @@ describe('YtService', () => {
   
     describe('getPlaylistItem', () => {
       let expectedListResponse: PlaylistItemListResponse;
-      let expectedItemResponse: PlaylistItem;
+      let expectedItem: PlaylistItem;
       let unexpectedItemResponse: PlaylistItem;
       let playlistItemIdStub = "playlist_item_id";
       let GETPlayistItemUrl = ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet&id=' + playlistItemIdStub;
 
       beforeEach(() => {
         expectedListResponse = new PlaylistItemListResponse();
-        expectedItemResponse = new PlaylistItem();
-        expectedItemResponse.id = 'item_id';
-        unexpectedItemResponse = new PlaylistItem();
-        unexpectedItemResponse.id = 'unexpected_id';
-        expectedListResponse.items = [expectedItemResponse];
+        expectedItem = new PlaylistItem();
+        expectedItem.id = 'item_id';
+        expectedListResponse.items = [expectedItem];
       });
 
       it('returns expected playlist item (multiple calls)', () => {
-        let timesToTest = 50;
+        let timesToTest = 10;
 
         for (let i = 0; i < timesToTest; i++) {
           testedYtService.getPlaylistItem(playlistItemIdStub).subscribe(
             (response: PlaylistItemListResponse) => {
-              expect(response.items[0]).toBe(expectedItemResponse);
+              expect(response.items).toEqual([expectedItem]);
             },
             fail
           );
@@ -157,7 +159,7 @@ describe('YtService', () => {
         expect(requests.length).toEqual(timesToTest);
 
         for (let i = 0; i < timesToTest; i++) {
-          requests[i].flush(expectedItemResponse);
+          requests[i].flush(expectedListResponse);
         }
       });
     });
@@ -375,5 +377,5 @@ describe('YtService', () => {
     });
   });
 
-  // no unit tests for error handling because it only prints to the console right now
+  // no unit tests for error handling right now because it just prints messages
 });

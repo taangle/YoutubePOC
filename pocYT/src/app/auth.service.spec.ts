@@ -28,14 +28,17 @@ describe('AuthService', () => {
   
   function setUpGoogleAuthSpies() {
     googleAuthServiceSpy = jasmine.createSpyObj('GoogleAuthService', ['getAuth']);
-    googleAuthSpy = jasmine.createSpyObj('GoogleAuth', ['signIn', 'then']);
+    googleAuthSpy = jasmine.createSpyObj('GoogleAuth', ['signIn', 'then', 'signOut']);
+
     function subscription(observer) {
       observer.next(googleAuthSpy);
       observer.complete();
     }
+
     googleAuthServiceSpy.getAuth.and.callFake(() => {
       return new Observable(subscription);
     });
+
     googleAuthSpy.signIn.and.callFake(() => {
       return {
         getAuthResponse: () => {
@@ -83,19 +86,34 @@ describe('AuthService', () => {
   });
 
   describe('signIn', () => {
-    xit('*PENDING* calls getAuth and the googleAuth signIn', async () => {
+    it('calls getAuth and the googleAuth signIn', async () => {
       // These should be separate tests, but I had problems
       //the "then" that gets called might be related to to the problem somehow
       testedAuthService.signIn();
       expect(googleAuthServiceSpy.getAuth).toHaveBeenCalled();
       await expect(googleAuthSpy.signIn).toHaveBeenCalled();
-      //await expect(sessionStorage.getItem(AuthService.SESSION_STORAGE_KEY)).toEqual(stubAccessToken);
+    });
+  });
+
+  describe('signOut', () => {
+    it('calls getAuth and the googleAuth signOut', async () => {
+      testedAuthService.signOut();
+      expect(googleAuthServiceSpy.getAuth).toHaveBeenCalled();
+      await expect(googleAuthSpy.signOut).toHaveBeenCalled();
+    });
+  });
+
+  describe('isSignedIn', () => {
+    it('returns true if the token exists', () => {
+      sessionStorage.setItem(AuthService.SESSION_STORAGE_KEY, 'token');
+      expect(testedAuthService.isSignedIn()).toBe(true);
     });
 
-    xit('*PENDING* calls the signIn on GoogleAuth', () => {
-      // Something changes that makes calling signIn an error
-      testedAuthService.signIn();
-      expect(googleAuthSpy.signIn).toHaveBeenCalled();
+    xit('returns false if the token does not exist *PENDING*', () => {
+      spyOn(testedAuthService, 'getToken').and.callFake(() => {
+        throw new Error("No token set; authentication required.");
+      });
+      expect(testedAuthService.isSignedIn()).toBe(false);
     });
   });
 });

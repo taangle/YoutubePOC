@@ -7,7 +7,7 @@ describe('YtRoutingModule', () => {
     ytRoutingModule = new YtRoutingModule();
   });
 
-  it('creates an instance', () => {
+  it('is created', () => {
     expect(ytRoutingModule).toBeTruthy();
   });
 });
