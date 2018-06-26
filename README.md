@@ -5,7 +5,7 @@ Proof-of-concept using Angular 6 and YouTube Data API.
 
 Allows GET, POST, PUT, DELETE requests on videos/data in a single playlist on the corresponding authorized YouTube account.
 
-**Requires ng-gapi package.**
+**Requires ng-gapi package.**<br />
 This package should be installed when the repository is cloned and set up locally properly; if not, run `npm install ng-gapi`. See the [documentation](https://github.com/rubenCodeforges/ng-gapi) for more details.
 
 ### Setting Up the Project Locally
@@ -47,7 +47,7 @@ By default, you may only view playlists and video descriptions. You must sign in
 
 This application deals heavily with YouTube playlist IDs and video IDs.
 
-Playlist ID example: **PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG** from https://www.youtube.com/playlist?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG
+Playlist ID example: **PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG** from https://www.youtube.com/playlist?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG<br />
 Video ID example: **dQw4w9WgXcQ** from https://www.youtube.com/watch?v=dQw4w9WgXcQ
 
 To view a specific playlist, copy and paste the desired playlist ID into the corresponding textbox.
