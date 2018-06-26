@@ -36,6 +36,12 @@ describe('AuthComponent', () => {
     fixture.detectChanges();
   });
 
+  xit('~~placeholder', () => {});
+  xit('~~placeholder', () => {});
+  xit('~~placeholder', () => {});
+  xit('~~placeholder', () => {});
+  xit('~~placeholder', () => {});
+
   it('is created', () => {
     expect(component).toBeTruthy();
   });

@@ -278,9 +278,7 @@ describe('YtService', () => {
             });
 
             // this has to be here otherwise some weird error with no stacktrace happens...
-            xit('um', () => {
-                expect(true).toBe(true);
-            });
+            xit('~~placeholder', () => {});
 
             it('requests that an item be added and returns it', () => {
                 testedYtService.addPlaylistItem(videoIdStub).subscribe(

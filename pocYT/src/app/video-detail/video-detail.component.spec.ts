@@ -108,7 +108,7 @@ describe('VideoDetailComponent', () => {
     component.item = fakePlaylistItem;
   });
 
-  xit('*PENDING* should create', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 

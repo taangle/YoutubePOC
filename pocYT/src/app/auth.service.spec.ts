@@ -109,7 +109,7 @@ describe('AuthService', () => {
       expect(testedAuthService.isSignedIn()).toBe(true);
     });
 
-    xit('returns false if the token does not exist *PENDING*', () => {
+    it('returns false if the token does not exist', () => {
       spyOn(testedAuthService, 'getToken').and.callFake(() => {
         throw new Error("No token set; authentication required.");
       });
