@@ -46,6 +46,7 @@ export class YtService {
     getPlaylistItems(playlistId: string): Observable<PlaylistItemListResponse> {
 
         //currently, only returns snippet data; pageToken not needed for request to be "complete", so keeping the parameter there makes sure user stays on the correct playlist page
+        this.playlistId = playlistId;
         return this.http.get<PlaylistItemListResponse>(this.ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet&playlistId=' + playlistId + '&maxResults=50&pageToken=' + this.pageToken).pipe(catchError(this.handleError));
 
     }
