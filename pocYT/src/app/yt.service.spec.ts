@@ -1,4 +1,4 @@
-﻿import { TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
@@ -278,9 +278,7 @@ describe('YtService', () => {
             });
 
             // this has to be here otherwise some weird error with no stacktrace happens...
-            xit('um', () => {
-                expect(true).toBe(true);
-            });
+            xit('~~placeholder', () => {});
 
             it('requests that an item be added and returns it', () => {
                 testedYtService.addPlaylistItem(videoIdStub).subscribe(

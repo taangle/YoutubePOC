@@ -9,257 +9,249 @@ import { PlaylistItem } from '../playlistItem';
 import { PlaylistItemListResponse } from '../playlistItemListResponse';
 
 describe('YtComponent', () => {
-  let component: YtComponent;
-  let fixture: ComponentFixture<YtComponent>;
+    let component: YtComponent;
+    let fixture: ComponentFixture<YtComponent>;
 
-  let ytServiceSpy: jasmine.SpyObj<YtService>;
-  let gapiServiceSpy: jasmine.SpyObj<GoogleApiService>;
-  let fakePlaylistItem: PlaylistItem = {
-      kind: 'string', //youtube#playlistItem
-      etag: 'string', //etag
-      id: 'string',
-      snippet: {
-          publishedAt: 'string', //datetime
-          channelId: 'string',
-          title: 'string',
-          description: 'string',
-          thumbnails: {
-              default: { //only default thumbnail; other resolutions are available
-                  url: 'string',
-                  width: 1, //uint
-                  height: 1, //uint
-              },
-          },
-          channelTitle: 'string',
-          playlistId: 'string',
-          position: 0, //uint
-          resourceId: {
-              kind: 'string', //usually youtube#video
-              videoId: 'string'
-          },
-      },
-      contentDetails: {
-          videoId: 'string',
-          startAt: 'string',
-          endAt: 'string',
-          note: 'string',
-          videoPublishedAt: 'string' //datetime
-      },
-      status: {
-          privacyStatus: 'string',
-      }
-  };
-  let fakePlaylistItemListResponse: PlaylistItemListResponse = {
-      kind: "kind", //youtube#playlistItemListResponse
-      etag: "etag", //etag
-      nextPageToken: "next",
-      prevPageToken: "prev",
-      pageInfo: {
-          totalResults: 1, //int
-          resultsPerPage: 50 //int
-      },
-      items: [fakePlaylistItem] //resource array
-  };
-
-  function setUpGoogleApi() {
-
-      function subscription(observer) {
-          observer.next();
-          observer.complete();
-      }
-      gapiServiceSpy.onLoad.and.callFake(() => {
-          return new Observable(subscription);
-      });
-      
-  }
-
-  function setUpGetPlaylistItems() {
-
-      function subscription(observer) {
-          observer.next(fakePlaylistItemListResponse);
-          observer.complete();
-      }
-      ytServiceSpy.getPlaylistItems.and.callFake(() => {
-          return new Observable(subscription);
-      });
-
-  }
-
-  function setUpAddPlaylistItem() {
-
-      function subscription(observer) {
-          observer.next(fakePlaylistItem);
-          observer.complete();
-      }
-      ytServiceSpy.addPlaylistItem.and.callFake(() => {
-          return new Observable(subscription);
-      });
-
-  }
-
-  function setUpDeletePlaylistItem() {
-
-      function subscription(observer) {
-          observer.next(fakePlaylistItem);
-          observer.complete();
-      }
-      ytServiceSpy.deletePlaylistItem.and.callFake(() => {
-          return new Observable(subscription);
-      });
-
-  }
-
-  beforeEach(async(() => {
-      ytServiceSpy = jasmine.createSpyObj('YtService', ['getPlaylistItems', 'addPlaylistItem', 'deletePlaylistItem', 'giveErrorSolution']);
-      gapiServiceSpy = jasmine.createSpyObj('GoogleApiService', ['onLoad']);
-
-      setUpGoogleApi();
-      setUpGetPlaylistItems();
-      setUpAddPlaylistItem();
-      setUpDeletePlaylistItem();
-
-    TestBed.configureTestingModule({
-        declarations: [YtComponent],
-        imports: [RouterTestingModule],
-        providers: [
-            {
-                provide: YtService,
-                useValue: ytServiceSpy
+    let ytServiceFake;
+    let gapiServiceSpy: jasmine.SpyObj<GoogleApiService>;
+    let fakePlaylistItem: PlaylistItem = {
+        kind: 'string', //youtube#playlistItem
+        etag: 'string', //etag
+        id: 'string',
+        snippet: {
+            publishedAt: 'string', //datetime
+            channelId: 'string',
+            title: 'string',
+            description: 'string',
+            thumbnails: {
+                default: { //only default thumbnail; other resolutions are available
+                    url: 'string',
+                    width: 1, //uint
+                    height: 1, //uint
+                },
             },
-            {
-                provide: GoogleApiService,
-                useValue: gapiServiceSpy
-            }
-        ]
-    })
-    .compileComponents();
-  }));
+            channelTitle: 'string',
+            playlistId: 'string',
+            position: 0, //uint
+            resourceId: {
+                kind: 'string', //usually youtube#video
+                videoId: 'string'
+            },
+        },
+        contentDetails: {
+            videoId: 'string',
+            startAt: 'string',
+            endAt: 'string',
+            note: 'string',
+            videoPublishedAt: 'string' //datetime
+        },
+        status: {
+            privacyStatus: 'string',
+        }
+    };
+    let fakePlaylistItemListResponse: PlaylistItemListResponse = {
+        kind: "kind", //youtube#playlistItemListResponse
+        etag: "etag", //etag
+        nextPageToken: "next",
+        prevPageToken: "prev",
+        pageInfo: {
+            totalResults: 1, //int
+            resultsPerPage: 50 //int
+        },
+        items: [fakePlaylistItem] //resource array
+    };
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(YtComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    function setUpGoogleApi() {
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+        function subscription(observer) {
+            observer.next();
+            observer.complete();
+        }
+        gapiServiceSpy.onLoad.and.callFake(() => {
+            return new Observable(subscription);
+        });
 
-  it('has all properties undefined initially', () => {
-      expect(component.playlistItems).toBeUndefined();
-      expect(component.playlistItemListResponse).toBeUndefined();
-      expect(component.error).toBeUndefined();
-      expect(component.errorSolution).toBeUndefined();
-  });
+    }
+    function setUpGetPlaylistItems() {
 
-  describe('ngOnInit', () => {
+        function subscription(observer) {
+            observer.next(fakePlaylistItemListResponse);
+            observer.complete();
+        }
+        spyOn(ytServiceFake, 'getPlaylistItems').and.callFake(() => {
+            return new Observable(subscription);
+        });
 
-      let playlistIdStub = 'playlistId stub';
+    }
+    function setUpAddPlaylistItem() {
 
-      it('should not call service initially', () => {
-          spyOn(component, 'getPlaylistItems');
-          component.ngOnInit();
-          expect(component.getPlaylistItems).not.toHaveBeenCalled();
-      });
+        function subscription(observer) {
+            observer.next(fakePlaylistItem);
+            observer.complete();
+        }
+        spyOn(ytServiceFake, 'addPlaylistItem').and.callFake(() => {
+            return new Observable(subscription);
+        });
 
-      it('should call service', () => {
-          component.getPlaylistItems(playlistIdStub);
-          spyOn(component, 'getPlaylistItems');
-          component.ngOnInit();
-          expect(component.getPlaylistItems).toHaveBeenCalled();
-      });
+    }
+    function setUpDeletePlaylistItem() {
 
-  });
+        function subscription(observer) {
+            observer.next(fakePlaylistItem);
+            observer.complete();
+        }
+        spyOn(ytServiceFake, 'deletePlaylistItem').and.callFake(() => {
+            return new Observable(subscription);
+        });
 
-  describe('getPlaylistItems', () => {
+    }
 
-      let playlistIdStub = 'playlistId stub';
-      let emptyPlaylistIdStub = '    ';
+    beforeEach(async(() => {
+        ytServiceFake = {
+            playlistId: <string> null,
+            pageToken: <string> null,
+            getPlaylistItems: function () {},
+            addPlaylistItem: function () {},
+            deletePlaylistItem: function () {},
+            giveErrorSolution: function () {}
+        };
 
-      it('should not call service on blank input', () => {
-          component.getPlaylistItems(emptyPlaylistIdStub);
-          expect(ytServiceSpy.getPlaylistItems).not.toHaveBeenCalled();
-      });
+        gapiServiceSpy = jasmine.createSpyObj('GoogleApiService', ['onLoad']);
 
-      it('should call service with given playlistId input and update playlistItemListResponse and playlistItems', () => {
-          component.getPlaylistItems(playlistIdStub);
-          expect(ytServiceSpy.getPlaylistItems).toHaveBeenCalledWith(playlistIdStub);
-          expect(component.playlistItemListResponse).toEqual(fakePlaylistItemListResponse);
-          expect(component.playlistItems).toContain(fakePlaylistItem);
-      });
+        setUpGoogleApi();
+        setUpGetPlaylistItems();
+        setUpAddPlaylistItem();
+        setUpDeletePlaylistItem();
 
-  });
+        TestBed.configureTestingModule({
+            declarations: [YtComponent],
+            imports: [RouterTestingModule],
+            providers: [
+                {
+                    provide: YtService,
+                    useValue: ytServiceFake as YtService
+                },
+                {
+                    provide: GoogleApiService,
+                    useValue: gapiServiceSpy
+                }
+            ]
+        })
+            .compileComponents();
+    }));
 
-  describe('addPlaylistItem', () => {
+    beforeEach(() => {
+        fixture = TestBed.createComponent(YtComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-      let playlistIdStub = 'playlistId stub';
-      let videoIdStub = 'videoId stub';
-      let emptyVideoIdStub = '    ';
+    it('is created', () => {
+        expect(component).toBeTruthy();
+    });
 
-      it('should not call service on blank input', () => {
-          component.getPlaylistItems(playlistIdStub);
-          component.addPlaylistItem(emptyVideoIdStub);
-          expect(ytServiceSpy.addPlaylistItem).not.toHaveBeenCalled();
-      });
+    xdescribe('ngOnInit', () => {
 
-      it('should call service with given videoId input and update playlistItems', () => {
-          component.getPlaylistItems(playlistIdStub);
-          component.addPlaylistItem(videoIdStub);
-          expect(ytServiceSpy.addPlaylistItem).toHaveBeenCalledWith(videoIdStub);
-          expect(component.playlistItems).toContain(fakePlaylistItem);
-      });
+        let playlistIdStub = 'playlistId stub';
 
-  });
+        describe('(when ytService has no playlistId', () => {
 
-  describe('deletePlaylistItem', () => {
+        });
 
-      let playlistIdStub = 'playlistId stub';
+        describe('(when ytService has a playlistId', () => {
+            
+        });
+    });
 
-      it('should call service with given playlistItem and update playlistItems', () => {
-          component.getPlaylistItems(playlistIdStub);
-          component.deletePlaylistItem(fakePlaylistItem);
-          expect(ytServiceSpy.deletePlaylistItem).toHaveBeenCalledWith(fakePlaylistItem.id);
-          expect(component.playlistItems).not.toContain(fakePlaylistItem);
-      });
+    describe('getPlaylistItems', () => {
 
-  });
+        let playlistIdStub = 'playlistId stub';
+        let emptyPlaylistIdStub = '    ';
 
-  describe('toPrevPage', () => {
+        it('should not call service on blank input', () => {
+            component.getPlaylistItems(emptyPlaylistIdStub);
+            expect(ytServiceFake.getPlaylistItems).not.toHaveBeenCalled();
+        });
 
-      let playlistIdStub = 'playlistId stub';
+        it('should call service with given playlistId input and update playlistItemListResponse and playlistItems', () => {
+            component.getPlaylistItems(playlistIdStub);
+            expect(ytServiceFake.getPlaylistItems).toHaveBeenCalledWith(playlistIdStub);
+            expect(component.playlistItemListResponse).toEqual(fakePlaylistItemListResponse);
+            expect(component.playlistItems).toContain(fakePlaylistItem);
+        });
 
-      it('should call service and update playlistItemListResponse and playlistItems', () => {
-          component.getPlaylistItems(playlistIdStub);
-          component.toPrevPage();
-          expect(ytServiceSpy.getPlaylistItems).toHaveBeenCalledWith(playlistIdStub);
-          expect(component.playlistItemListResponse).toEqual(fakePlaylistItemListResponse);
-          expect(component.playlistItems).toContain(fakePlaylistItem);
-      });
+    });
 
-  });
+    describe('addPlaylistItem', () => {
 
-  describe('toNextPage', () => {
+        let playlistIdStub = 'playlistId stub';
+        let videoIdStub = 'videoId stub';
+        let emptyVideoIdStub = '    ';
 
-      let playlistIdStub = 'playlistId stub';
+        it('should not call service on blank input', () => {
+            component.getPlaylistItems(playlistIdStub);
+            component.addPlaylistItem(emptyVideoIdStub);
+            expect(ytServiceFake.addPlaylistItem).not.toHaveBeenCalled();
+        });
 
-      it('should call service and update playlistItemListResponse and playlistItems', () => {
-          component.getPlaylistItems(playlistIdStub);
-          component.toNextPage();
-          expect(ytServiceSpy.getPlaylistItems).toHaveBeenCalledWith(playlistIdStub);
-          expect(component.playlistItemListResponse).toEqual(fakePlaylistItemListResponse);
-          expect(component.playlistItems).toContain(fakePlaylistItem);
-      });
-   
-  });
+        it('should call service with given videoId input and update playlistItems', () => {
+            component.getPlaylistItems(playlistIdStub);
+            component.addPlaylistItem(videoIdStub);
+            expect(ytServiceFake.addPlaylistItem).toHaveBeenCalledWith(videoIdStub);
+            expect(component.playlistItems).toContain(fakePlaylistItem);
+        });
 
-  describe('clearErrors', () => {
+    });
 
-      it('should set error and errorSolution to null', () => {
-          component.clearErrors();
-          expect(component.error).toBeNull();
-          expect(component.errorSolution).toBeNull();
-      });
+    describe('deletePlaylistItem', () => {
 
-  });
+        let playlistIdStub = 'playlistId stub';
+
+        it('should call service with given playlistItem and update playlistItems', () => {
+            component.getPlaylistItems(playlistIdStub);
+            component.deletePlaylistItem(fakePlaylistItem);
+            expect(ytServiceFake.deletePlaylistItem).toHaveBeenCalledWith(fakePlaylistItem.id);
+            expect(component.playlistItems).not.toContain(fakePlaylistItem);
+        });
+
+    });
+
+    xdescribe('toPrevPage', () => {
+
+        let playlistIdStub = 'playlistId stub';
+
+        it('should call service and update playlistItemListResponse and playlistItems', () => {
+            component.getPlaylistItems(playlistIdStub);
+            component.toPrevPage();
+            expect(ytServiceFake.getPlaylistItems).toHaveBeenCalledWith(playlistIdStub);
+            expect(component.playlistItemListResponse).toEqual(fakePlaylistItemListResponse);
+            expect(component.playlistItems).toContain(fakePlaylistItem);
+        });
+
+    });
+
+    xdescribe('toNextPage', () => {
+
+        let playlistIdStub = 'playlistId stub';
+
+        it('should call service and update playlistItemListResponse and playlistItems', () => {
+            component.getPlaylistItems(playlistIdStub);
+            component.toNextPage();
+            expect(ytServiceFake.getPlaylistItems).toHaveBeenCalledWith(playlistIdStub);
+            expect(component.playlistItemListResponse).toEqual(fakePlaylistItemListResponse);
+            expect(component.playlistItems).toContain(fakePlaylistItem);
+        });
+
+    });
+
+    describe('clearErrors', () => {
+
+        it('should set error and errorSolution to null', () => {
+            component.clearErrors();
+            expect(component.error).toBeNull();
+            expect(component.errorSolution).toBeNull();
+        });
+
+    });
 
 });

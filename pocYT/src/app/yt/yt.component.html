@@ -1,4 +1,4 @@
-﻿<label>Playlist ID:
+<label>Playlist ID:
   <input #playlistId />
 </label>
 <!--displays playlist based on playlist ID and clears input-->
@@ -8,13 +8,16 @@
 
   <h3>Total Results: {{playlistItemListResponse.pageInfo.totalResults}}</h3>
 
-  <ul style="list-style-type:none">
-    <!--lists titles of all PlaylistItems in playlist; each can be clicked for more information or deleted by clicking their respective Delete button-->
-    <li *ngFor="let item of playlistItems">
-      {{item.snippet.position + 1}}.&nbsp;&nbsp;<a routerLink="/video/{{item.id}}">{{item.snippet.title}}</a>
-      <button (click)="clearErrors(); deletePlaylistItem(item)">Delete</button>
-    </li>
-  </ul>
+  <div>
+    <button (click)="clearErrors(); deletePlaylistItem()">Delete Selected Videos</button>
+    <ul style="list-style-type:none">
+      <!--lists titles of all PlaylistItems in playlist; each can be clicked for more information or deleted by clicking their respective Delete button-->
+      <li *ngFor="let item of playlistItems; let i = index">
+        <input type="checkbox" (click)="toggleToDelete(i)"/>
+        {{item.snippet.position + 1}}.&nbsp;&nbsp;<a routerLink="/video/{{item.id}}">{{item.snippet.title}}</a>
+      </li>
+    </ul>
+  </div>
 
   <div>
     <!--advances to previous/next page in playlist, if possible-->
@@ -24,7 +27,8 @@
   <br />
 
   <div>
-    <label>Video ID:
+    <label>
+      Video ID:
       <input #videoId />
     </label>
     <!--adds new PlaylistItem to end of playlist based on video ID and clears input-->

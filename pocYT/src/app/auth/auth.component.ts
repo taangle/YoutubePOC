@@ -1,5 +1,6 @@
-﻿import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 
 import { AuthService } from '../auth.service';
 
@@ -10,7 +11,7 @@ import { AuthService } from '../auth.service';
 })
 export class AuthComponent implements OnInit {
 
-    constructor(private authService: AuthService, private location: Location) { }
+    constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
 
@@ -21,14 +22,14 @@ export class AuthComponent implements OnInit {
   signIn(): void {
 
       this.authService.signIn();
-      this.goBack();
+      this.redirect();
 
   }
 
   signOut(): void {
 
       this.authService.signOut();
-      this.goBack();
+      this.redirect();
 
   }
 
@@ -38,9 +39,9 @@ export class AuthComponent implements OnInit {
 
   }
 
-  goBack(): void {
+  redirect(): void {
 
-      this.location.back();
+      this.router.navigate(['/playlist']);
 
   }
 

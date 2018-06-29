@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 import { YtService } from '../yt.service';
 import { GoogleApiService } from "ng-gapi";
@@ -15,7 +15,13 @@ export class YtComponent implements OnInit {
     playlistItems: PlaylistItem[];
     playlistItemListResponse: PlaylistItemListResponse;
     error: string;
-    errorSolution: string;
+  errorSolution: string;
+  itemsToDelete: PlaylistItem[] = [];
+  shouldDelete: boolean[] = [false, false, false, false, false, false, false, false, false, false,
+                              false, false, false, false, false, false, false, false, false, false,
+                              false, false, false, false, false, false, false, false, false, false,
+                              false, false, false, false, false, false, false, false, false, false,
+                              false, false, false, false, false, false, false, false, false, false];
 
     constructor(private ytService: YtService, private gapiService: GoogleApiService) {
 
@@ -23,16 +29,16 @@ export class YtComponent implements OnInit {
 
     }
 
+    // If ytService has a current playlist, populate fields with it when component loads
     ngOnInit() {
 
-        //on first load (when there is no set playlist to display), nothing displays until Show Playlist is clicked
         if (this.ytService.playlistId) {
-            this.getPlaylistItems(this.ytService.playlistId);
+          this.getPlaylistItems(this.ytService.playlistId);
         }
 
     }
 
-    //GET request, which returns a PlaylistItemListResponse; playlistItemListResponse.items is stored in playlistItems and its elements are displayed on page
+    // Asks ytService for playlist to populate playlistItemListResponse and playlistItems
     getPlaylistItems(playlistId: string): void {
 
         playlistId = playlistId.trim();
@@ -43,7 +49,6 @@ export class YtComponent implements OnInit {
         this.ytService.getPlaylistItems(playlistId).subscribe(playlistItemListResponse => {
             this.playlistItemListResponse = playlistItemListResponse;
             this.playlistItems = this.playlistItemListResponse.items;
-            this.ytService.playlistId = playlistId; //waits for valid response, and then stores given playlist ID
         }, error => {
             this.errorSolution = this.ytService.giveErrorSolution(error);
             this.error = error;
@@ -51,7 +56,7 @@ export class YtComponent implements OnInit {
 
     }
 
-    //passes a new video ID to a POST request, which returns a PlaylistItem; playlistItem is added to end of playlist
+    // Asks ytService to add an item, updates fields manually if at < 50 items, otherwise gets the actual playlist from ytService
     addPlaylistItem(videoId: string): void {
 
         videoId = videoId.trim();
@@ -75,11 +80,31 @@ export class YtComponent implements OnInit {
 
     }
 
-    //passes a PlaylistItem to a DELETE request, which returns a PlaylistItem; playlist has playlistItem filtered from it to reflect deletion
-    deletePlaylistItem(item: PlaylistItem): void {
+    // Asks ytService to delete item, updates fields manually if at < 50 items, otherwise gets the actual playlist from ytService
+    deletePlaylistItem(): void {
 
+      this.itemsToDelete = [];
+      for (let i in this.shouldDelete) {
+        if (this.playlistItems[i] && this.shouldDelete[i]) {
+          this.itemsToDelete.push(this.playlistItems[i]);
+        }
+      }
+      if (this.itemsToDelete.length == 0) {
+        return;
+      }
+
+      for (let item of this.itemsToDelete) {
         this.ytService.deletePlaylistItem(item.id).subscribe(() => {
-            if (this.playlistItems.length >= 50) {
+          //not all requests go through this way; test if you can chain/concat a bunch of observables in case it's the API stopping frequent requests?
+        }, error => {
+            this.errorSolution = this.ytService.giveErrorSolution(error);
+            this.error = error;
+        });
+      }
+      this.getPlaylistItems(this.ytService.playlistId);
+
+      /*this.ytService.deletePlaylistItem(item).subscribe(() => {
+            /*if (this.playlistItems.length >= 50) {
                 this.getPlaylistItems(this.ytService.playlistId); //has to refresh display list if deleting from full page; currently, makes another GET call
             } else {
                 this.playlistItems = this.playlistItems.filter(video => video !== item);
@@ -93,36 +118,20 @@ export class YtComponent implements OnInit {
         }, error => {
             this.errorSolution = this.ytService.giveErrorSolution(error);
             this.error = error;
-        });
+        });*/
 
     }
 
-    //saves pageToken and moves to previous playlist page (requires another GET request with specified pageToken)
+    // Gives ytService the pageToken then asks ytService for the playlist
     toPrevPage(): void {
-
         this.ytService.pageToken = this.playlistItemListResponse.prevPageToken;
-        this.ytService.getPlaylistItems(this.ytService.playlistId).subscribe(playlistItemListResponse => {
-            this.playlistItemListResponse = playlistItemListResponse;
-            this.playlistItems = this.playlistItemListResponse.items;
-        }, error => {
-            this.errorSolution = this.ytService.giveErrorSolution(error);
-            this.error = error;
-        });
-
+        this.getPlaylistItems(this.ytService.playlistId);
     }
 
-    //saves pageToken and moves to next playlist page (requires another GET request with specified pageToken)
+    // Gives ytService the pageToken then asks ytService for the playlist
     toNextPage(): void {
-
         this.ytService.pageToken = this.playlistItemListResponse.nextPageToken;
-        this.ytService.getPlaylistItems(this.ytService.playlistId).subscribe(playlistItemListResponse => {
-            this.playlistItemListResponse = playlistItemListResponse;
-            this.playlistItems = this.playlistItemListResponse.items;
-        }, error => {
-            this.errorSolution = this.ytService.giveErrorSolution(error);
-            this.error = error;
-        });
-
+        this.getPlaylistItems(this.ytService.playlistId);
     }
 
     clearErrors(): void {
@@ -130,6 +139,12 @@ export class YtComponent implements OnInit {
         this.error = null;
         this.errorSolution = null;
 
-    }
+  }
+
+  toggleToDelete(index: number): void {
+
+    this.shouldDelete[index] = !this.shouldDelete[index];
+
+  }
 
 }
