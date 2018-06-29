@@ -150,16 +150,49 @@ describe('YtComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    xdescribe('ngOnInit', () => {
+    describe('ngOnInit', () => {
 
         let playlistIdStub = 'playlistId stub';
 
-        describe('(when ytService has no playlistId', () => {
-
+        describe('(when ytService has no playlistId)', () => {
+            it('does not populate any of its fields', () => {
+                expect(component.playlistItems).toBeUndefined();
+                expect(component.playlistItemListResponse).toBeUndefined();
+                expect(component.error).toBeUndefined();
+                expect(component.errorSolution).toBeUndefined();
+            });
         });
 
-        describe('(when ytService has a playlistId', () => {
-            
+        xdescribe('(when ytService has a playlistId)', () => {
+            beforeEach(() => {
+                ytServiceFake.playlistId = playlistIdStub;
+            });
+
+            describe('(when ytService actually has a playlist for it)', () => {
+                it('populates playlistItems and playlistItemListResponse', () => {
+                    expect(component.playlistItems).toBeTruthy();
+                    expect(component.playlistItemListResponse).toBeTruthy();
+                });
+            });
+
+            describe('(when ytService has a problem retrieving the playlist)', () => {
+                let error = '403';
+                let errorSolution = 'I don\'t know what you\'re trying to do, but you can\'t do it.';
+                beforeEach(() => {
+                    function subscription(observer) {
+                        observer.error(error);
+                        observer.complete();
+                    }
+                    spyOn(ytServiceFake, 'getPlaylistItems').and.callFake(() => {
+                        return new Observable(subscription);
+                    });
+                });
+                
+                it('populates error and errorSolution ', () => {
+                    expect(component.error).toEqual(error);
+                    expect(component.errorSolution).toEqual(errorSolution);
+                });
+            });
         });
     });
 
