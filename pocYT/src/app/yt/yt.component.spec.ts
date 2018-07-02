@@ -60,6 +60,7 @@ describe('YtComponent', () => {
         },
         items: [fakePlaylistItem] //resource array
     };
+    let errorSolution = 'I don\'t know what you\'re trying to do, but you can\'t do it.';
 
     function setUpGoogleApi() {
 
@@ -95,7 +96,6 @@ describe('YtComponent', () => {
 
     }
     function setUpDeletePlaylistItem() {
-
         function subscription(observer) {
             observer.next(fakePlaylistItem);
             observer.complete();
@@ -103,7 +103,9 @@ describe('YtComponent', () => {
         spyOn(ytServiceFake, 'deletePlaylistItem').and.callFake(() => {
             return new Observable(subscription);
         });
-
+    }
+    function setUpGiveErrorSolution() {
+        spyOn(ytServiceFake, 'giveErrorSolution').and.returnValue(errorSolution);
     }
 
     beforeEach(async(() => {
@@ -122,6 +124,7 @@ describe('YtComponent', () => {
         setUpGetPlaylistItems();
         setUpAddPlaylistItem();
         setUpDeletePlaylistItem();
+        setUpGiveErrorSolution();
 
         TestBed.configureTestingModule({
             declarations: [YtComponent],
@@ -163,34 +166,41 @@ describe('YtComponent', () => {
             });
         });
 
-        xdescribe('(when ytService has a playlistId)', () => {
+        describe('(when ytService has a playlistId)', () => {
             beforeEach(() => {
                 ytServiceFake.playlistId = playlistIdStub;
             });
 
             describe('(when ytService actually has a playlist for it)', () => {
                 it('populates playlistItems and playlistItemListResponse', () => {
-                    expect(component.playlistItems).toBeTruthy();
-                    expect(component.playlistItemListResponse).toBeTruthy();
+                    let newComponent = new YtComponent(ytServiceFake, gapiServiceSpy);
+                    newComponent.ngOnInit();
+
+                    expect(newComponent.playlistItems).toEqual([fakePlaylistItem]);
+                    expect(newComponent.playlistItemListResponse).toEqual(fakePlaylistItemListResponse);
                 });
             });
 
             describe('(when ytService has a problem retrieving the playlist)', () => {
                 let error = '403';
-                let errorSolution = 'I don\'t know what you\'re trying to do, but you can\'t do it.';
+
                 beforeEach(() => {
                     function subscription(observer) {
                         observer.error(error);
                         observer.complete();
                     }
-                    spyOn(ytServiceFake, 'getPlaylistItems').and.callFake(() => {
+                    
+                    ytServiceFake.getPlaylistItems = jasmine.createSpy().and.callFake(() => {
                         return new Observable(subscription);
                     });
                 });
                 
                 it('populates error and errorSolution ', () => {
-                    expect(component.error).toEqual(error);
-                    expect(component.errorSolution).toEqual(errorSolution);
+                    let newComponent = new YtComponent(ytServiceFake, gapiServiceSpy);
+                    newComponent.ngOnInit();
+
+                    expect(newComponent.error).toEqual(error);
+                    expect(newComponent.errorSolution).toEqual(errorSolution);
                 });
             });
         });
@@ -253,23 +263,36 @@ describe('YtComponent', () => {
 
         let playlistIdStub = 'playlistId stub';
 
-        it('should call service and update playlistItemListResponse and playlistItems', () => {
-            component.getPlaylistItems(playlistIdStub);
+        it('sets ytService.pageToken with playlistItemResponse.prevPageToken', () => {
             component.toPrevPage();
-            expect(ytServiceFake.getPlaylistItems).toHaveBeenCalledWith(playlistIdStub);
-            expect(component.playlistItemListResponse).toEqual(fakePlaylistItemListResponse);
-            expect(component.playlistItems).toContain(fakePlaylistItem);
+            expect(ytServiceFake.pageToken).toEqual(fakePlaylistItemListResponse.prevPageToken);
         });
 
+        it('calls this.getPlaylistItems with ytService.playlistId', () => {
+            component.toPrevPage();
+            expect(component.getPlaylistItems).toHaveBeenCalledWith(playlistIdStub);
+        });
     });
 
-    xdescribe('toNextPage', () => {
+    describe('toNextPage', () => {
 
         let playlistIdStub = 'playlistId stub';
 
+        beforeEach(() => {
+            ytServiceFake.playlistId = playlistIdStub;
+        });
+
         it('should call service and update playlistItemListResponse and playlistItems', () => {
+            console.log("~~~~1" + ytServiceFake.playlistId);
+            
             component.getPlaylistItems(playlistIdStub);
+
+            console.log("~~~2" + ytServiceFake.playlistId);
+            
             component.toNextPage();
+
+            console.log("~~~~3" + ytServiceFake.playlistId);
+
             expect(ytServiceFake.getPlaylistItems).toHaveBeenCalledWith(playlistIdStub);
             expect(component.playlistItemListResponse).toEqual(fakePlaylistItemListResponse);
             expect(component.playlistItems).toContain(fakePlaylistItem);
