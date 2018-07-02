@@ -9,10 +9,12 @@
   <h3>Total Results: {{playlistItemListResponse.pageInfo.totalResults}}</h3>
 
   <div>
+    <!--deletes all playlistItems marked by checkboxes-->
     <button (click)="clearErrors(); deletePlaylistItem()">Delete Selected Videos</button>
     <ul style="list-style-type:none">
-      <!--lists titles of all PlaylistItems in playlist; each can be clicked for more information or deleted by clicking their respective Delete button-->
+      <!--lists titles of all PlaylistItems in playlist; each can be clicked for more information or queued for deletion by clicking the corresponding checkbox-->
       <li *ngFor="let item of playlistItems; let i = index">
+        <!--marks playlistItem for deletion-->
         <input type="checkbox" (click)="toggleToDelete(i)"/>
         {{item.snippet.position + 1}}.&nbsp;&nbsp;<a routerLink="/video/{{item.id}}">{{item.snippet.title}}</a>
       </li>

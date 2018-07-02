@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Location } from '@angular/common';
-import { Router } from '@angular/router';
 
 import { AuthService } from '../auth.service';
 
@@ -11,7 +9,7 @@ import { AuthService } from '../auth.service';
 })
 export class AuthComponent implements OnInit {
 
-    constructor(private authService: AuthService, private router: Router) { }
+    constructor(private authService: AuthService) { }
 
   ngOnInit() {
 
@@ -22,26 +20,18 @@ export class AuthComponent implements OnInit {
   signIn(): void {
 
       this.authService.signIn();
-      this.redirect();
 
   }
 
   signOut(): void {
 
       this.authService.signOut();
-      this.redirect();
 
   }
 
   isSignedIn(): boolean {
 
       return AuthService.IS_SIGNED_IN;
-
-  }
-
-  redirect(): void {
-
-      this.router.navigate(['/playlist']);
 
   }
 
