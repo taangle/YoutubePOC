@@ -1,6 +1,7 @@
-﻿//mostly from ng-gapi (rubenCodeforges) docs
+//mostly from ng-gapi (rubenCodeforges) docs
 
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { GoogleAuthService } from "ng-gapi";
 import GoogleUser = gapi.auth2.GoogleUser;
@@ -14,7 +15,7 @@ export class AuthService {
     public static IS_SIGNED_IN: boolean = false; //signed-in status
     private user: GoogleUser = null;
 
-    constructor(private googleAuth: GoogleAuthService) { }
+    constructor(private googleAuth: GoogleAuthService, private ngZone: NgZone, private router: Router) { }
 
     public getToken(): string {
 
@@ -31,7 +32,7 @@ export class AuthService {
     public signIn(): void {
 
         this.googleAuth.getAuth().subscribe((auth) => {
-            auth.signIn().then(res => this.signInSuccessHandler(res));
+          auth.signIn().then(res => this.signInSuccessHandler(res));
         }, error => this.handleAuthError(error));
 
     }
@@ -64,7 +65,12 @@ export class AuthService {
 
         this.user = res;
         sessionStorage.setItem(AuthService.SESSION_STORAGE_KEY, res.getAuthResponse().access_token);
-        AuthService.IS_SIGNED_IN = this.isSignedIn(); //should become true
+      AuthService.IS_SIGNED_IN = this.isSignedIn(); //should become true
+      //redirects to user view page; this is done here so that the redirect happens after the user completely signs in (no early redirect)
+      //and since only authComponent will call authService.signIn/signOut
+      //NgZone is used so that userDetailComponent.ngOnInit is called when redirect occurs; otherwise, page won't update on redirect with
+      //user's playlists (something to do with services not interacting with components that way)
+      this.ngZone.run(() => this.router.navigate(['/user']));
 
     }
 
@@ -72,7 +78,12 @@ export class AuthService {
 
         this.user = null;
         sessionStorage.removeItem(AuthService.SESSION_STORAGE_KEY);
-        AuthService.IS_SIGNED_IN = this.isSignedIn(); //should become false
+      AuthService.IS_SIGNED_IN = this.isSignedIn(); //should become false
+       //redirects to user view page; this is done here so that the redirect happens after the user completely signs in (no early redirect)
+      //and since only authComponent will call authService.signIn/signOut
+      //NgZone is used so that ytComponent.ngOnInit is called when redirect occurs; otherwise, page won't update on redirect with
+      //last-viewed playlist (something to do with services not interacting with components that way)
+      this.ngZone.run(() => this.router.navigate(['/playlist']));
 
     }
 
