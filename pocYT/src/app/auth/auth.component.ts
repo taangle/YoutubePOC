@@ -1,5 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { Location } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 
 import { AuthService } from '../auth.service';
 
@@ -10,7 +9,7 @@ import { AuthService } from '../auth.service';
 })
 export class AuthComponent implements OnInit {
 
-    constructor(private authService: AuthService, private location: Location) { }
+    constructor(private authService: AuthService) { }
 
   ngOnInit() {
 
@@ -21,26 +20,18 @@ export class AuthComponent implements OnInit {
   signIn(): void {
 
       this.authService.signIn();
-      this.goBack();
 
   }
 
   signOut(): void {
 
       this.authService.signOut();
-      this.goBack();
 
   }
 
   isSignedIn(): boolean {
 
       return AuthService.IS_SIGNED_IN;
-
-  }
-
-  goBack(): void {
-
-      this.location.back();
 
   }
 

@@ -1,0 +1,29 @@
+<div *ngIf="playlists">
+
+  <h3>Total Playlists: {{playlistListResponse.pageInfo.totalResults}}</h3>
+
+  <div>
+    <ul>
+      <!--lists titles of all user's Playlists; each can be clicked to view its contents-->
+      <li *ngFor="let item of playlists">
+        <!--redirects user to ytComponent, which will display contents of clicked playlist based on its ID-->
+        <button (click)="toPlaylist(item.id)">{{item.snippet.title}}</button>
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    <!--advances to previous/next page in list of playlists, if possible-->
+    <button (click)="toPrevPage()" [disabled]="!playlistListResponse.prevPageToken">Previous Page</button>
+    <button (click)="toNextPage()" [disabled]="!playlistListResponse.nextPageToken">Next Page</button>
+  </div>
+  <br />
+
+</div>
+
+<div *ngIf="error">
+  <pre>{{error}}</pre>
+</div>
+<div *ngIf="errorSolution">
+  <i>{{errorSolution}}</i>
+</div>

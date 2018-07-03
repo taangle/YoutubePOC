@@ -1,4 +1,4 @@
-﻿import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -8,8 +8,9 @@ import { YtRoutingModule } from './/yt-routing.module';
 import { YtComponent } from './yt/yt.component';
 import { VideoDetailComponent } from './video-detail/video-detail.component';
 import { AuthComponent } from './auth/auth.component';
+import { UserDetailComponent } from './user-detail/user-detail.component';
 
-import { GoogleApiModule, GoogleApiService, GoogleAuthService, NgGapiClientConfig, NG_GAPI_CONFIG, GoogleApiConfig } from "ng-gapi";;
+import { GoogleApiModule, GoogleApiService, GoogleAuthService, NgGapiClientConfig, NG_GAPI_CONFIG, GoogleApiConfig } from "ng-gapi";
 
 //personal client ID, required YouTube discovery doc, YouTube authentication scope for OAuth2
 let gapiClientConfig: NgGapiClientConfig = {
@@ -23,7 +24,8 @@ let gapiClientConfig: NgGapiClientConfig = {
       AppComponent,
       YtComponent,
       VideoDetailComponent,
-      AuthComponent
+      AuthComponent,
+      UserDetailComponent
     ],
   imports: [
       BrowserModule,

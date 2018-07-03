@@ -309,7 +309,8 @@ describe('YtService', () => {
         describe('deletePlaylistItem', () => {
             let deletePlaylistItem: PlaylistItem;
             let playlistItemIdStub: string;
-            let DELETEurl: string;
+          let DELETEurl: string;
+          let itemsToDelete: PlaylistItem[];
 
             beforeEach(() => {
                 playlistItemIdStub = 'id_stub';
@@ -351,8 +352,9 @@ describe('YtService', () => {
                 };
             });
 
-            it('requests than an item be deleted and returns it', () => {
-                testedYtService.deletePlaylistItem(playlistItemIdStub).subscribe(
+          it('requests than an item be deleted and returns it', () => {
+            itemsToDelete.push(deletePlaylistItem);
+                testedYtService.deletePlaylistItem(itemsToDelete).subscribe(
                     (response) => {
                         expect(response).toBe(deletePlaylistItem);
                     }
