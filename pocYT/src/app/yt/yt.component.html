@@ -8,14 +8,17 @@
 
   <h3>Total Results: {{playlistItemListResponse.pageInfo.totalResults}}</h3>
 
-  <div>
+  <!--only displays if playlist has at least one video in it-->
+  <div *ngIf="playlistItems.length>0">
+    <!--routes user to embedded playlist view based on retrieved playlist ID associated with first video-->
+    <a routerLink="/play/{{playlistItems[0].snippet.playlistId}}"><button>&#9658;</button></a>
     <!--deletes all playlistItems marked by checkboxes-->
     <button (click)="clearErrors(); deletePlaylistItem()">Delete Selected Videos</button>
     <ul style="list-style-type:none">
       <!--lists titles of all PlaylistItems in playlist; each can be clicked for more information or queued for deletion by clicking the corresponding checkbox-->
       <li *ngFor="let item of playlistItems; let i = index">
         <!--marks playlistItem for deletion-->
-        <input type="checkbox" (click)="toggleToDelete(i)"/>
+        <input type="checkbox" (click)="toggleToDelete(i)" />
         {{item.snippet.position + 1}}.&nbsp;&nbsp;<a routerLink="/video/{{item.id}}">{{item.snippet.title}}</a>
       </li>
     </ul>

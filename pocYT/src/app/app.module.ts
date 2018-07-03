@@ -9,6 +9,7 @@ import { YtComponent } from './yt/yt.component';
 import { VideoDetailComponent } from './video-detail/video-detail.component';
 import { AuthComponent } from './auth/auth.component';
 import { UserDetailComponent } from './user-detail/user-detail.component';
+import { PlayComponent } from './play/play.component';
 
 import { GoogleApiModule, GoogleApiService, GoogleAuthService, NgGapiClientConfig, NG_GAPI_CONFIG, GoogleApiConfig } from "ng-gapi";
 
@@ -25,7 +26,8 @@ let gapiClientConfig: NgGapiClientConfig = {
       YtComponent,
       VideoDetailComponent,
       AuthComponent,
-      UserDetailComponent
+      UserDetailComponent,
+      PlayComponent
     ],
   imports: [
       BrowserModule,

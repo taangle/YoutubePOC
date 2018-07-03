@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { YtService } from '../yt.service';
-import { GoogleApiService } from "ng-gapi";
 import { PlaylistItem } from '../playlistItem';
 import { PlaylistItemListResponse } from '../playlistItemListResponse';
 import { forEach } from '@angular/router/src/utils/collection';
@@ -20,24 +19,16 @@ export class YtComponent implements OnInit {
   errorSolution: string;
   itemsToDelete: PlaylistItem[] = [];
    //keeps track of which playlistItems have been marked for deletion by index
-  shouldDelete: boolean[] = [false, false, false, false, false, false, false, false, false, false,
-                              false, false, false, false, false, false, false, false, false, false,
-                              false, false, false, false, false, false, false, false, false, false,
-                              false, false, false, false, false, false, false, false, false, false,
-                              false, false, false, false, false, false, false, false, false, false];
+  shouldDelete: boolean[] = new Array(50).fill(false);
 
-    constructor(private ytService: YtService, private gapiService: GoogleApiService) {
-
-        this.gapiService.onLoad().subscribe(); //I don't quite know what this does so it could be removed
-
-    }
+    constructor(private ytService: YtService) { }
 
     // If ytService has a current playlist, populate fields with it when component loads
     ngOnInit() {
 
         if (this.ytService.playlistId) {
           this.getPlaylistItems(this.ytService.playlistId);
-        }
+      }
 
     }
 
