@@ -87,9 +87,9 @@ export class YtComponent implements OnInit {
     deletePlaylistItem(): void {
 
       this.itemsToDelete = []; //resets array of items marked for deletion
-      for (let i in this.shouldDelete) {
+      for (let i in this.playlistItems) {
         //adds playlistItem to itemsToDelete if the corresponding index in shouldDelete is true, then changes element at that index back to false
-        if (this.playlistItems[i] && this.shouldDelete[i]) {
+        if (this.shouldDelete[i]) {
           this.itemsToDelete.push(this.playlistItems[i]);
           this.shouldDelete[i] = false;
         }

@@ -45,6 +45,10 @@ export class UserDetailComponent implements OnInit {
   //sets current playlistId in ytService and redirects to ytComponent, which will display playlistItems in the playlist with the aforementioned playlistId
   toPlaylist(playlistId: string): void {
 
+    //clears page token from previous playlist to prevent it from getting passed to GET call for a new playlist
+    if (playlistId !== this.ytService.playlistId) {
+      this.ytService.playlistItemPageToken = '';
+    }
     this.ytService.playlistId = playlistId;
     this.router.navigate(['/playlist']);
 
