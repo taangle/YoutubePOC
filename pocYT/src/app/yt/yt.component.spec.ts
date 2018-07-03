@@ -79,7 +79,8 @@ describe('YtComponent', () => {
             observer.next(fakePlaylistItemListResponse);
             observer.complete();
         }
-        spyOn(ytServiceFake, 'getPlaylistItems').and.callFake(() => {
+        spyOn(ytServiceFake, 'getPlaylistItems').and.callFake((id: string) => {
+            ytServiceFake.playlistId = id;
             return new Observable(subscription);
         });
 
@@ -211,12 +212,12 @@ describe('YtComponent', () => {
         let playlistIdStub = 'playlistId stub';
         let emptyPlaylistIdStub = '    ';
 
-        it('should not call service on blank input', () => {
+        it('should not call ytService on blank input', () => {
             component.getPlaylistItems(emptyPlaylistIdStub);
             expect(ytServiceFake.getPlaylistItems).not.toHaveBeenCalled();
         });
 
-        it('should call service with given playlistId input and update playlistItemListResponse and playlistItems', () => {
+        it('should call ytService with given playlistId input and update playlistItemListResponse and playlistItems', () => {
             component.getPlaylistItems(playlistIdStub);
             expect(ytServiceFake.getPlaylistItems).toHaveBeenCalledWith(playlistIdStub);
             expect(component.playlistItemListResponse).toEqual(fakePlaylistItemListResponse);
@@ -231,7 +232,7 @@ describe('YtComponent', () => {
         let videoIdStub = 'videoId stub';
         let emptyVideoIdStub = '    ';
 
-        it('should not call service on blank input', () => {
+        it('should not call ytService on blank input', () => {
             component.getPlaylistItems(playlistIdStub);
             component.addPlaylistItem(emptyVideoIdStub);
             expect(ytServiceFake.addPlaylistItem).not.toHaveBeenCalled();
@@ -259,22 +260,27 @@ describe('YtComponent', () => {
 
     });
 
-    xdescribe('toPrevPage', () => {
+    xdescribe('*PENDING* toPrevPage', () => {
 
-        let playlistIdStub = 'playlistId stub';
+        let playlistIdStub = 'pl_id_stub_for_prevPage';
+
+        beforeEach(() => {
+            component.getPlaylistItems(playlistIdStub);
+
+            console.log("~~~~beforeEach fake.id: " + ytServiceFake.playlistId);
+            component.toPrevPage();
+        });
 
         it('sets ytService.pageToken with playlistItemResponse.prevPageToken', () => {
-            component.toPrevPage();
             expect(ytServiceFake.pageToken).toEqual(fakePlaylistItemListResponse.prevPageToken);
         });
 
-        it('calls this.getPlaylistItems with ytService.playlistId', () => {
-            component.toPrevPage();
+        xit('calls this.getPlaylistItems with ytService.playlistId', () => {
             expect(component.getPlaylistItems).toHaveBeenCalledWith(playlistIdStub);
         });
     });
 
-    describe('toNextPage', () => {
+    xdescribe('*PENDING* toNextPage', () => {
 
         let playlistIdStub = 'playlistId stub';
 
@@ -303,6 +309,8 @@ describe('YtComponent', () => {
     describe('clearErrors', () => {
 
         it('should set error and errorSolution to null', () => {
+            component.error = "some error";
+            component.errorSolution = "some solution";
             component.clearErrors();
             expect(component.error).toBeNull();
             expect(component.errorSolution).toBeNull();
