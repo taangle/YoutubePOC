@@ -9,29 +9,29 @@ import { AuthService } from '../auth.service';
 })
 export class AuthComponent implements OnInit {
 
-    constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit() {
 
-      AuthService.IS_SIGNED_IN = this.authService.isSignedIn();
+    AuthService.IS_SIGNED_IN = this.authService.isSignedIn();
 
   }
 
   signIn(): void {
 
-      this.authService.signIn();
+    this.authService.signIn();
 
   }
 
   signOut(): void {
 
-      this.authService.signOut();
+    this.authService.signOut();
 
   }
 
   isSignedIn(): boolean {
 
-      return AuthService.IS_SIGNED_IN;
+    return AuthService.IS_SIGNED_IN;
 
   }
 

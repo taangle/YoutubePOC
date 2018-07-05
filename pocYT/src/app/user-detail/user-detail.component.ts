@@ -23,7 +23,7 @@ export class UserDetailComponent implements OnInit {
   ngOnInit() {
 
     //checks if user is signed-in; if so, gets a list of their playlists
-    if (AuthService.IS_SIGNED_IN) {
+    if (this.authService.isSignedIn()) {
       this.getPlaylists();
     }
 
