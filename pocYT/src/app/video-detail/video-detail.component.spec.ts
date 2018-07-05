@@ -72,7 +72,6 @@ describe('VideoDetailComponent', () => {
   }
 
   function setUpUpdatePlaylistItem() {
-
       function subscription(observer) {
           observer.next(fakePlaylistItem);
           observer.complete();
@@ -80,7 +79,6 @@ describe('VideoDetailComponent', () => {
       ytServiceSpy.updatePlaylistItem.and.callFake(() => {
           return new Observable(subscription);
       });
-
   }
 
   beforeEach(async(() => {

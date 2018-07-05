@@ -118,7 +118,6 @@ describe('YtComponent', () => {
             deletePlaylistItem: function () { },
             giveErrorSolution: function () { }
         };
-
         gapiServiceSpy = jasmine.createSpyObj('GoogleApiService', ['onLoad']);
 
         setUpGoogleApi();
@@ -140,22 +139,17 @@ describe('YtComponent', () => {
                     useValue: gapiServiceSpy
                 }
             ]
-        })
-            .compileComponents();
-    }));
-
-    beforeEach(() => {
+        }).compileComponents();
         fixture = TestBed.createComponent(YtComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-    });
+    }));
 
     it('is created', () => {
         expect(component).toBeTruthy();
     });
 
     describe('ngOnInit', () => {
-
         let playlistIdStub = 'playlistId stub';
 
         describe('(when ytService has no playlistId)', () => {
@@ -208,7 +202,6 @@ describe('YtComponent', () => {
     });
 
     describe('getPlaylistItems', () => {
-
         let playlistIdStub = 'playlistId stub';
         let emptyPlaylistIdStub = '    ';
 
@@ -223,11 +216,9 @@ describe('YtComponent', () => {
             expect(component.playlistItemListResponse).toEqual(fakePlaylistItemListResponse);
             expect(component.playlistItems).toContain(fakePlaylistItem);
         });
-
     });
 
     describe('addPlaylistItem', () => {
-
         let playlistIdStub = 'playlistId stub';
         let videoIdStub = 'videoId stub';
         let emptyVideoIdStub = '    ';
@@ -244,11 +235,25 @@ describe('YtComponent', () => {
             expect(ytServiceFake.addPlaylistItem).toHaveBeenCalledWith(videoIdStub);
             expect(component.playlistItems).toContain(fakePlaylistItem);
         });
-
     });
 
-    describe('deletePlaylistItem', () => {
+    xdescribe('*PENDING* deletePlaylistItem', () => {
 
+        beforeEach(() => {
+            component.playlistItems = new Array(50);
+            component.playlistItems.forEach((item) => {
+                item = new PlaylistItem();
+            });
+        });
+
+        it('calls ytService.deletePlaylistItem with array of items marked for deletion', () => {
+            let indexesToDeleteAt = [ 1, 5, 15, 50 ];
+            indexesToDeleteAt.forEach((index) => {
+                component.toggleToDelete(index);
+            });
+            component.deletePlaylistItem();
+            expect(component.playlistItems.length).toBe(50 - indexesToDeleteAt.length);
+        });
     });
 
     xdescribe('*PENDING* toPrevPage', () => {
@@ -262,8 +267,8 @@ describe('YtComponent', () => {
             component.toPrevPage();
         });
 
-        it('sets ytService.pageToken with playlistItemResponse.prevPageToken', () => {
-            expect(ytServiceFake.pageToken).toEqual(fakePlaylistItemListResponse.prevPageToken);
+        xit('*PENDING* sets ytService.pageToken with playlistItemResponse.prevPageToken', () => {
+            // expect(ytServiceFake.pageToken).toEqual(fakePlaylistItemListResponse.prevPageToken);
         });
 
         xit('calls this.getPlaylistItems with ytService.playlistId', () => {

@@ -63,13 +63,13 @@ describe('YtService', () => {
 
         describe('getPlaylistItems', () => {
             let expectedPlaylistResponse: PlaylistItemListResponse;
-            let unexpectedPlaylistResponse;
-            let playlistIdStub = "playlist_id";
-            let pageTokenStub = "page_token";
-            let GETPlayistUrl = ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet&playlistId=' + playlistIdStub + '&maxResults=50&pageToken=' + pageTokenStub
+            let unexpectedResponse;
+            let playlistIdStub: string = "playlist_id";
+            let pageTokenStub: string = "page_token";
+            let GETPlaylistUrl: string = ytUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet&playlistId=' + playlistIdStub + '&maxResults=50&pageToken=' + pageTokenStub
 
             beforeEach(() => {
-                testedYtService.pageToken = pageTokenStub;
+                testedYtService.playlistItemPageToken = pageTokenStub;
                 expectedPlaylistResponse = {
                     kind: "kind", //youtube#playlistItemListResponse
                     etag: "etag", //etag
@@ -81,24 +81,22 @@ describe('YtService', () => {
                     },
                     items: [] //resource array
                 }
-                unexpectedPlaylistResponse = {}
+                unexpectedResponse = {}
             });
 
-            it('returns expected playlist (one call)', () => {
+            it('returns expected playlist (one call)', async () => {
                 testedYtService.getPlaylistItems(playlistIdStub).subscribe(
                     (playlist: PlaylistItemListResponse) => {
                         expect(playlist).toBe(expectedPlaylistResponse);
                     },
                     fail
                 );
-
-                const request = httpTestingController.expectOne(GETPlayistUrl);
+                const request = httpTestingController.expectOne(GETPlaylistUrl);
                 expect(request.request.method).toEqual('GET');
-
                 request.flush(expectedPlaylistResponse);
             });
 
-            it('returns expected playlist (multiple calls)', () => {
+            it('returns expected playlist (multiple calls)', async () => {
                 let timesToTest = 50;
 
                 for (let i = 0; i < timesToTest; i++) {
@@ -107,19 +105,19 @@ describe('YtService', () => {
                             if (i % 2 == 0)
                                 expect(playlist).toBe(expectedPlaylistResponse);
                             else
-                                expect(playlist).toBe(unexpectedPlaylistResponse);
+                                expect(playlist).toBe(unexpectedResponse);
                         }
                     );
                 }
 
-                const requests = httpTestingController.match(GETPlayistUrl);
+                const requests = httpTestingController.match(GETPlaylistUrl);
                 expect(requests.length).toEqual(timesToTest);
 
                 for (let i = 0; i < timesToTest; i++) {
                     if (i % 2 == 0)
                         requests[i].flush(expectedPlaylistResponse);
                     else
-                        requests[i].flush(unexpectedPlaylistResponse);
+                        requests[i].flush(unexpectedResponse);
                 }
             });
             // TODO: test for http error response behaviour?
@@ -231,7 +229,6 @@ describe('YtService', () => {
     });
 
     describe('POST', () => {
-
         describe('addPlaylistItem', () => {
             let videoIdStub: string;
             let postPlaylistItem: PlaylistItem;
@@ -278,9 +275,13 @@ describe('YtService', () => {
             });
 
             // this has to be here otherwise some weird error with no stacktrace happens...
-            xit('~~placeholder', () => {});
+            xit('~~placeholder', () => { });
+            xit('~~placeholder', () => { });
+            xit('~~placeholder', () => { });
+            xit('~~placeholder', () => { });
+            xit('~~placeholder', () => { });
 
-            it('requests that an item be added and returns it', () => {
+            it('requests that an item be added and returns it', async () => {
                 testedYtService.addPlaylistItem(videoIdStub).subscribe(
                     (response) => {
                         expect(response).toBe(postPlaylistItem);
@@ -304,13 +305,12 @@ describe('YtService', () => {
         });
     });
 
-    describe('DELETE', () => {
-
+    xdescribe('*PENDING* DELETE', () => {
         describe('deletePlaylistItem', () => {
             let deletePlaylistItem: PlaylistItem;
             let playlistItemIdStub: string;
-          let DELETEurl: string;
-          let itemsToDelete: PlaylistItem[];
+            let DELETEurl: string;
+            let itemsToDelete: PlaylistItem[];
 
             beforeEach(() => {
                 playlistItemIdStub = 'id_stub';
@@ -352,8 +352,8 @@ describe('YtService', () => {
                 };
             });
 
-          it('requests than an item be deleted and returns it', () => {
-            itemsToDelete.push(deletePlaylistItem);
+            it('requests than an item be deleted and returns it', () => {
+                itemsToDelete.push(deletePlaylistItem);
                 testedYtService.deletePlaylistItem(itemsToDelete).subscribe(
                     (response) => {
                         expect(response).toBe(deletePlaylistItem);
@@ -371,7 +371,7 @@ describe('YtService', () => {
                     }
                 );
                 request.event(expectedResponse);
-            })
+            });
         });
     });
 

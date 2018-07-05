@@ -5,7 +5,7 @@ import { AuthService } from 'src/app/auth.service';
 import { YtService } from 'src/app/yt.service';
 import { Router } from '@angular/router';
 
-fdescribe('UserDetailComponent', () => {
+describe('UserDetailComponent', () => {
     let component: UserDetailComponent;
     let fixture: ComponentFixture<UserDetailComponent>;
 

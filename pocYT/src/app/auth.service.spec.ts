@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs';
 
 import { AuthService } from './auth.service';
@@ -52,6 +53,7 @@ describe('AuthService', () => {
 
   function setUpTestingModule() {
     TestBed.configureTestingModule({
+      imports: [ RouterTestingModule ],
       providers: [
         AuthService,
         {
