@@ -18,9 +18,9 @@ export class YtComponent implements OnInit {
     playlistItemListResponse: PlaylistItemListResponse;
     error: string;
   errorSolution: string;
-  itemsToDelete: PlaylistItem[] = [];
+  private itemsToDelete: PlaylistItem[] = [];
    //keeps track of which playlistItems have been marked for deletion by index
-  shouldDelete: boolean[] = [false, false, false, false, false, false, false, false, false, false,
+  private shouldDelete: boolean[] = [false, false, false, false, false, false, false, false, false, false,
                               false, false, false, false, false, false, false, false, false, false,
                               false, false, false, false, false, false, false, false, false, false,
                               false, false, false, false, false, false, false, false, false, false,

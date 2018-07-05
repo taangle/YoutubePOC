@@ -113,10 +113,10 @@ describe('YtComponent', () => {
         ytServiceFake = {
             playlistId: <string> null,
             pageToken: <string> null,
-            getPlaylistItems: function () {},
-            addPlaylistItem: function () {},
-            deletePlaylistItem: function () {},
-            giveErrorSolution: function () {}
+            getPlaylistItems: function () { },
+            addPlaylistItem: function () { },
+            deletePlaylistItem: function () { },
+            giveErrorSolution: function () { }
         };
 
         gapiServiceSpy = jasmine.createSpyObj('GoogleApiService', ['onLoad']);
@@ -190,12 +190,12 @@ describe('YtComponent', () => {
                         observer.error(error);
                         observer.complete();
                     }
-                    
+
                     ytServiceFake.getPlaylistItems = jasmine.createSpy().and.callFake(() => {
                         return new Observable(subscription);
                     });
                 });
-                
+
                 it('populates error and errorSolution ', () => {
                     let newComponent = new YtComponent(ytServiceFake, gapiServiceSpy);
                     newComponent.ngOnInit();
@@ -249,15 +249,6 @@ describe('YtComponent', () => {
 
     describe('deletePlaylistItem', () => {
 
-        let playlistIdStub = 'playlistId stub';
-
-        it('should call service with given playlistItem and update playlistItems', () => {
-            component.getPlaylistItems(playlistIdStub);
-            component.deletePlaylistItem(fakePlaylistItem);
-            expect(ytServiceFake.deletePlaylistItem).toHaveBeenCalledWith(fakePlaylistItem.id);
-            expect(component.playlistItems).not.toContain(fakePlaylistItem);
-        });
-
     });
 
     xdescribe('*PENDING* toPrevPage', () => {
@@ -290,11 +281,11 @@ describe('YtComponent', () => {
 
         it('should call service and update playlistItemListResponse and playlistItems', () => {
             console.log("~~~~1" + ytServiceFake.playlistId);
-            
+
             component.getPlaylistItems(playlistIdStub);
 
             console.log("~~~2" + ytServiceFake.playlistId);
-            
+
             component.toNextPage();
 
             console.log("~~~~3" + ytServiceFake.playlistId);
