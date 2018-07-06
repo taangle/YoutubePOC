@@ -53,6 +53,7 @@ export class YtComponent implements OnInit {
     }
 
     this.ytService.getPlaylistItems(playlistId).subscribe(playlistItemListResponse => {
+      console.log("~~getPlaylistItems subscription fulfilled: " + playlistItemListResponse)
       this.playlistItemListResponse = playlistItemListResponse;
       this.playlistItems = this.playlistItemListResponse.items;
     }, error => {
