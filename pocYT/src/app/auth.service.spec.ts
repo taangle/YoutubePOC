@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs';
 
 import { AuthService } from './auth.service';
@@ -7,7 +8,7 @@ import { GoogleAuthService } from "ng-gapi";
 describe('AuthService', () => {
   let testedAuthService: AuthService;
   let googleAuthServiceSpy: jasmine.SpyObj<GoogleAuthService>;
-  let googleAuthSpy;
+  let googleAuthSpy: jasmine.SpyObj<gapi.auth2.GoogleAuth>;
   let mockStorage;
   let stubAccessToken = 'stub token';
 
@@ -20,15 +21,19 @@ describe('AuthService', () => {
       },
       setItem: (key: string, value: string) => {
         store[key] = value;
+      },
+      removeItem: (key: string): void => {
+        store[key] = null;
       }
     };
     spyOn(sessionStorage, 'getItem').and.callFake(mockStorage.getItem);
     spyOn(sessionStorage, 'setItem').and.callFake(mockStorage.setItem);
+    spyOn(sessionStorage, 'removeItem').and.callFake(mockStorage.removeItem);
   }
   
   function setUpGoogleAuthSpies() {
     googleAuthServiceSpy = jasmine.createSpyObj('GoogleAuthService', ['getAuth']);
-    googleAuthSpy = jasmine.createSpyObj('GoogleAuth', ['signIn', 'then', 'signOut']);
+    googleAuthSpy = jasmine.createSpyObj('GoogleAuth', ['signIn', 'signOut']);
 
     function subscription(observer) {
       observer.next(googleAuthSpy);
@@ -36,10 +41,22 @@ describe('AuthService', () => {
     }
 
     googleAuthServiceSpy.getAuth.and.callFake(() => {
-      return new Observable(subscription);
+      return new Observable<gapi.auth2.GoogleAuth>(subscription);
     });
 
     googleAuthSpy.signIn.and.callFake(() => {
+      return new Promise(() => {
+        sessionStorage.setItem(AuthService.SESSION_STORAGE_KEY, 'test_token');
+      });
+    });
+
+    googleAuthSpy.signOut.and.callFake(() => {
+      return new Promise(() => {
+        sessionStorage.removeItem(AuthService.SESSION_STORAGE_KEY);
+      });
+    });
+
+    /*googleAuthSpy.signIn.and.callFake(() => {
       return {
         getAuthResponse: () => {
           return {
@@ -47,11 +64,12 @@ describe('AuthService', () => {
           };
         }
       }
-    });
+    });*/
   }
 
   function setUpTestingModule() {
     TestBed.configureTestingModule({
+      imports: [ RouterTestingModule ],
       providers: [
         AuthService,
         {
@@ -91,7 +109,8 @@ describe('AuthService', () => {
       //the "then" that gets called might be related to to the problem somehow
       testedAuthService.signIn();
       expect(googleAuthServiceSpy.getAuth).toHaveBeenCalled();
-      await expect(googleAuthSpy.signIn).toHaveBeenCalled();
+      expect(googleAuthSpy.signIn).toHaveBeenCalled();
+      expect(testedAuthService.isSignedIn()).toBe(true);
     });
   });
 
@@ -99,7 +118,8 @@ describe('AuthService', () => {
     it('calls getAuth and the googleAuth signOut', async () => {
       testedAuthService.signOut();
       expect(googleAuthServiceSpy.getAuth).toHaveBeenCalled();
-      await expect(googleAuthSpy.signOut).toHaveBeenCalled();
+      expect(googleAuthSpy.signOut).toHaveBeenCalled();
+      expect(testedAuthService.isSignedIn()).toBe(false);
     });
   });
 
