@@ -13,16 +13,17 @@ import { forEach } from '@angular/router/src/utils/collection';
 })
 export class YtComponent implements OnInit {
 
-  playlistItems: PlaylistItem[];
-  playlistItemListResponse: PlaylistItemListResponse;
-  error: string;
-  errorSolution: string;
   private splitUrl: string[];
   private ytPlaylistDelimiter: string = 'list=';
   private ytVideoDelimiter: string = 'watch?v=';
   private itemsToDelete: PlaylistItem[] = [];
   //keeps track of which playlistItems have been marked for deletion by index
   private shouldDelete: boolean[] = new Array(50).fill(false);
+
+  playlistItems: PlaylistItem[];
+  playlistItemListResponse: PlaylistItemListResponse;
+  error: string;
+  errorSolution: string;
 
   constructor(private ytService: YtService) { }
 
@@ -37,7 +38,8 @@ export class YtComponent implements OnInit {
 
   // Asks ytService for playlist to populate playlistItemListResponse and playlistItems
   getPlaylistItems(playlistId: string): void {
-
+    console.log("~~component.getPlaylistItems called with: " + playlistId);
+    
     playlistId = playlistId.trim();
     if (!playlistId) {
       return;
@@ -77,13 +79,14 @@ export class YtComponent implements OnInit {
 
     this.ytService.addPlaylistItem(videoId).subscribe(playlistItem => {
       //max display is 50 PlaylistItems, so this shouldn't display a new video entry if it is added to the end of a 50+-video playlist
-      if (this.playlistItems.length < 50 && this.playlistItems.length > 0) {
-        playlistItem.snippet.position = this.playlistItems[this.playlistItems.length - 1].snippet.position + 1; //updates position since returned playlistItem has none initially
-        this.playlistItems.push(playlistItem);
-        this.playlistItemListResponse.pageInfo.totalResults += 1; //updates display total to reflect actual total
-      } else {
-        this.getPlaylistItems(this.ytService.playlistId); //has to refresh display list if adding to full page; makes another GET call
-      }
+      // if (this.playlistItems.length < 50 && this.playlistItems.length > 0) {
+      //   playlistItem.snippet.position = this.playlistItems[this.playlistItems.length - 1].snippet.position + 1; //updates position since returned playlistItem has none initially
+      //   this.playlistItems.push(playlistItem);
+      //   this.playlistItemListResponse.pageInfo.totalResults += 1; //updates display total to reflect actual total
+      // } else {
+      //   this.getPlaylistItems(this.ytService.playlistId); //has to refresh display list if adding to full page; makes another GET call
+      // }
+      this.getPlaylistItems(this.ytService.playlistId);
     }, error => {
       this.errorSolution = this.ytService.giveErrorSolution(error);
       this.error = error;
@@ -91,8 +94,8 @@ export class YtComponent implements OnInit {
 
   }
 
-  // Asks ytService to delete items, then gets the playlist from ytService
-  deletePlaylistItem(): void {
+  // Asks ytService to delete array of items marked for deletion, then gets the playlist from ytService
+  deletePlaylistItems(): void {
 
     this.itemsToDelete = []; //resets array of items marked for deletion
     for (let i in this.playlistItems) {
@@ -108,14 +111,14 @@ export class YtComponent implements OnInit {
     }
 
     this.ytService.deletePlaylistItem(this.itemsToDelete).subscribe(() => {
-      console.log("success"); //currently, no "loading" indicator so this just prints to the console for each successful delete
-    }, error => {
-      this.errorSolution = this.ytService.giveErrorSolution(error);
-      this.error = error;
-    }, () => {
-      this.getPlaylistItems(this.ytService.playlistId); //makes another GET call to refresh display after all marked playlistItems are deleted
-    });
-
+        console.log("success"); //currently, no "loading" indicator so this just prints to the console for each successful delete
+      }, error => {
+        this.errorSolution = this.ytService.giveErrorSolution(error);
+        this.error = error;
+      }, () => {
+        this.getPlaylistItems(this.ytService.playlistId); //makes another GET call to refresh display after all marked playlistItems are deleted
+      }
+    );
   }
 
   // Gives ytService the pageToken then asks ytService for the playlist
@@ -142,6 +145,14 @@ export class YtComponent implements OnInit {
 
     this.shouldDelete[index] = !this.shouldDelete[index];
 
+  }
+
+  callGet() { //~~
+    this.getPlaylistItems(this.ytService.playlistId);
+  }
+
+  getService(): YtService { //~~
+    return this.ytService;
   }
 
 }
