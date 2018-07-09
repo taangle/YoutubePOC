@@ -8,9 +8,9 @@ import { GoogleAuthService } from "ng-gapi";
 describe('AuthService', () => {
   let testedAuthService: AuthService;
   let googleAuthServiceSpy: jasmine.SpyObj<GoogleAuthService>;
-  let googleAuthSpy;
+  let googleAuthSpy: jasmine.SpyObj<gapi.auth2.GoogleAuth>;
   let mockStorage;
-  let stubAccessToken = 'stub token';
+  let stubAccessToken: string = 'stub token';
 
   // Mocks sessionStorage
   function setUpStorageSpies() {
@@ -21,15 +21,19 @@ describe('AuthService', () => {
       },
       setItem: (key: string, value: string) => {
         store[key] = value;
+      },
+      removeItem: (key: string): void => {
+        store[key] = null;
       }
     };
     spyOn(sessionStorage, 'getItem').and.callFake(mockStorage.getItem);
     spyOn(sessionStorage, 'setItem').and.callFake(mockStorage.setItem);
+    spyOn(sessionStorage, 'removeItem').and.callFake(mockStorage.removeItem);
   }
   
   function setUpGoogleAuthSpies() {
     googleAuthServiceSpy = jasmine.createSpyObj('GoogleAuthService', ['getAuth']);
-    googleAuthSpy = jasmine.createSpyObj('GoogleAuth', ['signIn', 'then', 'signOut']);
+    googleAuthSpy = jasmine.createSpyObj('GoogleAuth', ['signIn', 'signOut']);
 
     function subscription(observer) {
       observer.next(googleAuthSpy);
@@ -37,17 +41,19 @@ describe('AuthService', () => {
     }
 
     googleAuthServiceSpy.getAuth.and.callFake(() => {
-      return new Observable(subscription);
+      return new Observable<gapi.auth2.GoogleAuth>(subscription);
     });
 
     googleAuthSpy.signIn.and.callFake(() => {
-      return {
-        getAuthResponse: () => {
-          return {
-            access_token: stubAccessToken
-          };
-        }
-      }
+      return new Promise(() => {
+        sessionStorage.setItem(AuthService.SESSION_STORAGE_KEY, 'test_token');
+      });
+    });
+
+    googleAuthSpy.signOut.and.callFake(() => {
+      return new Promise(() => {
+        sessionStorage.removeItem(AuthService.SESSION_STORAGE_KEY);
+      });
     });
   }
 
@@ -81,7 +87,7 @@ describe('AuthService', () => {
     });
   
     it('returns the token if it has been set', () => {
-      let testVal = "test val";
+      let testVal = 'test val';
       sessionStorage.setItem(AuthService.SESSION_STORAGE_KEY, testVal);
       expect(testedAuthService.getToken()).toEqual(testVal);
     });
@@ -89,11 +95,10 @@ describe('AuthService', () => {
 
   describe('signIn', () => {
     it('calls getAuth and the googleAuth signIn', async () => {
-      // These should be separate tests, but I had problems
-      //the "then" that gets called might be related to to the problem somehow
       testedAuthService.signIn();
       expect(googleAuthServiceSpy.getAuth).toHaveBeenCalled();
-      await expect(googleAuthSpy.signIn).toHaveBeenCalled();
+      expect(googleAuthSpy.signIn).toHaveBeenCalled();
+      expect(testedAuthService.isSignedIn()).toBe(true);
     });
   });
 
@@ -101,7 +106,8 @@ describe('AuthService', () => {
     it('calls getAuth and the googleAuth signOut', async () => {
       testedAuthService.signOut();
       expect(googleAuthServiceSpy.getAuth).toHaveBeenCalled();
-      await expect(googleAuthSpy.signOut).toHaveBeenCalled();
+      expect(googleAuthSpy.signOut).toHaveBeenCalled();
+      expect(testedAuthService.isSignedIn()).toBe(false);
     });
   });
 
@@ -113,7 +119,7 @@ describe('AuthService', () => {
 
     it('returns false if the token does not exist', () => {
       spyOn(testedAuthService, 'getToken').and.callFake(() => {
-        throw new Error("No token set; authentication required.");
+        throw new Error('No token set; authentication required.');
       });
       expect(testedAuthService.isSignedIn()).toBe(false);
     });
