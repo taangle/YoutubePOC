@@ -10,7 +10,7 @@ import { tick } from '@angular/core/testing';
 import { Observable } from 'rxjs';
 import { PlaylistListResponse } from 'src/app/playlistListResponse';
 
-fdescribe('UserDetailComponent', () => {
+describe('UserDetailComponent', () => {
   let component: UserDetailComponent;
   let fixture: ComponentFixture<UserDetailComponent>;
   let ytServiceFake: FakeYtService;
