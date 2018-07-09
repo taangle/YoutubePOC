@@ -9,7 +9,7 @@ import { PlaylistItem } from '../playlistItem';
 import { PlaylistItemListResponse } from '../playlistItemListResponse';
 import { FakeYtService } from 'src/test-files/yt.service.fake';
 
-fdescribe('YtComponent', () => {
+describe('YtComponent', () => {
   let component: YtComponent;
   let fixture: ComponentFixture<YtComponent>;
   let ytServiceFake: FakeYtService;
