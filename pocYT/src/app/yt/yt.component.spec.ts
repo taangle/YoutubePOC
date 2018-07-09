@@ -94,7 +94,6 @@ describe('YtComponent', () => {
     beforeEach(() => {
       addPlaylistItemSpy = spyOn(ytServiceFake, 'addPlaylistItem').and.callThrough();
     });
-  });
 
     it('should not call out to service on blank input', fakeAsync(() => {
       component.addPlaylistItem(emptyVideoIdStub);
