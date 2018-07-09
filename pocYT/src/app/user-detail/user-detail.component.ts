@@ -20,6 +20,7 @@ export class UserDetailComponent implements OnInit {
 
   constructor(private authService: AuthService, private ytService: YtService, private router: Router) { }
 
+  // Gets playlists if authService reports that user is authenticated
   ngOnInit() {
 
     //checks if user is signed-in; if so, gets a list of their playlists

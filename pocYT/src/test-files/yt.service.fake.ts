@@ -2,6 +2,8 @@ import { PlaylistItem } from "src/app/playlistItem";
 import { PlaylistItemListResponse } from "src/app/playlistItemListResponse";
 import { YtService } from "src/app/yt.service";
 import { Observable } from "rxjs";
+import { PlaylistListResponse } from "src/app/playlistListResponse";
+import { Playlist } from "src/app/playlist";
 
 export class FakeYtService extends YtService {
   public playlistId: string; //holds current playlist ID
@@ -51,13 +53,65 @@ export class FakeYtService extends YtService {
   public fixedFakePlaylistItemListResponse: PlaylistItemListResponse = {
     kind: "kind", //youtube#playlistItemListResponse
     etag: "etag", //etag
-    nextPageToken: "next",
-    prevPageToken: "prev",
+    nextPageToken: "",
+    prevPageToken: "",
     pageInfo: {
       totalResults: 1, //int
       resultsPerPage: 50 //int
     },
     items: [this.fixedFakePlaylistItem] //resource array
+  };
+  public fixedFakePlaylist: Playlist = {
+    kind: 'string', //youtube#playlist
+    etag: 'string', //etag
+    id: 'string',
+    snippet: {
+      publishedAt: 'string', //datetime
+      channelId: 'string',
+      title: 'string',
+      description: 'string',
+      thumbnails: {
+        default: { //only default thumbnail; other resolutions are available
+          url: 'string',
+          width: 1, //uint
+          height: 1, //uint
+        },
+      },
+      channelTitle: 'string',
+      tags: ['string'],
+      defaultLanguage: 'string',
+      localized: {
+        title: 'string',
+        description: 'string',
+      },
+    },
+    status: {
+      privacyStatus: 'string',
+    },
+    contentDetails: {
+      itemCount: 1, //uint
+    },
+    player: {
+      embedHtml: 'string',
+    },
+    localizations: {
+      languageCode: { //only default language; other languages are available
+        title: 'string',
+        description: 'string',
+      },
+    },
+  };
+  public fixedFakePlaylistListResponse: PlaylistListResponse = {
+
+    kind: 'string', //youtube#playlistListResponse
+    etag: 'string', //etag
+    nextPageToken: '',
+    prevPageToken: '',
+    pageInfo: {
+      totalResults: 1, //int
+      resultsPerPage: 50, //int
+    },
+    items: [Object.assign({}, this.fixedFakePlaylist)] //resource array
   };
 
   public errorSolution = 'I don\'t know what you\'re trying to do, but you can\'t do it.';
@@ -114,5 +168,17 @@ export class FakeYtService extends YtService {
   //error handler that provides user-friendly advice/details for common error codes
   giveErrorSolution(error: any): string {
     return this.errorSolution;
+  }
+
+  public playlistListResponseToReturn: PlaylistListResponse;
+
+  getPlaylists(): Observable<PlaylistListResponse> {
+
+    //this.setAccessToken(); //authorization needed due to "mine" filter in GET request
+
+    return new Observable((observer) => {
+      observer.next(this.playlistListResponseToReturn)
+      observer.complete();
+    });
   }
 }
