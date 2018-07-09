@@ -10,7 +10,7 @@ describe('AuthService', () => {
   let googleAuthServiceSpy: jasmine.SpyObj<GoogleAuthService>;
   let googleAuthSpy: jasmine.SpyObj<gapi.auth2.GoogleAuth>;
   let mockStorage;
-  let stubAccessToken = 'stub token';
+  let stubAccessToken: string = 'stub token';
 
   // Mocks sessionStorage
   function setUpStorageSpies() {
@@ -55,16 +55,6 @@ describe('AuthService', () => {
         sessionStorage.removeItem(AuthService.SESSION_STORAGE_KEY);
       });
     });
-
-    /*googleAuthSpy.signIn.and.callFake(() => {
-      return {
-        getAuthResponse: () => {
-          return {
-            access_token: stubAccessToken
-          };
-        }
-      }
-    });*/
   }
 
   function setUpTestingModule() {
@@ -97,7 +87,7 @@ describe('AuthService', () => {
     });
   
     it('returns the token if it has been set', () => {
-      let testVal = "test val";
+      let testVal = 'test val';
       sessionStorage.setItem(AuthService.SESSION_STORAGE_KEY, testVal);
       expect(testedAuthService.getToken()).toEqual(testVal);
     });
@@ -105,8 +95,6 @@ describe('AuthService', () => {
 
   describe('signIn', () => {
     it('calls getAuth and the googleAuth signIn', async () => {
-      // These should be separate tests, but I had problems
-      //the "then" that gets called might be related to to the problem somehow
       testedAuthService.signIn();
       expect(googleAuthServiceSpy.getAuth).toHaveBeenCalled();
       expect(googleAuthSpy.signIn).toHaveBeenCalled();
@@ -131,7 +119,7 @@ describe('AuthService', () => {
 
     it('returns false if the token does not exist', () => {
       spyOn(testedAuthService, 'getToken').and.callFake(() => {
-        throw new Error("No token set; authentication required.");
+        throw new Error('No token set; authentication required.');
       });
       expect(testedAuthService.isSignedIn()).toBe(false);
     });
