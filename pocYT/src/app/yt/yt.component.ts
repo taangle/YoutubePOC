@@ -38,7 +38,6 @@ export class YtComponent implements OnInit {
 
   // Asks ytService for playlist to populate playlistItemListResponse and playlistItems
   getPlaylistItems(playlistId: string): void {
-    console.log("~~component.getPlaylistItems called with: " + playlistId);
     
     playlistId = playlistId.trim();
     if (!playlistId) {
@@ -53,7 +52,6 @@ export class YtComponent implements OnInit {
     }
 
     this.ytService.getPlaylistItems(playlistId).subscribe(playlistItemListResponse => {
-      console.log("~~getPlaylistItems subscription fulfilled: " + playlistItemListResponse)
       this.playlistItemListResponse = playlistItemListResponse;
       this.playlistItems = this.playlistItemListResponse.items;
     }, error => {
@@ -80,14 +78,13 @@ export class YtComponent implements OnInit {
 
     this.ytService.addPlaylistItem(videoId).subscribe(playlistItem => {
       //max display is 50 PlaylistItems, so this shouldn't display a new video entry if it is added to the end of a 50+-video playlist
-      // if (this.playlistItems.length < 50 && this.playlistItems.length > 0) {
-      //   playlistItem.snippet.position = this.playlistItems[this.playlistItems.length - 1].snippet.position + 1; //updates position since returned playlistItem has none initially
-      //   this.playlistItems.push(playlistItem);
-      //   this.playlistItemListResponse.pageInfo.totalResults += 1; //updates display total to reflect actual total
-      // } else {
-      //   this.getPlaylistItems(this.ytService.playlistId); //has to refresh display list if adding to full page; makes another GET call
-      // }
-      this.getPlaylistItems(this.ytService.playlistId);
+      if (this.playlistItems.length < 50 && this.playlistItems.length > 0) {
+        playlistItem.snippet.position = this.playlistItems[this.playlistItems.length - 1].snippet.position + 1; //updates position since returned playlistItem has none initially
+        this.playlistItems.push(playlistItem);
+        this.playlistItemListResponse.pageInfo.totalResults += 1; //updates display total to reflect actual total
+      } else {
+        this.getPlaylistItems(this.ytService.playlistId); //has to refresh display list if adding to full page; makes another GET call
+      }
     }, error => {
       this.errorSolution = this.ytService.giveErrorSolution(error);
       this.error = error;
@@ -146,14 +143,6 @@ export class YtComponent implements OnInit {
 
     this.shouldDelete[index] = !this.shouldDelete[index];
 
-  }
-
-  callGet() { //~~
-    this.getPlaylistItems(this.ytService.playlistId);
-  }
-
-  getService(): YtService { //~~
-    return this.ytService;
   }
 
 }
