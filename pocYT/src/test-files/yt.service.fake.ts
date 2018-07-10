@@ -181,4 +181,24 @@ export class FakeYtService extends YtService {
       observer.complete();
     });
   }
+
+  public playlistItemToReturn: PlaylistItem;
+
+  getPlaylistItem(): Observable<PlaylistItemListResponse> {
+    return new Observable((observer) => {
+      // console.log("~~get subscription about to be fulfilled: " + this.playlistItemListResponseToReturn.items);
+
+      let responseToReturn = Object.assign({}, this.fixedFakePlaylistItemListResponse);
+      responseToReturn.items = [this.playlistItemToReturn];
+      observer.next(responseToReturn);
+      observer.complete();
+    });
+  }
+
+  updatePlaylistItem(): Observable<any> {
+    return new Observable((observer) => {
+      observer.next();
+      observer.complete();
+    });
+  }
 }

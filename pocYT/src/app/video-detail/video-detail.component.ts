@@ -12,7 +12,7 @@ import { YtService } from '../yt.service';
 })
 export class VideoDetailComponent implements OnInit {
 
-  @Input() item: PlaylistItem;
+  item: PlaylistItem;
 
   error: string;
   errorSolution: string;
@@ -29,11 +29,12 @@ export class VideoDetailComponent implements OnInit {
   getPlaylistItem(): void {
 
     const id = this.route.snapshot.paramMap.get('id'); //ID also stored in PlaylistItem (i.e. item.id) so it can be pulled from there alternatively
-    this.ytService.getPlaylistItem(id).subscribe(playlistItemListResponse => this.item = playlistItemListResponse.items[0], error => {
-      this.errorSolution = this.ytService.giveErrorSolution(error);
-      this.error = error;
-    });
-
+    this.ytService.getPlaylistItem(id).subscribe(
+      playlistItemListResponse => this.item = playlistItemListResponse.items[0], 
+      error => {
+        this.errorSolution = this.ytService.giveErrorSolution(error);
+        this.error = error;
+      });
   }
 
   goBack(): void {
@@ -42,19 +43,20 @@ export class VideoDetailComponent implements OnInit {
 
   }
 
-  //passes the PlaylistItem on the page to a PUT request and returns to main page; currently only allows user to update item's position in playlist
+  // Asks ytService to update the current item, makes sure that ytService has an id, and calls goBack
   savePlaylistItem(): void {
 
-    this.ytService.updatePlaylistItem(this.item).subscribe(() => {
-      //navigates user back to playlist page if user lands on a detail page independently (without routing)
-      if (!this.ytService.playlistId) {
-        this.ytService.playlistId = this.item.snippet.playlistId;
-      }
-      this.goBack();
-    }, error => {
-      this.errorSolution = this.ytService.giveErrorSolution(error);
-      this.error = error;
-    });
+    this.ytService.updatePlaylistItem(this.item).subscribe(
+      () => {
+        //navigates user back to playlist page if user lands on a detail page independently (without routing)
+        if (!this.ytService.playlistId) {
+          this.ytService.playlistId = this.item.snippet.playlistId;
+        }
+        this.goBack();
+      }, error => {
+        this.errorSolution = this.ytService.giveErrorSolution(error);
+        this.error = error;
+      });
 
   }
 
