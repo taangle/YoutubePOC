@@ -1,5 +1,4 @@
 ﻿import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { Location } from '@angular/common';
 
 import { AuthComponent } from './auth.component';
 import { AuthService } from '../auth.service';
@@ -7,68 +6,60 @@ import { AuthService } from '../auth.service';
 describe('AuthComponent', () => {
   let component: AuthComponent;
   let fixture: ComponentFixture<AuthComponent>;
-  let locationSpy;
-  let authServiceSpy;
+  let stubAuthService;
 
   beforeEach(async(() => {
-    locationSpy = jasmine.createSpyObj('Location', ['back']);
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['signIn', 'signOut', 'isSignedIn']);
-    authServiceSpy.isSignedIn.and.returnValue(false);
+    stubAuthService = new AuthServiceStub();
+    spyOn(stubAuthService, 'isSignedIn').and.returnValue(false);
 
     TestBed.configureTestingModule({
       declarations: [ AuthComponent ],
       providers: [
         {
-          provide: Location,
-          useValue: locationSpy
-        },
-        {
           provide: AuthService,
-          useValue: authServiceSpy
+          useValue: stubAuthService
         }
       ]
     }).compileComponents();
-  }));
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(AuthComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  xit('~~placeholder', () => {});
-  xit('~~placeholder', () => {});
-  xit('~~placeholder', () => {});
-  xit('~~placeholder', () => {});
-  xit('~~placeholder', () => {});
+  }));
 
   it('is created', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('ngOnInit', () => {
+    describe('sets the value of IS_SIGNED_IN to the return value of authService.isSignedIn()', () => {
+      it('when isSignedIn() returns false', () => {
+        stubAuthService.isSignedIn.and.returnValue(false);
+        component.ngOnInit;
+        expect(AuthServiceStub.IS_SIGNED_IN).toBeFalsy();
+      });
+
+      it('when isSignedIn() returns true', () => {
+        stubAuthService.isSignedIn.and.returnValue(true);
+        component.ngOnInit;
+        expect(AuthServiceStub.IS_SIGNED_IN).toBeTruthy;
+      });
+    });
+  });
+
   describe('signIn', () => {
     it('calls the authService signIn', () => { 
+      spyOn(stubAuthService, 'signIn');
       component.signIn();
-      expect(authServiceSpy.signIn).toHaveBeenCalled();
-    });
-
-    xit('*PENDING* calls goBack', () => {
-      // spyOn(component, 'goBack');
-      // component.signIn();
-      // expect(component.goBack).toHaveBeenCalled();
+      expect(stubAuthService.signIn).toHaveBeenCalled();
     });
   });
 
   describe('signOut', () => {
     it('calls the authService signOut', () => {
+      spyOn(stubAuthService, 'signOut');
       component.signOut();
-      expect(authServiceSpy.signOut).toHaveBeenCalled();
-    });
-
-    xit('*PENDING* calls goBack', () => {
-      // spyOn(component, 'goBack');
-      // component.signOut();
-      // expect(component.goBack).toHaveBeenCalled();
+      expect(stubAuthService.signOut).toHaveBeenCalled();
     });
   });
 
@@ -81,3 +72,21 @@ describe('AuthComponent', () => {
     });
   });
 });
+
+
+class AuthServiceStub extends AuthService {
+
+  constructor() {
+    super(null, null, null);
+  }
+
+  public static IS_SIGNED_IN: boolean;
+
+  public signIn(): void {}
+
+  public signOut(): void {}
+
+  public isSignedIn(): boolean {
+    return null;
+  }
+}
