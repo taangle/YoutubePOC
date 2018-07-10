@@ -65,7 +65,7 @@ describe('AuthComponent', () => {
       expect(authServiceSpy.signOut).toHaveBeenCalled();
     });
 
-    it('*PENDING* calls goBack', () => {
+    xit('*PENDING* calls goBack', () => {
       // spyOn(component, 'goBack');
       // component.signOut();
       // expect(component.goBack).toHaveBeenCalled();

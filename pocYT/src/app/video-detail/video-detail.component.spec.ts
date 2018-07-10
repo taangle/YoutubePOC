@@ -134,7 +134,7 @@ describe('VideoDetailComponent', () => {
 
   });
 
-  describe('*PENDING* goBack', () => {
+  xdescribe('*PENDING* goBack', () => {
   });
 
   describe('savePlaylistItem', () => {
