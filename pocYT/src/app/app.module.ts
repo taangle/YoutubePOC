@@ -2,6 +2,14 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatCardModule } from '@angular/material/card';
+import { MatListModule } from '@angular/material/list';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { AppComponent } from './app.component';
 import { YtRoutingModule } from './/yt-routing.module';
@@ -15,29 +23,37 @@ import { GoogleApiModule, GoogleApiService, GoogleAuthService, NgGapiClientConfi
 
 //personal client ID, required YouTube discovery doc, YouTube authentication scope for OAuth2
 let gapiClientConfig: NgGapiClientConfig = {
-    client_id: "384382936305-q9jtiflffe22ai3pghk9rt991cqg29ji.apps.googleusercontent.com",
-    discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"],
-    scope: ["https://www.googleapis.com/auth/youtube"].join(" ")
+  client_id: "384382936305-q9jtiflffe22ai3pghk9rt991cqg29ji.apps.googleusercontent.com",
+  discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"],
+  scope: ["https://www.googleapis.com/auth/youtube"].join(" ")
 };
 
 @NgModule({
   declarations: [
-      AppComponent,
-      YtComponent,
-      VideoDetailComponent,
-      AuthComponent,
-      UserDetailComponent,
-      PlayComponent
-    ],
+    AppComponent,
+    YtComponent,
+    VideoDetailComponent,
+    AuthComponent,
+    UserDetailComponent,
+    PlayComponent
+  ],
   imports: [
-      BrowserModule,
-      FormsModule,
-      YtRoutingModule,
-      HttpClientModule,
-      GoogleApiModule.forRoot({
-          provide: NG_GAPI_CONFIG,
-          useValue: gapiClientConfig
-      })
+    BrowserModule,
+    FormsModule,
+    YtRoutingModule,
+    HttpClientModule,
+    GoogleApiModule.forRoot({
+      provide: NG_GAPI_CONFIG,
+      useValue: gapiClientConfig
+    }),
+    BrowserAnimationsModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatToolbarModule,
+    MatCardModule,
+    MatListModule,
+    MatInputModule,
+    MatCheckboxModule
   ],
   providers: [],
   bootstrap: [AppComponent]

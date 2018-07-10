@@ -1,31 +1,7 @@
-<div *ngIf="playlists; else loginPrompt">
-
-  <h3>Total Playlists: {{playlistListResponse.pageInfo.totalResults}}</h3>
-
-  <div>
-    <ul>
-      <!--lists titles of all user's Playlists; each can be clicked to view its contents-->
-      <li *ngFor="let item of playlists">
-        <!--routes user to embedded playlist view-->
-        <a routerLink="/play/{{item.id}}"><button>&#9658;</button></a>
-        <!--redirects user to ytComponent, which will display contents of clicked playlist based on its ID-->
-        <button (click)="toPlaylist(item.id)">{{item.snippet.title}}</button>
-      </li>
-    </ul>
-  </div>
-
-  <div>
-    <!--advances to previous/next page in list of playlists, if possible-->
-    <button (click)="toPrevPage()" [disabled]="!playlistListResponse.prevPageToken">Previous Page</button>
-    <button (click)="toNextPage()" [disabled]="!playlistListResponse.nextPageToken">Next Page</button>
-  </div>
-  <br />
-
-</div>
-
-<ng-template #loginPrompt>
-  Please sign in to get an overview of your playlists.
-</ng-template>
+<mat-toolbar>
+  User Overview
+</mat-toolbar>
+<br />
 
 <div *ngIf="error">
   <pre>{{error}}</pre>
@@ -33,3 +9,43 @@
 <div *ngIf="errorSolution">
   <i>{{errorSolution}}</i>
 </div>
+<br />
+
+<mat-card *ngIf="playlists; else loginPrompt">
+
+  <mat-card-header>
+    <mat-card-title id="playlist-count">Total Playlists: {{playlistListResponse.pageInfo.totalResults}}</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p>
+      This is a list of all playlists on your YouTube channel. You can choose to watch a playlist immediately or view/edit its video contents.
+    </p>
+
+    <mat-list dense>
+      <!--lists titles of all user's Playlists; each can be clicked to view its contents-->
+      <mat-list-item *ngFor="let item of playlists">
+        <!--routes user to embedded playlist view-->
+        <a routerLink="/play/{{item.id}}"><button mat-mini-fab color="primary">&#9658;</button></a>&nbsp;
+        <!--redirects user to ytComponent, which will display contents of clicked playlist based on its ID-->
+        <button mat-raised-button color="primary" (click)="toPlaylist(item.id)">VIEW/EDIT</button>&nbsp;
+        {{item.snippet.title}}
+      </mat-list-item>
+    </mat-list>
+    <br />
+
+    <!--advances to previous/next page in list of playlists, if possible-->
+    <button mat-stroked-button (click)="toPrevPage()" [disabled]="!playlistListResponse.prevPageToken">Previous Page</button>
+    <button mat-stroked-button (click)="toNextPage()" [disabled]="!playlistListResponse.nextPageToken">Next Page</button>
+  </mat-card-content>
+
+</mat-card>
+<br />
+
+<ng-template #loginPrompt>
+  <mat-card>
+    <mat-card-content>
+      Please sign in to get an overview of your playlists.
+    </mat-card-content>
+  </mat-card>
+</ng-template>
