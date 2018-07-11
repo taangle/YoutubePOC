@@ -10,6 +10,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from '@angular/material/divider';
 
 import { AppComponent } from './app.component';
 import { YtRoutingModule } from './/yt-routing.module';
@@ -18,9 +19,9 @@ import { VideoDetailComponent } from './video-detail/video-detail.component';
 import { AuthComponent } from './auth/auth.component';
 import { UserDetailComponent } from './user-detail/user-detail.component';
 import { PlayComponent } from './play/play.component';
+import { SafePipe } from './safe.pipe';
 
 import { GoogleApiModule, GoogleApiService, GoogleAuthService, NgGapiClientConfig, NG_GAPI_CONFIG, GoogleApiConfig } from "ng-gapi";
-import { SafePipe } from './safe.pipe';
 
 //personal client ID, required YouTube discovery doc, YouTube authentication scope for OAuth2
 let gapiClientConfig: NgGapiClientConfig = {
@@ -55,7 +56,8 @@ let gapiClientConfig: NgGapiClientConfig = {
     MatCardModule,
     MatListModule,
     MatInputModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatDividerModule
   ],
   providers: [],
   bootstrap: [AppComponent]

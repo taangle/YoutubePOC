@@ -8,6 +8,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from '@angular/material/divider';
 
 import { YtComponent } from './yt.component';
 import { GoogleApiService } from "ng-gapi";
@@ -35,7 +36,8 @@ describe('YtComponent', () => {
         MatCardModule,
         MatListModule,
         MatInputModule,
-        MatCheckboxModule
+        MatCheckboxModule,
+        MatDividerModule
       ],
       providers: [
         {

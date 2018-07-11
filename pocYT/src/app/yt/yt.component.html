@@ -11,7 +11,6 @@
     <button mat-stroked-button (click)="clearErrors(); getPlaylistItems(playlistId.value); playlistId.value=''">SHOW PLAYLIST</button>
   </mat-toolbar-row>
 </mat-toolbar>
-<br />
 
 <div *ngIf="error">
   <pre>{{error}}</pre>
@@ -53,6 +52,10 @@
       <!--advances to previous/next page in playlist, if possible-->
       <button mat-stroked-button (click)="toPrevPage()" [disabled]="!playlistItemListResponse.prevPageToken">Previous Page</button>
       <button mat-stroked-button (click)="toNextPage()" [disabled]="!playlistItemListResponse.nextPageToken">Next Page</button>
+      <br />
+      <br />
+
+      <mat-divider [inset]="true"></mat-divider>
 
       <p>
         If you're signed-in, you can also add a video to the playlist by pasting a YouTube video ID (or any URL that contains a video ID) in the box at the bottom or delete videos by checking the boxes next to the videos you want to delete before clicking "Delete Selected Videos".
