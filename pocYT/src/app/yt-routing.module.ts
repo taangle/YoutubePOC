@@ -7,7 +7,7 @@ import { AuthComponent } from './auth/auth.component';
 import { UserDetailComponent } from './user-detail/user-detail.component';
 import { PlayComponent } from './play/play.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' }, //default
   { path: 'playlist', component: YtComponent }, //main playlist
   { path: 'login', component: AuthComponent }, //sign-in/sign-out
