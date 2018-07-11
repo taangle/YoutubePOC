@@ -20,6 +20,7 @@ import { UserDetailComponent } from './user-detail/user-detail.component';
 import { PlayComponent } from './play/play.component';
 
 import { GoogleApiModule, GoogleApiService, GoogleAuthService, NgGapiClientConfig, NG_GAPI_CONFIG, GoogleApiConfig } from "ng-gapi";
+import { SafePipe } from './safe.pipe';
 
 //personal client ID, required YouTube discovery doc, YouTube authentication scope for OAuth2
 let gapiClientConfig: NgGapiClientConfig = {
@@ -35,7 +36,8 @@ let gapiClientConfig: NgGapiClientConfig = {
     VideoDetailComponent,
     AuthComponent,
     UserDetailComponent,
-    PlayComponent
+    PlayComponent,
+    SafePipe
   ],
   imports: [
     BrowserModule,

@@ -1,90 +1,29 @@
 ﻿import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs';
+import { Location } from '@angular/common';
 
 import { VideoDetailComponent } from './video-detail.component';
 import { YtService } from '../yt.service';
 import { PlaylistItem } from '../playlistItem';
 import { PlaylistItemListResponse } from '../playlistItemListResponse';
+import { ActivatedRouteStub } from 'src/test-files/activated-route.stub';
+import { ActivatedRoute } from '@angular/router';
+import { FakeYtService } from 'src/test-files/yt.service.fake';
+import { fakeAsync, tick } from '@angular/core/testing';
 
 describe('VideoDetailComponent', () => {
   let component: VideoDetailComponent;
   let fixture: ComponentFixture<VideoDetailComponent>;
-  let ytServiceSpy: jasmine.SpyObj<YtService>;
-  let fakePlaylistItem: PlaylistItem = {
-    kind: 'string', //youtube#playlistItem
-    etag: 'string', //etag
-    id: 'string',
-    snippet: {
-      publishedAt: '2010-10-10T10:10:10.1Z', //datetime
-      channelId: 'string',
-      title: 'string',
-      description: 'string',
-      thumbnails: {
-        default: { //only default thumbnail; other resolutions are available
-          url: 'string',
-          width: 1, //uint
-          height: 1, //uint
-        },
-      },
-      channelTitle: 'string',
-      playlistId: 'string',
-      position: 0, //uint
-      resourceId: {
-        kind: 'string', //usually youtube#video
-        videoId: 'string'
-      },
-    },
-    contentDetails: {
-      videoId: 'string',
-      startAt: 'string',
-      endAt: 'string',
-      note: 'string',
-      videoPublishedAt: 'string' //datetime
-    },
-    status: {
-      privacyStatus: 'string',
-    }
-  };
-  let fakePlaylistItemListResponse: PlaylistItemListResponse = {
-    kind: "kind", //youtube#playlistItemListResponse
-    etag: "etag", //etag
-    nextPageToken: "next",
-    prevPageToken: "prev",
-    pageInfo: {
-      totalResults: 1, //int
-      resultsPerPage: 50 //int
-    },
-    items: [fakePlaylistItem] //resource array
-  };
-
-  function setUpGetPlaylistItem() {
-
-    function subscription(observer) {
-      observer.next(fakePlaylistItemListResponse);
-      observer.complete();
-    }
-    ytServiceSpy.getPlaylistItem.and.callFake(() => {
-      return new Observable(subscription);
-    });
-
-  }
-
-  function setUpUpdatePlaylistItem() {
-    function subscription(observer) {
-      observer.next(fakePlaylistItem);
-      observer.complete();
-    }
-    ytServiceSpy.updatePlaylistItem.and.callFake(() => {
-      return new Observable(subscription);
-    });
-  }
+  let routeStub: ActivatedRouteStub;
+  let locationSpy;
+  let ytServiceFake: FakeYtService;
 
   beforeEach(async(() => {
-    ytServiceSpy = jasmine.createSpyObj('YtService', ['getPlaylistItem', 'updatePlaylistItem', 'giveErrorSolution']);
-
-    setUpGetPlaylistItem();
-    setUpUpdatePlaylistItem();
+    ytServiceFake = new FakeYtService();
+    routeStub = new ActivatedRouteStub();
+    routeStub.paramMapValueToReturn = 'initial_stub';
+    locationSpy = jasmine.createSpyObj('Location', ['back']);
 
     TestBed.configureTestingModule({
       declarations: [VideoDetailComponent],
@@ -92,7 +31,15 @@ describe('VideoDetailComponent', () => {
       providers: [
         {
           provide: YtService,
-          useValue: ytServiceSpy
+          useValue: ytServiceFake
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: routeStub
+        },
+        {
+          provide: Location,
+          useValue: locationSpy
         }
       ]
     }).compileComponents();
@@ -102,49 +49,92 @@ describe('VideoDetailComponent', () => {
     fixture = TestBed.createComponent(VideoDetailComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    component.item = fakePlaylistItem;
   });
 
-  it('should create', () => {
+  it('is created', () => {
     expect(component).toBeTruthy();
   });
 
-  it('has all properties undefined initially', () => {
-    expect(component.error).toBeUndefined();
-    expect(component.errorSolution).toBeUndefined();
-  });
-
   describe('ngOnInit', () => {
-
-    it('should call service', () => {
+    it('calls its own getPlaylistItem', () => {
       spyOn(component, 'getPlaylistItem');
       component.ngOnInit();
       expect(component.getPlaylistItem).toHaveBeenCalled();
     });
-
   });
 
   describe('getPlaylistItem', () => {
-
-    it('should call service', () => {
+    it('asks ytService for playlist item by id, populates \'item\' with it', fakeAsync(() => {
+      let stubId = 'getPlaylistItem_stub_id';
+      routeStub.paramMapValueToReturn = stubId;
+      let itemToReturn = Object.assign({}, ytServiceFake.fixedFakePlaylistItem);
+      ytServiceFake.playlistItemToReturn = itemToReturn;
+      spyOn(ytServiceFake, 'getPlaylistItem').and.callThrough();
       component.getPlaylistItem();
-      expect(ytServiceSpy.getPlaylistItem).toHaveBeenCalled();
-      expect(component.item).toEqual(fakePlaylistItem);
-    });
+      tick();
+      expect(ytServiceFake.getPlaylistItem).toHaveBeenCalledWith(stubId);
+      expect(component.item).toEqual(itemToReturn);
+    }));
 
+    it('populates error and errorSolution if ytService has a problem', fakeAsync(() => {
+      let errorStub = 'error_stub';
+      let solutionStub = 'some_solution';
+      spyOn(ytServiceFake, 'getPlaylistItem').and.callFake(() => {
+        return new Observable((observer) => {
+          observer.error(errorStub);
+        });
+      });
+      spyOn(ytServiceFake, 'giveErrorSolution').and.returnValue(solutionStub);
+      component.getPlaylistItem();
+      tick();
+      expect(component.error).toEqual(errorStub);
+      expect(component.errorSolution).toEqual(solutionStub);
+    }));
   });
 
-  describe('*PENDING* goBack', () => {
+  describe('goBack', () => {
+    it('calls location.back()', () => {
+      expect(locationSpy.back).not.toHaveBeenCalled();
+      component.goBack();
+      expect(locationSpy.back).toHaveBeenCalled();
+    });
   });
 
   describe('savePlaylistItem', () => {
+    let itemToSave: PlaylistItem;
+    let playlistIdStub = 'playlistId_stub';
 
-    it('should call service', () => {
-      component.getPlaylistItem();
-      component.savePlaylistItem();
-      expect(ytServiceSpy.updatePlaylistItem).toHaveBeenCalledWith(component.item);
+    beforeEach(() => {
+      itemToSave = Object.assign({}, ytServiceFake.fixedFakePlaylistItem);
+      itemToSave.snippet.playlistId = playlistIdStub;
+      component.item = itemToSave;
+      spyOn(component, 'goBack');
     });
 
-  });
+    it('asks ytService to update item', fakeAsync(() => {
+      spyOn(ytServiceFake, 'updatePlaylistItem').and.callFake(() => {
+        return new Observable();
+      });
+      component.savePlaylistItem();
+      tick();
+      expect(ytServiceFake.updatePlaylistItem).toHaveBeenCalledWith(itemToSave);
+    }));
 
+    it('sets ytService.playlistId if it does not exist, calls goBack', fakeAsync(() => {
+      ytServiceFake.playlistId = undefined;
+      component.savePlaylistItem();
+      tick();
+      expect(ytServiceFake.playlistId).toEqual(itemToSave.snippet.playlistId);
+      expect(component.goBack).toHaveBeenCalled();
+    }));
+
+    it('leaves ytService.playlistId alone if it already exists, calls goBack', fakeAsync(() => {
+      let differentPlaylistIdStub = 'some_other_id_stub';
+      ytServiceFake.playlistId = differentPlaylistIdStub;
+      component.savePlaylistItem();
+      tick();
+      expect(ytServiceFake.playlistId).toEqual(differentPlaylistIdStub);
+      expect(component.goBack).toHaveBeenCalled();
+    }));
+  });
 });

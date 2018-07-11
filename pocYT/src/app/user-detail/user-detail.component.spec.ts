@@ -1,5 +1,10 @@
 import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatCardModule } from '@angular/material/card';
+import { MatListModule } from '@angular/material/list';
 
 import { UserDetailComponent } from './user-detail.component';
 import { AuthService } from 'src/app/auth.service';
@@ -25,7 +30,14 @@ describe('UserDetailComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [UserDetailComponent],
-      imports: [RouterTestingModule],
+      imports: [
+        RouterTestingModule,
+        BrowserAnimationsModule,
+        MatButtonModule,
+        MatToolbarModule,
+        MatCardModule,
+        MatListModule
+      ],
       providers: [
         {
           provide: AuthService,
