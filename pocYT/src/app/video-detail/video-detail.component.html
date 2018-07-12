@@ -41,4 +41,4 @@
 </mat-card>
 
 <button mat-raised-button color="primary" (click)="goBack()">Go Back</button>
-<button mat-raised-button color="primary" (click)="savePlaylistItem()">SAVE</button>
+<button mat-raised-button color="primary" (click)="savePlaylistItem()" [disabled]="!item">SAVE</button>
