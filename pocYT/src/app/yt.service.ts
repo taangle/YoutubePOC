@@ -169,13 +169,13 @@ export class YtService {
     if (error.error instanceof ErrorEvent) {
 
       //client-side error handler
-      console.error('An error occurred:', error.error.message);
+      //console.error('An error occurred:', error.error.message);
       errorText = error.error.message;
 
     } else {
 
       //server-side error handler
-      console.error(`Backend returned code ${error.status}: ${error.error.error.message}`); //format is HttpErrorResponse.JSON_response_body.error_field.error_message_field
+      //console.error(`Backend returned code ${error.status}: ${error.error.error.message}`); //format is HttpErrorResponse.JSON_response_body.error_field.error_message_field
       errorText = `${error.status} - ${error.error.error.message}`;
 
     }
