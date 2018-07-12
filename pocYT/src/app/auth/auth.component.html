@@ -1,9 +1,34 @@
-﻿<div *ngIf="isSignedIn()">
-  Signed In
-</div>
-<div *ngIf="!isSignedIn()">
-  Signed Out
-</div>
+<mat-toolbar>
+  Sign In/Out
+</mat-toolbar>
+<br />
+<br />
 
-<button (click)="signIn()">Sign In</button>
-<button (click)="signOut()">Sign Out</button>
+<mat-card class="app-description">
+
+  <mat-card-header>
+    <mat-card-title id="sign-in-status">
+      Current Status:
+      <span *ngIf="isSignedIn()">Signed In</span>
+      <span *ngIf="!isSignedIn()">Signed Out</span>
+    </mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p>
+      Please sign in with a Google account associated with a YouTube channel. You don't have to sign in just to view playlists and their contents, but signing in allows you to:
+    </p>
+    <ul>
+      <li>Get an overview of your playlists on your account/channel</li>
+      <li>Add videos to your playlists</li>
+      <li>Update the positions of videos in your playlists</li>
+      <li>Delete videos from your playlists</li>
+    </ul>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-raised-button color="primary" (click)="signIn()">SIGN IN</button>
+    <button mat-raised-button color="primary" (click)="signOut()">SIGN OUT</button>
+  </mat-card-actions>
+
+</mat-card>

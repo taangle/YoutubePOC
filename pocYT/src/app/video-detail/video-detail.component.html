@@ -1,28 +1,6 @@
-﻿<div *ngIf="item">
-
-  <h2>{{item.snippet.title}}</h2>
-  <ul>
-    <!--more info can be displayed as needed-->
-    <li>Description: <pre>{{item.snippet.description}}</pre></li>
-    <li>Video ID: {{item.snippet.resourceId.videoId}}</li>
-    <li>Unique Item ID: {{item.id}}</li>
-    <!--EEEE: day of week; MMMM d y: date; h:mm:ss a: time; zzzz: time zone-->
-    <li>Added to Playlist on: {{item.snippet.publishedAt | date : 'EEEE, MMMM d, y, h:mm:ss a (zzzz)'}}</li>
-    <li>Playlist by: {{item.snippet.channelTitle}} ({{item.snippet.channelId}})</li>
-  </ul>
-
-  <div>
-    <label>
-      <!--currently, displays 0 when user clears position with backspace, then displays placeholder when backspace is hit again; 0 is overwritten upon typing so it's like an extra placeholder-->
-      <!--+/-1 differentiates between display and array position; instantly commits position change to item object, so the updated position can be pulled when user clicks Save-->
-      <input [value]="item.snippet.position+1" (input)="item.snippet.position=$event.target.value-1" placeholder="Enter New Position" />
-    </label>
-  </div>
-
-</div>
-
-<button (click)="goBack()">Go Back</button>
-<button (click)="savePlaylistItem()">Save</button>
+<mat-toolbar>
+  Video Detail
+</mat-toolbar>
 
 <div *ngIf="error">
   <pre>{{error}}</pre>
@@ -30,3 +8,37 @@
 <div *ngIf="errorSolution">
   <i>{{errorSolution}}</i>
 </div>
+<br />
+
+<mat-card *ngIf="item">
+
+  <mat-card-header>
+    <mat-card-title id="video-title">{{item.snippet.title}}</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!--more info can be displayed as needed-->
+    <p><span>Description: </span></p><pre>{{item.snippet.description}}</pre>
+    <p><span>Video ID: </span>{{item.snippet.resourceId.videoId}}</p>
+    <p><span>Unique Item ID: </span>{{item.id}}</p>
+    <!--EEEE: day of week; MMMM d y: date; h:mm:ss a: time; zzzz: time zone-->
+    <p><span>Added to Playlist on: </span>{{item.snippet.publishedAt | date : 'EEEE, MMMM d, y, h:mm:ss a (zzzz)'}}</p>
+    <p><span>Playlist by: </span>{{item.snippet.channelTitle}} ({{item.snippet.channelId}})</p>
+
+    <mat-divider [inset]="true"></mat-divider>
+
+    <p>
+      If you're signed-in, you can update the position of this video in its playlist by changing the number and clicking "Save".
+    </p>
+
+    <mat-form-field>
+      <!--currently, displays 0 when user clears position with backspace, then displays placeholder when backspace is hit again; 0 is overwritten upon typing so it's like an extra placeholder-->
+      <!--+/-1 differentiates between display and array position; instantly commits position change to item object, so the updated position can be pulled when user clicks Save-->
+      <input matInput [value]="item.snippet.position+1" (input)="item.snippet.position=$event.target.value-1" placeholder="New Position" />
+    </mat-form-field>
+  </mat-card-content>
+
+</mat-card>
+
+<button mat-raised-button color="primary" (click)="goBack()">Go Back</button>
+<button mat-raised-button color="primary" (click)="savePlaylistItem()">SAVE</button>
