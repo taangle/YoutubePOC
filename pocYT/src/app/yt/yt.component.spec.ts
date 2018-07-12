@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+﻿import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -58,21 +58,18 @@ fdescribe('YtComponent', () => {
 
   describe('ngOnInit', () => {
     describe('(when ytService has no playlistId)', () => {
-      it('does not populate any of its fields', () => {
-        expect(component.playlistItems).toBeUndefined();
-        expect(component.playlistItemListResponse).toBeUndefined();
-        expect(component.error).toBeUndefined();
-        expect(component.errorSolution).toBeUndefined();
+      it('does not ask service for playlist', () => {
+        spyOn(component, 'getPlaylistItems');
+        expect(component.getPlaylistItems).not.toHaveBeenCalled();
       });
     });
 
     describe('(when ytService has a playlistId)', () => {
-      it('populates playlistItemListResponse', () => {
-        let expectedResponse = new PlaylistItemListResponse();
-        ytServiceFake.playlistItemListResponseToReturn = expectedResponse;
+      it('asks service for playlsit', () => {
+        spyOn(component, 'getPlaylistItems');
         ytServiceFake.playlistId = ytServiceFake.playlistIdStub;
         component.ngOnInit();
-        expect(component.playlistItemListResponse).toBe(expectedResponse);
+        expect(component.getPlaylistItems).toHaveBeenCalledWith(ytServiceFake.playlistId);
       });
       // TODO: add tests for error response
     });
@@ -237,8 +234,8 @@ fdescribe('YtComponent', () => {
       component.getPlaylistItems(ytServiceFake.playlistIdStub);
       tick();
 
-      let  urlStub = 'https://www.youtube.com/watch?v=vYb4_ARPNfo&list=PLWQB0T3rGCzEPRWOqrfSrJW_-A7RsT4qS&index=2&t=0s';
-      let  actualVideoId = 'vYb4_ARPNfo';
+      let urlStub = 'https://www.youtube.com/watch?v=vYb4_ARPNfo&list=PLWQB0T3rGCzEPRWOqrfSrJW_-A7RsT4qS&index=2&t=0s';
+      let actualVideoId = 'vYb4_ARPNfo';
       component.addPlaylistItem(urlStub);
       tick();
       expect(addPlaylistItemSpy).toHaveBeenCalledWith(actualVideoId);
@@ -264,15 +261,31 @@ fdescribe('YtComponent', () => {
       expect(addPlaylistItemSpy).toHaveBeenCalledWith(actualVideoId);
     }));
 
-    it('updates fields once the item is added (length >= 50)', fakeAsync(() => {
+    it('updates fields once the item is added (length == 50)', fakeAsync(() => {
       let origLength: number = 50;
       ytServiceFake.fakeCloudPlaylist = new Array<PlaylistItem>(origLength);
       ytServiceFake.playlistItemListResponseToReturn = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
       ytServiceFake.playlistItemListResponseToReturn.items = ytServiceFake.fakeCloudPlaylist;
       ytServiceFake.playlistItemToAdd = Object.assign({}, ytServiceFake.fixedFakePlaylistItem);
-
       component.getPlaylistItems(ytServiceFake.playlistIdStub);
       tick();
+
+      component.addPlaylistItem(ytServiceFake.videoIdStub);
+      tick();
+
+      expect(component.playlistItems.length).toBe(origLength + 1);
+      expect(component.playlistItems).toContain(ytServiceFake.playlistItemToAdd);
+    }));
+
+    it('updates fields once the item is added (length > 50)', fakeAsync(() => {
+      let origLength: number = 4999;
+      ytServiceFake.fakeCloudPlaylist = new Array<PlaylistItem>(origLength);
+      ytServiceFake.playlistItemListResponseToReturn = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
+      ytServiceFake.playlistItemListResponseToReturn.items = ytServiceFake.fakeCloudPlaylist;
+      ytServiceFake.playlistItemToAdd = Object.assign({}, ytServiceFake.fixedFakePlaylistItem);
+      component.getPlaylistItems(ytServiceFake.playlistIdStub);
+      tick();
+
       component.addPlaylistItem(ytServiceFake.videoIdStub);
       tick();
 
@@ -281,19 +294,36 @@ fdescribe('YtComponent', () => {
     }));
 
     it('updates fields once the item is added (length < 50)', fakeAsync(() => {
-      let origLength: number = 3;
+      let origLength: number = 1;
       ytServiceFake.fakeCloudPlaylist = new Array<PlaylistItem>(origLength);
       ytServiceFake.fakeCloudPlaylist[origLength - 1] = Object.assign({}, ytServiceFake.fixedFakePlaylistItem);
       ytServiceFake.playlistItemListResponseToReturn = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
       ytServiceFake.playlistItemListResponseToReturn.items = ytServiceFake.fakeCloudPlaylist.slice();
+      ytServiceFake.playlistItemListResponseToReturn.pageInfo = { totalResults: origLength, resultsPerPage: 50 };
       ytServiceFake.playlistItemToAdd = Object.assign({}, ytServiceFake.fixedFakePlaylistItem);
-
       component.getPlaylistItems(ytServiceFake.playlistIdStub);
       tick();
+
       component.addPlaylistItem(ytServiceFake.videoIdStub);
       tick();
 
       expect(component.playlistItems.length).toBe(origLength + 1);
+      expect(component.playlistItems).toContain(ytServiceFake.playlistItemToAdd);
+    }));
+
+    it('updates fields once the item is added (length == 0)', fakeAsync(() => {
+      ytServiceFake.fakeCloudPlaylist = new Array<PlaylistItem>();
+      ytServiceFake.playlistItemListResponseToReturn = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
+      ytServiceFake.playlistItemListResponseToReturn.items = ytServiceFake.fakeCloudPlaylist.slice();
+      ytServiceFake.playlistListResponseToReturn.pageInfo = { totalResults: 0, resultsPerPage: 50 };
+      ytServiceFake.playlistItemToAdd = Object.assign({}, ytServiceFake.fixedFakePlaylistItem);
+      component.getPlaylistItems(ytServiceFake.playlistIdStub);
+      tick();
+
+      component.addPlaylistItem(ytServiceFake.videoIdStub);
+      tick();
+
+      expect(component.playlistItems.length).toBe(1);
       expect(component.playlistItems).toContain(ytServiceFake.playlistItemToAdd);
     }));
 
@@ -322,58 +352,126 @@ fdescribe('YtComponent', () => {
     }));
   });
 
-  describe('deletePlaylistItems', () => {
-    let items: PlaylistItem[];
-
-    beforeEach(() => {
-      items = new Array<PlaylistItem>(5);
-      for (let i = 0; i < items.length; i++) {
-        items[i] = Object.assign({}, ytServiceFake.fixedFakePlaylistItem);
+  describe('deletePlaylistItems & toggleToDelete', () => {
+    beforeEach(fakeAsync(() => {
+      // populate fakeCloudPlaylist with filled fake items
+      let fakeCloudPlaylist: PlaylistItem[] = new Array<PlaylistItem>(10);
+      for (let i = 0; i < fakeCloudPlaylist.length; i++) {
+        fakeCloudPlaylist[i] = Object.assign({}, ytServiceFake.fixedFakePlaylistItem);
+        fakeCloudPlaylist[i].id = i.toString();
       }
-      ytServiceFake.fakeCloudPlaylist = items;
-    });
+      ytServiceFake.fakeCloudPlaylist = fakeCloudPlaylist;
 
-    it('asks service to delete a playlist of items', fakeAsync(() => {
+      // populate component's fields
       ytServiceFake.playlistItemListResponseToReturn = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
       ytServiceFake.playlistItemListResponseToReturn.items = ytServiceFake.fakeCloudPlaylist;
       component.getPlaylistItems(ytServiceFake.playlistIdStub);
       tick();
+    }));
 
-      component.toggleToDelete(0);
-      spyOn(ytServiceFake, 'deletePlaylistItem').and.returnValue(new Observable());
+    it('asks service to delete array of PlaylistItems that have been toggled to delete', fakeAsync(() => {
+      let indexesToDeleteAt: number[];
+      let expectedItemsToHaveBeenCalledWith: PlaylistItem[];
+      let deleteSpy = spyOn(ytServiceFake, 'deletePlaylistItem').and.returnValue(new Observable());
+
+      expectedItemsToHaveBeenCalledWith = new Array<PlaylistItem>();
+      indexesToDeleteAt = [0];
+      indexesToDeleteAt.forEach((i) => {
+        component.toggleToDelete(i);
+        expectedItemsToHaveBeenCalledWith.push(component.playlistItems[i]);
+      });
       component.deletePlaylistItems();
       tick();
-      expect(ytServiceFake.deletePlaylistItem).toHaveBeenCalledWith([ytServiceFake.fakeCloudPlaylist[0]]);
+      indexesToDeleteAt.forEach((i) => {
+        expect(deleteSpy.calls.mostRecent().args[0]).toContain(ytServiceFake.fakeCloudPlaylist[i]);
+      });
+
+      expectedItemsToHaveBeenCalledWith = new Array<PlaylistItem>();
+      indexesToDeleteAt = [0, 2, 5, 9];
+      indexesToDeleteAt.forEach((i) => {
+        component.toggleToDelete(i);
+        expectedItemsToHaveBeenCalledWith.push(component.playlistItems[i]);
+      });
+      component.deletePlaylistItems();
+      tick();
+      indexesToDeleteAt.forEach((i) => {
+        expect(deleteSpy.calls.mostRecent().args[0]).toContain(ytServiceFake.fakeCloudPlaylist[i]);
+      });
+
+      expectedItemsToHaveBeenCalledWith = new Array<PlaylistItem>();
+      indexesToDeleteAt = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+      indexesToDeleteAt.forEach((i) => {
+        component.toggleToDelete(i);
+        expectedItemsToHaveBeenCalledWith.push(component.playlistItems[i]);
+      });
+      component.deletePlaylistItems();
+      tick();
+      indexesToDeleteAt.forEach((i) => {
+        expect(deleteSpy.calls.mostRecent().args[0]).toContain(ytServiceFake.fakeCloudPlaylist[i]);
+      });
     }));
 
     it('does not ask service to delete anything if nothing has been marked for deletion', fakeAsync(() => {
-      ytServiceFake.playlistItemListResponseToReturn = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
-      ytServiceFake.playlistItemListResponseToReturn.items = ytServiceFake.fakeCloudPlaylist;
-      component.getPlaylistItems(ytServiceFake.playlistIdStub);
-      tick();
       spyOn(ytServiceFake, 'deletePlaylistItem').and.returnValue(new Observable());
 
       component.deletePlaylistItems();
       tick();
+
       expect(ytServiceFake.deletePlaylistItem).not.toHaveBeenCalled();
     }));
 
     it('updates fields once service completes action', fakeAsync(() => {
       ytServiceFake.playlistId = ytServiceFake.playlistIdStub;
-      ytServiceFake.playlistItemListResponseToReturn = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
-      ytServiceFake.playlistItemListResponseToReturn.items = ytServiceFake.fakeCloudPlaylist;
-      component.getPlaylistItems(ytServiceFake.playlistIdStub);
-      tick();
       spyOn(component, 'getPlaylistItems');
 
-      console.log("~~fake cloud PL: " + JSON.stringify(ytServiceFake.fakeCloudPlaylist));
       component.toggleToDelete(0);
       component.deletePlaylistItems();
       tick();
-      console.log("~~fake cloud PL: " + JSON.stringify(ytServiceFake.fakeCloudPlaylist));
-      expect(component.playlistItemListResponse).toEqual(ytServiceFake.playlistItemListResponseToReturn);
-      expect(component.playlistItems).toEqual(ytServiceFake.playlistItemListResponseToReturn.items);
+
       expect(component.getPlaylistItems).toHaveBeenCalledWith(ytServiceFake.playlistIdStub);
+    }));
+
+    it('allows items to be toggled back and forth before actual deletion', fakeAsync(() => {
+      let indexesToDeleteAt: number[];
+      let indexesToNotDeleteAt: number[];
+      let expectedItemsToHaveBeenCalledWith: PlaylistItem[];
+      let deleteSpy = spyOn(ytServiceFake, 'deletePlaylistItem').and.returnValue(new Observable());
+
+      expectedItemsToHaveBeenCalledWith = new Array<PlaylistItem>();
+      indexesToDeleteAt = [0, 3, 5, 9];
+      indexesToNotDeleteAt = [1, 8];
+      indexesToDeleteAt.forEach((i) => {
+        component.toggleToDelete(i);
+        expectedItemsToHaveBeenCalledWith.push(component.playlistItems[i]);
+      });
+      component.toggleToDelete(0); component.toggleToDelete(0); component.toggleToDelete(0); component.toggleToDelete(0);
+      component.toggleToDelete(1); component.toggleToDelete(1);
+      component.toggleToDelete(9);
+      component.toggleToDelete(8);
+      component.toggleToDelete(9);
+      component.toggleToDelete(8);
+      component.deletePlaylistItems();
+      tick();
+      indexesToDeleteAt.forEach((i) => {
+        expect(deleteSpy.calls.mostRecent().args[0]).toContain(ytServiceFake.fakeCloudPlaylist[i]);
+      });
+      indexesToNotDeleteAt.forEach((i) => {
+        expect(deleteSpy.calls.mostRecent().args[0]).not.toContain(ytServiceFake.fakeCloudPlaylist[i]);
+      });
+    }));
+
+    it('populates error and errorSolution if ytService has a problem', fakeAsync(() => {
+      let errorStub = 'delete_error_stub';
+      let solutionStub = 'delete_solution_stub';
+      spyOn(ytServiceFake, 'deletePlaylistItem').and.returnValue(new Observable((observer) => {
+        observer.error(errorStub);
+      }));
+      spyOn(ytServiceFake, 'giveErrorSolution').and.returnValue(solutionStub);
+      component.toggleToDelete(0); component.toggleToDelete(9);
+      component.deletePlaylistItems();
+      tick();
+      expect(component.error).toEqual(errorStub);
+      expect(component.errorSolution).toEqual(solutionStub);
     }));
   });
 

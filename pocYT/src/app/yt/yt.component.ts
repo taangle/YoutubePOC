@@ -109,7 +109,7 @@ export class YtComponent implements OnInit {
     }
 
     this.ytService.deletePlaylistItem(this.itemsToDelete).subscribe(() => {
-        console.log("success"); //currently, no "loading" indicator so this just prints to the console for each successful delete
+        console.log("yt.component: item successfully deleted"); //currently, no "loading" indicator so this just prints to the console for each successful delete
       }, error => {
         this.errorSolution = this.ytService.giveErrorSolution(error);
         this.error = error;
