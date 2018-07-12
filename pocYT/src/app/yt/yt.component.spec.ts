@@ -340,7 +340,7 @@ fdescribe('YtComponent', () => {
       expect(ytServiceFake.deletePlaylistItem).not.toHaveBeenCalled();
     }));
 
-    xit('updates fields once service reports that it ', fakeAsync(() => {
+    it('updates fields once service completes action', fakeAsync(() => {
       ytServiceFake.playlistId = ytServiceFake.playlistIdStub;
       ytServiceFake.playlistItemListResponseToReturn = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
       ytServiceFake.playlistItemListResponseToReturn.items = ytServiceFake.fakeCloudPlaylist;
@@ -348,15 +348,15 @@ fdescribe('YtComponent', () => {
       tick();
       spyOn(component, 'getPlaylistItems');
 
+      console.log("~~fake cloud PL: " + JSON.stringify(ytServiceFake.fakeCloudPlaylist));
       component.toggleToDelete(0);
       component.deletePlaylistItems();
       tick();
+      console.log("~~fake cloud PL: " + JSON.stringify(ytServiceFake.fakeCloudPlaylist));
       expect(component.playlistItemListResponse).toEqual(ytServiceFake.playlistItemListResponseToReturn);
       expect(component.playlistItems).toEqual(ytServiceFake.playlistItemListResponseToReturn.items);
       expect(component.getPlaylistItems).toHaveBeenCalledWith(ytServiceFake.playlistIdStub);
     }));
-
-    it 
   });
 
   describe('toPrevPage', () => {
