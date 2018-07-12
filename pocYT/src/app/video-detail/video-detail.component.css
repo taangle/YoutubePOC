@@ -1,0 +1,11 @@
+mat-card-content span {
+	font-size: 18px;
+}
+
+pre {
+	white-space: pre-wrap;
+}
+
+#video-title {
+	font-size: 24px;
+}

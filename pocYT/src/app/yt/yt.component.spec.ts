@@ -1,6 +1,14 @@
-﻿import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatCardModule } from '@angular/material/card';
+import { MatListModule } from '@angular/material/list';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from '@angular/material/divider';
 
 import { YtComponent } from './yt.component';
 import { GoogleApiService } from "ng-gapi";
@@ -20,7 +28,17 @@ describe('YtComponent', () => {
     //#region Configure TestBed and get component instance
     TestBed.configureTestingModule({
       declarations: [YtComponent],
-      imports: [RouterTestingModule],
+      imports: [
+        RouterTestingModule,
+        BrowserAnimationsModule,
+        MatButtonModule,
+        MatToolbarModule,
+        MatCardModule,
+        MatListModule,
+        MatInputModule,
+        MatCheckboxModule,
+        MatDividerModule
+      ],
       providers: [
         {
           provide: YtService,

@@ -1,8 +1,12 @@
+<mat-toolbar>
+  Watch Playlist
+</mat-toolbar>
+<br />
+
 <div>
 
-  <h3>Watch</h3>
   <iframe id="embeddedPlaylist" width="560" height="315" [src]="embedUrl | safe" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 </div>
 
-<button (click)="goBack()">Go Back</button>
+<button mat-raised-button color="primary" (click)="goBack()">Go Back</button>
