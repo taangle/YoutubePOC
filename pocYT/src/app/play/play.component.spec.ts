@@ -65,4 +65,30 @@ describe('PlayComponent', () => {
       expect(locationSpy.back).toHaveBeenCalled();
     });
   });
+
+  describe('DOM', () => {
+    it('creates a toolbar with appropriate text', () => {
+      let appElement: HTMLElement = fixture.nativeElement;
+      let toolbar = appElement.querySelector('mat-toolbar');
+
+      expect(toolbar.innerHTML).toContain('Watch Playlist');
+    });
+
+    it('populates iframe with embedUrl and fixed dimensions', () => {
+      let appElement: HTMLElement = fixture.nativeElement;
+      let iframe = appElement.querySelector('iframe');
+
+      expect(iframe.height).toEqual('315');
+      expect(iframe.width).toEqual('560');
+      expect(iframe.src).toEqual('https://www.youtube.com/embed/videoseries?list=initial_stub&autoplay=1&loop=1');
+    });
+
+    it('creates the Go Back button', () => {
+      let appElement: HTMLElement = fixture.nativeElement;
+      let goBackButton = appElement.querySelector('button');
+
+      expect(goBackButton).toBeTruthy();
+      expect(goBackButton.innerHTML).toContain('Go Back');
+    });
+  });
 });
