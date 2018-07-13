@@ -129,11 +129,24 @@ export class FakeYtService extends YtService {
     this.playlistId = playlistId;
     return new Observable((observer) => {
       // console.log("~~get subscription about to be fulfilled: " + this.playlistItemListResponseToReturn.items);
-
+      if (this.itemsHasBeenSet) {
+        this.playlistItemListResponseToReturn.items = this.itemsInPlaylistItemListResponseToReturnSliceOf;
+      }
       observer.next(this.playlistItemListResponseToReturn);
       observer.complete();
     });
   }
+
+  private itemsHasBeenSet: boolean = false;
+  private _itemsInPlaylistItemListResponseToReturnSliceOf : PlaylistItem[];
+  public get itemsInPlaylistItemListResponseToReturnSliceOf() : PlaylistItem[] {
+    return this._itemsInPlaylistItemListResponseToReturnSliceOf.slice();
+  }
+  public set itemsInPlaylistItemListResponseToReturnSliceOf(v : PlaylistItem[]) {
+    this.itemsHasBeenSet = true;
+    this._itemsInPlaylistItemListResponseToReturnSliceOf = v;
+  }
+  
 
   //POST request for new PlaylistItem using its video ID
   addPlaylistItem(videoId: string): Observable<PlaylistItem> {

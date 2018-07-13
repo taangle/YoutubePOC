@@ -17,7 +17,7 @@ import { PlaylistItem } from '../playlistItem';
 import { PlaylistItemListResponse } from '../playlistItemListResponse';
 import { FakeYtService } from 'src/test-files/yt.service.fake';
 
-fdescribe('YtComponent', () => {
+describe('YtComponent', () => {
   let component: YtComponent;
   let fixture: ComponentFixture<YtComponent>;
   let ytServiceFake: FakeYtService;
@@ -314,8 +314,7 @@ fdescribe('YtComponent', () => {
     it('updates fields once the item is added (length == 0)', fakeAsync(() => {
       ytServiceFake.fakeCloudPlaylist = new Array<PlaylistItem>();
       ytServiceFake.playlistItemListResponseToReturn = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
-      ytServiceFake.playlistItemListResponseToReturn.items = ytServiceFake.fakeCloudPlaylist.slice();
-      ytServiceFake.playlistListResponseToReturn.pageInfo = { totalResults: 0, resultsPerPage: 50 };
+      ytServiceFake.itemsInPlaylistItemListResponseToReturnSliceOf = ytServiceFake.fakeCloudPlaylist;
       ytServiceFake.playlistItemToAdd = Object.assign({}, ytServiceFake.fixedFakePlaylistItem);
       component.getPlaylistItems(ytServiceFake.playlistIdStub);
       tick();
