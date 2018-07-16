@@ -142,9 +142,9 @@ export class YtService {
 
       //checks if user is unauthorized and if an access token exists, i.e. user is signed-in
       if (httpOptions.headers.get('Authorization')) {
-        errorSolutionText = 'You\'re either unauthorized to edit this playlist or your access has expired; please sign in with the correct YouTube account.';
+        errorSolutionText = 'Please sign in again with the correct YouTube account.';
       } else {
-        errorSolutionText = 'Please sign in.';
+        errorSolutionText = 'You\'re unauthorized to do this; please sign in.';
       }
 
     } else if (error.match(/(.*)403(.*)/)) {

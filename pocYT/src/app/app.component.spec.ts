@@ -10,6 +10,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
+  let appElement: HTMLElement;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -29,6 +30,8 @@ describe('AppComponent', () => {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.debugElement.componentInstance;
     fixture.detectChanges();
+
+    appElement = fixture.nativeElement;
   }));
 
   it('creates the app', async(() => {
@@ -40,14 +43,12 @@ describe('AppComponent', () => {
   }));
 
   it('creates toolbar and displays title', () => {
-    let appElement: HTMLElement = fixture.nativeElement;
     let toolbar = appElement.querySelector('mat-toolbar');
 
     expect(toolbar.innerHTML).toContain(component.title);
   });
 
   it('creates menu and menu button', () => {
-    let appElement: HTMLElement = fixture.nativeElement;
     let menu = appElement.querySelector('mat-menu');
     let menuButton = appElement.querySelector('button');
 
@@ -56,7 +57,6 @@ describe('AppComponent', () => {
   });
 
   it('creates a router outlet', async(() => {
-    let appElement: HTMLElement = fixture.nativeElement;
     let routerOutlet = appElement.querySelector('router-outlet');
 
     expect(routerOutlet).toBeTruthy();
