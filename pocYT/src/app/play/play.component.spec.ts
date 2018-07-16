@@ -67,15 +67,19 @@ describe('PlayComponent', () => {
   });
 
   describe('DOM', () => {
+    let appElement: HTMLElement;
+
+    beforeEach(() => {
+      appElement = fixture.nativeElement;
+    });
+
     it('creates a toolbar with appropriate text', () => {
-      let appElement: HTMLElement = fixture.nativeElement;
       let toolbar = appElement.querySelector('mat-toolbar');
 
       expect(toolbar.innerHTML).toContain('Watch Playlist');
     });
 
     it('populates iframe with embedUrl and fixed dimensions', () => {
-      let appElement: HTMLElement = fixture.nativeElement;
       let iframe = appElement.querySelector('iframe');
 
       expect(iframe.height).toEqual('315');
@@ -84,11 +88,18 @@ describe('PlayComponent', () => {
     });
 
     it('creates the Go Back button', () => {
-      let appElement: HTMLElement = fixture.nativeElement;
       let goBackButton = appElement.querySelector('button');
 
       expect(goBackButton).toBeTruthy();
       expect(goBackButton.innerHTML).toContain('Go Back');
+    });
+
+    it('triggers goBack when corresponding button is clicked', () => {
+      let goBackButton = appElement.querySelector('button');
+      spyOn(component, 'goBack');
+
+      goBackButton.click();
+      expect(component.goBack).toHaveBeenCalled();
     });
   });
 });

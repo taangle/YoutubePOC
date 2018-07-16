@@ -100,7 +100,6 @@ export class YtComponent implements OnInit {
       //adds playlistItem to itemsToDelete if the corresponding index in shouldDelete is true, then changes element at that index back to false
       if (this.shouldDelete[i]) {
         this.itemsToDelete.push(this.playlistItems[i]);
-        this.shouldDelete[i] = false;
       }
     }
     //returns if user never marked any playlistItems for deletion
@@ -115,6 +114,7 @@ export class YtComponent implements OnInit {
         this.error = error;
       }, () => {
         this.getPlaylistItems(this.ytService.playlistId); //makes another GET call to refresh display after all marked playlistItems are deleted
+        this.shouldDelete = new Array(50).fill(false); //resets deletion flags
       }
     );
   }
