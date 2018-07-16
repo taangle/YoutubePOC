@@ -145,4 +145,10 @@ export class YtComponent implements OnInit {
 
   }
 
+  clearPageToken(): void {
+
+    this.ytService.playlistItemPageToken = '';
+
+  }
+
 }

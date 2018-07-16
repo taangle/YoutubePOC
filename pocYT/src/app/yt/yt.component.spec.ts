@@ -444,4 +444,12 @@ describe('YtComponent', () => {
       expect(component.errorSolution).toBeNull();
     });
   });
+
+  describe('clearPageToken', () => {
+    it('should clear playlistItemPageToken in service', () => {
+      ytServiceFake.playlistItemPageToken = 'token_stub';
+      component.clearPageToken();
+      expect(ytServiceFake.playlistItemPageToken).toEqual('');
+    });
+  });
 });
