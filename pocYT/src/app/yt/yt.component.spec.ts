@@ -186,9 +186,19 @@ fdescribe('YtComponent', () => {
         expect(ytServiceFake.giveErrorSolution).toHaveBeenCalledWith(errorStub);
       }));
 
-      xit('only allows page change once service has completed', () => {
-        // what about when an error occurs?
-      });
+      it('only allows page change once service has completed', fakeAsync(() => {
+        getPlaylistItemsSpy.and.returnValue(new Observable((observer) => {
+          expect(component.allowPageChange).toBeFalsy();
+          observer.next(Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse));
+          expect(component.allowPageChange).toBeFalsy();
+          observer.complete();
+        }));
+        
+        expect(component.allowPageChange).toBeFalsy();
+        component.getPlaylistItems(ytServiceFake.playlistIdStub);
+        tick();
+        expect(component.allowPageChange).toBeTruthy();
+      }));
     });
   
     describe('addPlaylistItem:', () => {
@@ -865,7 +875,7 @@ fdescribe('YtComponent', () => {
           });
         });
 
-        describe('id=videoListFooter:', () => {
+        fdescribe('id=videoListFooter:', () => {
           let getVideoListFooter = function(): Element {
             return content.querySelector('#videoListFooter');
           };
@@ -894,34 +904,6 @@ fdescribe('YtComponent', () => {
             );
           });
 
-          xit('contains next page and prev page buttons', () => {
-            component.playlistItems = [Object.assign({}, ytServiceFake.fixedFakePlaylistItem)];
-            component.playlistItemListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
-            fixture.detectChanges();
-            let buttons: NodeListOf<HTMLButtonElement> = getVideoListFooter().querySelectorAll('button');
-            expect(buttons.length).toBe(3);
-
-            let prevPageButton: HTMLButtonElement = buttons.item(0);
-            expect(prevPageButton.innerHTML.toLowerCase()).toContain('previous page');
-            spyOn(component, 'toPrevPage');
-            prevPageButton.click();
-            expect(component.toPrevPage).not.toHaveBeenCalled();
-            component.playlistItemListResponse.prevPageToken = 'prev_page_token';
-            fixture.detectChanges();
-            prevPageButton.click();
-            expect(component.toPrevPage).toHaveBeenCalled();
-
-            let nextPageButton: HTMLButtonElement = buttons.item(1);
-            expect(nextPageButton.innerHTML.toLowerCase()).toContain('next page');
-            spyOn(component, 'toNextPage');
-            nextPageButton.click();
-            expect(component.toNextPage).not.toHaveBeenCalled();
-            component.playlistItemListResponse.nextPageToken = 'next_page_token';
-            fixture.detectChanges();
-            nextPageButton.click();
-            expect(component.toNextPage).toHaveBeenCalled();
-          });
-
           it('contains field for video id and button to add video', () => {
             component.playlistItems = [Object.assign({}, ytServiceFake.fixedFakePlaylistItem)];
             component.playlistItemListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
@@ -948,6 +930,76 @@ fdescribe('YtComponent', () => {
 
             addVideoButton.click();
             expect(component.addPlaylistItem).toHaveBeenCalledWith('diff_video_id_stub');
+          });
+
+          describe('next page button:', () => {
+            let nextPageButton: HTMLButtonElement;
+
+            beforeEach(() => {
+              component.playlistItems = [Object.assign({}, ytServiceFake.fixedFakePlaylistItem)];
+              component.playlistItemListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
+              fixture.detectChanges();
+              nextPageButton = getVideoListFooter().querySelectorAll('button').item(1);
+            });
+
+            it('calls toNextPage when clicked, if nextPageToken exists & allowPageChange is true', () => {
+              expect(nextPageButton.innerHTML.toLowerCase()).toContain('next page');
+              spyOn(component, 'toNextPage');
+
+              nextPageButton.click();
+              expect(component.toNextPage).not.toHaveBeenCalled();
+
+              component.allowPageChange = true;
+              fixture.detectChanges();
+              nextPageButton.click();
+              expect(component.toNextPage).not.toHaveBeenCalled();
+
+              component.allowPageChange = false;
+              component.playlistItemListResponse.nextPageToken = 'next_page_token';
+              fixture.detectChanges();
+              nextPageButton.click();
+              expect(component.toNextPage).not.toHaveBeenCalled();
+
+              component.allowPageChange = true;
+              fixture.detectChanges();
+              nextPageButton.click();
+              expect(component.toNextPage).toHaveBeenCalled(); 
+            });
+          });
+
+          describe('prev page button', () => {
+            let prevPageButton: HTMLButtonElement;
+            
+            beforeEach(() => {
+              component.playlistItems = [Object.assign({}, ytServiceFake.fixedFakePlaylistItem)];
+              component.playlistItemListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
+              fixture.detectChanges();
+              prevPageButton = getVideoListFooter().querySelectorAll('button').item(0);
+            });
+
+            it('calls toPrevPage when clicked, if prevPageToken exists & allowPageChange is true', () => {
+              expect(prevPageButton.innerHTML.toLowerCase()).toContain('previous page');
+              spyOn(component, 'toPrevPage');
+
+              prevPageButton.click();
+              expect(component.toPrevPage).not.toHaveBeenCalled();
+
+              component.allowPageChange = true;
+              fixture.detectChanges();
+              prevPageButton.click();
+              expect(component.toPrevPage).not.toHaveBeenCalled();
+
+              component.allowPageChange = false;
+              component.playlistItemListResponse.prevPageToken = 'prev_page_token';
+              fixture.detectChanges();
+              prevPageButton.click();
+              expect(component.toPrevPage).not.toHaveBeenCalled();
+
+              component.allowPageChange = true;
+              fixture.detectChanges();
+              prevPageButton.click();
+              expect(component.toPrevPage).toHaveBeenCalled();
+            });
           });
         });
       });
