@@ -32,7 +32,7 @@ export class AuthService {
   public signIn(): void {
 
     this.googleAuth.getAuth().subscribe((auth) => {
-      auth.signIn().then(res => this.signInSuccessHandler(res));
+      auth.signIn().then(res => this.signInSuccessHandler(res), error => this.handleAuthError(error));
     }, error => this.handleAuthError(error));
 
   }
@@ -40,7 +40,7 @@ export class AuthService {
   public signOut(): void {
 
     this.googleAuth.getAuth().subscribe((auth) => {
-      auth.signOut().then(() => this.signOutSuccessHandler());
+      auth.signOut().then(() => this.signOutSuccessHandler(), error => this.handleAuthError(error));
     }, error => this.handleAuthError(error));
 
   }

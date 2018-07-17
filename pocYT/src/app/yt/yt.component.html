@@ -8,16 +8,23 @@
       <input matInput placeholder="Playlist ID" #playlistId />
     </mat-form-field>&nbsp;
     <!--displays playlist based on playlist ID and clears input-->
-    <button mat-stroked-button (click)="clearErrors(); getPlaylistItems(playlistId.value); playlistId.value=''">SHOW PLAYLIST</button>
+    <button mat-stroked-button (click)="clearErrors(); clearPageToken(); getPlaylistItems(playlistId.value); playlistId.value=''">SHOW PLAYLIST</button>
   </mat-toolbar-row>
 </mat-toolbar>
+<br />
 
-<div *ngIf="error">
-  <pre>{{error}}</pre>
-</div>
-<div *ngIf="errorSolution">
-  <i>{{errorSolution}}</i>
-</div>
+<mat-card *ngIf="error&&errorSolution">
+
+  <mat-card-header>
+    <mat-card-title><b>ERROR</b></mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <pre>{{error}}</pre>
+    <i>{{errorSolution}}</i>
+  </mat-card-content>
+
+</mat-card>
 <br />
 
 <mat-card>

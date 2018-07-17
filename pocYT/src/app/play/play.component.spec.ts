@@ -65,4 +65,41 @@ describe('PlayComponent', () => {
       expect(locationSpy.back).toHaveBeenCalled();
     });
   });
+
+  describe('DOM', () => {
+    let appElement: HTMLElement;
+
+    beforeEach(() => {
+      appElement = fixture.nativeElement;
+    });
+
+    it('creates a toolbar with appropriate text', () => {
+      let toolbar = appElement.querySelector('mat-toolbar');
+
+      expect(toolbar.innerHTML).toContain('Watch Playlist');
+    });
+
+    it('populates iframe with embedUrl and fixed dimensions', () => {
+      let iframe = appElement.querySelector('iframe');
+
+      expect(iframe.height).toEqual('315');
+      expect(iframe.width).toEqual('560');
+      expect(iframe.src).toEqual('https://www.youtube.com/embed/videoseries?list=initial_stub&autoplay=1&loop=1');
+    });
+
+    it('creates the Go Back button', () => {
+      let goBackButton = appElement.querySelector('button');
+
+      expect(goBackButton).toBeTruthy();
+      expect(goBackButton.innerHTML).toContain('Go Back');
+    });
+
+    it('triggers goBack when corresponding button is clicked', () => {
+      let goBackButton = appElement.querySelector('button');
+      spyOn(component, 'goBack');
+
+      goBackButton.click();
+      expect(component.goBack).toHaveBeenCalled();
+    });
+  });
 });

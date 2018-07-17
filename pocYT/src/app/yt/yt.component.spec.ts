@@ -18,7 +18,7 @@ import { PlaylistItemListResponse } from '../playlistItemListResponse';
 import { FakeYtService } from 'src/test-files/yt.service.fake';
 import { DebugElement } from '@angular/core';
 
-describe('YtComponent', () => {
+fdescribe('YtComponent', () => {
   let component: YtComponent;
   let fixture: ComponentFixture<YtComponent>;
   let ytServiceFake: FakeYtService;
@@ -369,43 +369,50 @@ describe('YtComponent', () => {
   
       it('asks service to delete array of PlaylistItems that have been toggled to delete', fakeAsync(() => {
         let indexesToDeleteAt: number[];
-        let expectedItemsToHaveBeenCalledWith: PlaylistItem[];
-        let deleteSpy = spyOn(ytServiceFake, 'deletePlaylistItem').and.returnValue(new Observable());
+        let deleteSpy = spyOn(ytServiceFake, 'deletePlaylistItem').and.returnValue(new Observable((observer) => {
+          observer.next();
+          observer.complete();
+        }));
+        let mostRecentList = function(): PlaylistItem[] {
+          return deleteSpy.calls.mostRecent().args[0];
+        }
   
-        expectedItemsToHaveBeenCalledWith = new Array<PlaylistItem>();
         indexesToDeleteAt = [0];
         indexesToDeleteAt.forEach((i) => {
           component.toggleToDelete(i);
-          expectedItemsToHaveBeenCalledWith.push(component.playlistItems[i]);
         });
         component.deletePlaylistItems();
         tick();
         indexesToDeleteAt.forEach((i) => {
-          expect(deleteSpy.calls.mostRecent().args[0]).toContain(ytServiceFake.fakeCloudPlaylist[i]);
+          expect(mostRecentList()).toContain(ytServiceFake.fakeCloudPlaylist[i]);
         });
   
-        expectedItemsToHaveBeenCalledWith = new Array<PlaylistItem>();
         indexesToDeleteAt = [0, 2, 5, 9];
         indexesToDeleteAt.forEach((i) => {
           component.toggleToDelete(i);
-          expectedItemsToHaveBeenCalledWith.push(component.playlistItems[i]);
         });
         component.deletePlaylistItems();
         tick();
+        console.log('~~ids: ')
+        mostRecentList().forEach(element => {
+          console.log(element.id);
+        });
         indexesToDeleteAt.forEach((i) => {
-          expect(deleteSpy.calls.mostRecent().args[0]).toContain(ytServiceFake.fakeCloudPlaylist[i]);
+          expect(mostRecentList()).toContain(ytServiceFake.fakeCloudPlaylist[i]);
         });
   
-        expectedItemsToHaveBeenCalledWith = new Array<PlaylistItem>();
         indexesToDeleteAt = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
         indexesToDeleteAt.forEach((i) => {
           component.toggleToDelete(i);
-          expectedItemsToHaveBeenCalledWith.push(component.playlistItems[i]);
         });
         component.deletePlaylistItems();
         tick();
+        console.log('~~ids: ')
+        mostRecentList().forEach(element => {
+          console.log(element.id);
+        });
         indexesToDeleteAt.forEach((i) => {
-          expect(deleteSpy.calls.mostRecent().args[0]).toContain(ytServiceFake.fakeCloudPlaylist[i]);
+          expect(mostRecentList()).toContain(ytServiceFake.fakeCloudPlaylist[i]);
         });
       }));
   
@@ -467,7 +474,7 @@ describe('YtComponent', () => {
         });
       }));
   
-      xit('*WAITING FOR FIX*populates error and errorSolution if ytService has a problem, does not reset toggle status', fakeAsync(() => {
+      it('populates error and errorSolution if ytService has a problem, does not reset toggle status', fakeAsync(() => {
         let errorStub = 'delete_error_stub';
         let solutionStub = 'delete_solution_stub';
         let deleteSpy = spyOn(ytServiceFake, 'deletePlaylistItem').and.returnValue(new Observable((observer) => {
@@ -568,6 +575,14 @@ describe('YtComponent', () => {
         component.clearErrors();
         expect(component.error).toBeNull();
         expect(component.errorSolution).toBeNull();
+      });
+    });
+
+    describe('clearPageToken:', () => {
+      it('should clear playlistItemPageToken in service', () => {
+        ytServiceFake.playlistItemPageToken = 'token_stub';
+        component.clearPageToken();
+        expect(ytServiceFake.playlistItemPageToken).toEqual('');
       });
     });
   });
