@@ -185,6 +185,10 @@ fdescribe('YtComponent', () => {
         expect(component.errorSolution).toEqual(solutionStub);
         expect(ytServiceFake.giveErrorSolution).toHaveBeenCalledWith(errorStub);
       }));
+
+      xit('only allows page change once service has completed', () => {
+        // what about when an error occurs?
+      });
     });
   
     describe('addPlaylistItem:', () => {
@@ -393,10 +397,6 @@ fdescribe('YtComponent', () => {
         });
         component.deletePlaylistItems();
         tick();
-        console.log('~~ids: ')
-        mostRecentList().forEach(element => {
-          console.log(element.id);
-        });
         indexesToDeleteAt.forEach((i) => {
           expect(mostRecentList()).toContain(ytServiceFake.fakeCloudPlaylist[i]);
         });
@@ -407,10 +407,6 @@ fdescribe('YtComponent', () => {
         });
         component.deletePlaylistItems();
         tick();
-        console.log('~~ids: ')
-        mostRecentList().forEach(element => {
-          console.log(element.id);
-        });
         indexesToDeleteAt.forEach((i) => {
           expect(mostRecentList()).toContain(ytServiceFake.fakeCloudPlaylist[i]);
         });
@@ -529,13 +525,43 @@ fdescribe('YtComponent', () => {
   
       it('populates its fields from service after setting the page token', fakeAsync(() => {
         ytServiceFake.fakeCloudPlaylist = new Array<PlaylistItem>();
-        ytServiceFake.playlistItemListResponseToReturn.items = ytServiceFake.fakeCloudPlaylist.slice();
+        ytServiceFake.playlistItemListResponseToReturn.items = ytServiceFake.fakeCloudPlaylist.slice(0, 50);
         component.getPlaylistItems(ytServiceFake.playlistIdStub);
         tick();
         component.toPrevPage();
         tick();
         expect(component.playlistItemListResponse).toEqual(ytServiceFake.playlistItemListResponseToReturn);
         expect(component.playlistItems).toEqual(ytServiceFake.fakeCloudPlaylist);
+      }));
+
+      it('resets items to be deleted', fakeAsync(() => {
+        ytServiceFake.fakeCloudPlaylist = new Array<PlaylistItem>(100);
+        for (let i = 0; i < ytServiceFake.fakeCloudPlaylist.length; i++) {
+          ytServiceFake.fakeCloudPlaylist[i] = Object.assign({}, ytServiceFake.fixedFakePlaylistItem);
+        }
+        ytServiceFake.playlistItemListResponseToReturn.items = ytServiceFake.fakeCloudPlaylist.slice(50, 100);
+        component.getPlaylistItems(ytServiceFake.playlistIdStub);
+        tick();
+
+        let indexesToToggleAt: number[] = [0, 49, 2, 5, 35];
+        indexesToToggleAt.forEach((index) => {
+          component.toggleToDelete(index);
+        });
+        ytServiceFake.playlistItemListResponseToReturn.items = ytServiceFake.fakeCloudPlaylist.slice(0, 50);
+        component.toPrevPage();
+        tick();
+
+        spyOn(ytServiceFake, 'deletePlaylistItem');
+        component.deletePlaylistItems();
+        expect(ytServiceFake.deletePlaylistItem).not.toHaveBeenCalled();
+      }));
+
+      it('sets allowPageChange to false', fakeAsync(() => {
+        component.allowPageChange = true;
+        component.playlistItemListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
+        spyOn(component, 'getPlaylistItems');
+        component.toPrevPage();
+        expect(component.allowPageChange).toBeFalsy();
       }));
     });
   
@@ -565,6 +591,36 @@ fdescribe('YtComponent', () => {
         tick();
         expect(component.playlistItemListResponse).toEqual(ytServiceFake.playlistItemListResponseToReturn);
         expect(component.playlistItems).toEqual(ytServiceFake.fakeCloudPlaylist);
+      }));
+
+      it('resets items to be deleted', fakeAsync(() => {
+        ytServiceFake.fakeCloudPlaylist = new Array<PlaylistItem>(100);
+        for (let i = 0; i < ytServiceFake.fakeCloudPlaylist.length; i++) {
+          ytServiceFake.fakeCloudPlaylist[i] = Object.assign({}, ytServiceFake.fixedFakePlaylistItem);
+        }
+        ytServiceFake.playlistItemListResponseToReturn.items = ytServiceFake.fakeCloudPlaylist.slice(0, 50);
+        component.getPlaylistItems(ytServiceFake.playlistIdStub);
+        tick();
+
+        let indexesToToggleAt: number[] = [0, 49, 2, 5, 35];
+        indexesToToggleAt.forEach((index) => {
+          component.toggleToDelete(index);
+        });
+        ytServiceFake.playlistItemListResponseToReturn.items = ytServiceFake.fakeCloudPlaylist.slice(50, 100);
+        component.toNextPage();
+        tick();
+
+        spyOn(ytServiceFake, 'deletePlaylistItem');
+        component.deletePlaylistItems();
+        expect(ytServiceFake.deletePlaylistItem).not.toHaveBeenCalled();
+      }));
+
+      it('sets allowPageChange to false', fakeAsync(() => {
+        component.allowPageChange = true;
+        component.playlistItemListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
+        spyOn(component, 'getPlaylistItems');
+        component.toNextPage();
+        expect(component.allowPageChange).toBeFalsy();
       }));
     });
   
@@ -612,38 +668,95 @@ fdescribe('YtComponent', () => {
 
       it('contains field for playlist ID in second row', () => {
         let secondRow: Element = toolbarRows.item(1);
-        expect(secondRow.querySelector('mat-form-field')).toBeTruthy();
+        expect(secondRow.querySelector('mat-form-field').querySelector('input')).toBeTruthy();
       });
 
       it('contains button to show playlist in second row', () => {
-        let secondRow: Element = toolbarRows.item(1);
-        let button: Element = secondRow.querySelector('button');
-        expect(button).toBeTruthy();
-        expect(button.innerHTML.toLowerCase()).toContain('SHOW PLAYLIST'.toLowerCase());
+        let playlistIdStub: string = 'pl_id_stub';
+        let button: HTMLButtonElement = toolbarRows.item(1).querySelector('button');
+        let input: HTMLInputElement = toolbarRows.item(1).querySelector('input');
+
+        expect(input.getAttribute('placeholder').toLowerCase()).toContain('playlist id');
+        expect(button.innerHTML.toLowerCase()).toContain('show playlist');
+
+        input.value = playlistIdStub;
+        input.dispatchEvent(new Event('input'));
+        fixture.detectChanges();
       });
     });
 
-    xit('*WAITING FOR CHANGE*contains error message in div if class has an error', () => {
-      let divs: NodeListOf<Element> = rootElement.querySelectorAll('div');
-      console.log("~~~: " + JSON.stringify(divs));
+    describe('id=ytComponentErrorCard:', () => {
+      let getErrorCard = function(): Element {
+        return rootElement.querySelector('#ytComponentErrorCard');
+      }
+
+      it('only exists if error and errorSolution exist', () => {
+        component.error = undefined;
+        component.errorSolution = undefined;
+        fixture.detectChanges();
+        expect(getErrorCard()).toBeFalsy();
+
+        component.error = 'error';
+        component.errorSolution = 'solution';
+        fixture.detectChanges();
+        expect(getErrorCard()).toBeTruthy();
+
+        component.error = undefined;
+        component.errorSolution = undefined;
+        fixture.detectChanges();
+        expect(getErrorCard()).toBeFalsy();
+      });
+
+      it('contains header', () => {
+        component.error = 'error';
+        component.errorSolution = 'solution';
+        fixture.detectChanges();
+
+        let header: Element = getErrorCard().querySelector('mat-card-header');
+        expect(header.innerHTML.toLowerCase()).toContain('error');
+      });
+
+      it('contains content with error and error solution', () => {
+        component.error = 'error';
+        component.errorSolution = 'solution';
+        fixture.detectChanges();
+
+        let content: Element = getErrorCard().querySelector('mat-card-content');
+        expect(content.innerHTML.toLowerCase()).toContain(component.error);
+        expect(content.innerHTML.toLowerCase()).toContain(component.errorSolution);
+
+        component.error = 'different error this time';
+        component.errorSolution = 'different solution this time';
+        fixture.detectChanges();
+
+        expect(content.innerHTML.toLowerCase()).toContain(component.error);
+        expect(content.innerHTML.toLowerCase()).toContain(component.errorSolution);
+
+        component.error = '213asdfsa!@#$#%^$%*';
+        component.errorSolution = '(*^%$#@$%^hgfgh87654)';
+        fixture.detectChanges();
+
+        expect(content.innerHTML.toLowerCase()).toContain(component.error);
+        expect(content.innerHTML.toLowerCase()).toContain(component.errorSolution);
+      });
     });
 
-    describe('mat-card:', () => {
-      let matCard: Element;
+    describe('id=mainYtComponentCard:', () => {
+      let mainCard: Element;
 
       beforeEach(() => {
-        matCard = rootElement.querySelector('mat-card');
+        mainCard = rootElement.querySelector('#mainYtComponentCard');
       })
 
       it('contains header with total results if playlistItems exists', () => {
         fixture.detectChanges();
-        expect(matCard.querySelector('mat-card-header')).toBeFalsy();
+        expect(mainCard.querySelector('mat-card-header')).toBeFalsy();
         component.playlistItems = [Object.assign({}, ytServiceFake.fixedFakePlaylistItem)];
         component.playlistItemListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
         component.playlistItemListResponse.pageInfo.totalResults = 70;
         fixture.detectChanges();
-        expect(matCard.querySelector('mat-card-header')).toBeTruthy();
-        expect(matCard.querySelector('mat-card-header').innerHTML.toLocaleLowerCase()).toContain(
+        expect(mainCard.querySelector('mat-card-header')).toBeTruthy();
+        expect(mainCard.querySelector('mat-card-header').innerHTML.toLocaleLowerCase()).toContain(
           new String('total results: ' + component.playlistItemListResponse.pageInfo.totalResults).toLocaleLowerCase()
         );
       });
@@ -652,7 +765,7 @@ fdescribe('YtComponent', () => {
         let content: Element;
 
         beforeEach(() => {
-          content = matCard.querySelector('mat-card-content');
+          content = mainCard.querySelector('mat-card-content');
         });
 
         it('exists', () => {
@@ -781,7 +894,7 @@ fdescribe('YtComponent', () => {
             );
           });
 
-          it('contains next page and prev page buttons', () => {
+          xit('contains next page and prev page buttons', () => {
             component.playlistItems = [Object.assign({}, ytServiceFake.fixedFakePlaylistItem)];
             component.playlistItemListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
             fixture.detectChanges();
