@@ -18,7 +18,7 @@ import { PlaylistItemListResponse } from '../playlistItemListResponse';
 import { FakeYtService } from 'src/test-files/yt.service.fake';
 import { DebugElement } from '@angular/core';
 
-fdescribe('YtComponent', () => {
+describe('YtComponent', () => {
   let component: YtComponent;
   let fixture: ComponentFixture<YtComponent>;
   let ytServiceFake: FakeYtService;
@@ -875,7 +875,7 @@ fdescribe('YtComponent', () => {
           });
         });
 
-        fdescribe('id=videoListFooter:', () => {
+        describe('id=videoListFooter:', () => {
           let getVideoListFooter = function(): Element {
             return content.querySelector('#videoListFooter');
           };
