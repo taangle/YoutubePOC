@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs';
-import { Location } from '@angular/common';
+import { Location, DatePipe, formatDate } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -150,5 +150,173 @@ describe('VideoDetailComponent', () => {
       expect(ytServiceFake.playlistId).toEqual(differentPlaylistIdStub);
       expect(component.goBack).toHaveBeenCalled();
     }));
+  });
+
+  describe('DOM', () => {
+    let appElement: HTMLElement;
+    let fakePlaylistItemWithDate: PlaylistItem;
+
+    beforeEach(() => {
+      appElement = fixture.nativeElement;
+      fakePlaylistItemWithDate = ytServiceFake.fixedFakePlaylistItem;
+      fakePlaylistItemWithDate.snippet.publishedAt = '2013-10-18T14:55:24.000Z'; //DatePipe will throw an error if this field can't be converted to date
+    });
+
+    it('creates toolbar with appropriate text', () => {
+      let toolbar = appElement.querySelector('mat-toolbar');
+
+      expect(toolbar.innerHTML).toContain('Video Detail');
+    });
+
+    it('does not initially generate cards', () => {
+      let noCards = appElement.querySelectorAll('mat-card');
+
+      expect(noCards.length).toEqual(0);
+    });
+
+    it('creates card with header, content if item exists', () => {
+      component.item = fakePlaylistItemWithDate;
+      fixture.detectChanges();
+
+      let detailCard = appElement.querySelector('mat-card');
+      let detailCardHeader = detailCard.querySelector('mat-card-header');
+      let detailCardContent = detailCard.querySelector('mat-card-content');
+
+      expect(detailCard).toBeTruthy();
+      expect(detailCardHeader).toBeTruthy();
+      expect(detailCardContent).toBeTruthy();
+    });
+
+    it('creates card with header with video title', () => {
+      component.item = fakePlaylistItemWithDate;
+      fixture.detectChanges();
+
+      let detailCardHeader = appElement.querySelector('mat-card').querySelector('mat-card-header');
+      let detailCardHeaderTitle = detailCardHeader.querySelector('mat-card-title');
+
+      expect(detailCardHeaderTitle.innerHTML).toContain(component.item.snippet.title);
+    });
+
+    it('creates card with content containing video details and page description', () => {
+      component.item = fakePlaylistItemWithDate;
+      fixture.detectChanges();
+
+      let detailCardContent = appElement.querySelector('mat-card').querySelector('mat-card-content');
+      let detailCardContentDetails = detailCardContent.querySelectorAll('p');
+      let videoDescription = detailCardContent.querySelector('pre');
+      let videoDescriptionLabel = detailCardContentDetails[0];
+      let videoId = detailCardContentDetails[1];
+      let playlistItemId = detailCardContentDetails[2];
+      let datePublished = detailCardContentDetails[3];
+      let playlistAuthor = detailCardContentDetails[4];
+      let pageDescription = detailCardContentDetails[5];
+
+      expect(videoDescription.innerHTML).toContain(component.item.snippet.description);
+      expect(videoDescriptionLabel.innerHTML).toContain('Description:');
+      expect(videoId.innerHTML).toContain('Video ID:');
+      expect(videoId.innerHTML).toContain(component.item.snippet.resourceId.videoId);
+      expect(playlistItemId.innerHTML).toContain('Unique Item ID:');
+      expect(playlistItemId.innerHTML).toContain(component.item.id);
+      expect(datePublished.innerHTML).toContain('Added to Playlist on:');
+      expect(datePublished.innerHTML).toContain(formatDate(component.item.snippet.publishedAt, 'EEEE, MMMM d, y, h:mm:ss a (zzzz)', 'en-US'));
+      expect(playlistAuthor.innerHTML).toContain('Playlist by:');
+      expect(playlistAuthor.innerHTML).toContain(component.item.snippet.channelTitle);
+      expect(playlistAuthor.innerHTML).toContain(component.item.snippet.channelId);
+      expect(pageDescription.innerHTML).toContain('If you\'re signed-in');
+    });
+
+    it('creates card with input for updating playlist item position', () => {
+      component.item = fakePlaylistItemWithDate;
+      fixture.detectChanges();
+
+      let detailCardContent = appElement.querySelector('mat-card').querySelector('mat-card-content');
+      let detailCardContentForm = detailCardContent.querySelector('mat-form-field');
+      let detailCardContentFormInput = detailCardContentForm.querySelector('input');
+
+      expect(detailCardContentForm).toBeTruthy();
+      expect(detailCardContentFormInput.value).toEqual(`${component.item.snippet.position + 1}`);
+      expect(detailCardContentFormInput.placeholder).toEqual('New Position');
+    });
+
+    it('updates item\'s position when input value is changed', () => {
+      component.item = fakePlaylistItemWithDate;
+      fixture.detectChanges();
+
+      let detailCardContent = appElement.querySelector('mat-card').querySelector('mat-card-content');
+      let detailCardContentInput = detailCardContent.querySelector('input');
+      let newPosition = '9';
+
+      detailCardContentInput.value = newPosition;
+      detailCardContentInput.dispatchEvent(new Event('input')); //[value] won't change without (input) being triggered
+      fixture.detectChanges();
+      expect(component.item.snippet.position).toEqual(+newPosition - 1);
+    });
+
+    it('creates Go Back and Save buttons', () => {
+      let buttons = appElement.querySelectorAll('button');
+      let goBackButton = buttons[0];
+      let saveButton = buttons[1];
+
+      expect(goBackButton.innerHTML).toContain('Go Back');
+      expect(saveButton.innerHTML).toContain('SAVE');
+      expect(saveButton.disabled).toBeTruthy();
+    });
+
+    it('triggers goBack when corresponding button is clicked', () => {
+      let goBackButton = appElement.querySelectorAll('button')[0];
+      spyOn(component, 'goBack');
+
+      goBackButton.click();
+      expect(component.goBack).toHaveBeenCalled();
+    });
+
+    it('calls savePlaylistItem when Save button is clicked while item exists', () => {
+      component.item = fakePlaylistItemWithDate;
+      fixture.detectChanges();
+
+      let saveButton = appElement.querySelectorAll('button')[1];
+      spyOn(component, 'savePlaylistItem');
+
+      saveButton.click();
+      expect(component.savePlaylistItem).toHaveBeenCalled();
+    });
+
+    it('creates card with header, content when error and errorSolution exist', () => {
+      component.error = '404';
+      component.errorSolution = 'magic';
+      fixture.detectChanges();
+
+      let errorCard = appElement.querySelector('mat-card');
+      let errorCardHeader = errorCard.querySelector('mat-card-header');
+      let errorCardContent = errorCard.querySelector('mat-card-content');
+
+      expect(errorCard).toBeTruthy();
+      expect(errorCardHeader).toBeTruthy();
+      expect(errorCardContent).toBeTruthy();
+    });
+
+    it('creates card with header with error message', () => {
+      component.error = '404';
+      component.errorSolution = 'magic';
+      fixture.detectChanges();
+
+      let errorCardHeader = appElement.querySelector('mat-card').querySelector('mat-card-header');
+      let errorCardHeaderTitle = errorCardHeader.querySelector('mat-card-title');
+
+      expect(errorCardHeaderTitle.innerHTML).toContain('ERROR');
+    });
+
+    it('creates card with content containing error and its solution', () => {
+      component.error = '404';
+      component.errorSolution = 'magic';
+      fixture.detectChanges();
+
+      let errorCardContent = appElement.querySelector('mat-card').querySelector('mat-card-content');
+      let errorCardContentError = errorCardContent.querySelector('pre');
+      let errorCardContentSolution = errorCardContent.querySelector('i');
+
+      expect(errorCardContentError.innerHTML).toContain(component.error);
+      expect(errorCardContentSolution.innerHTML).toContain(component.errorSolution);
+    });
   });
 });
