@@ -30,7 +30,7 @@
     You can paste a YouTube playlist ID (or any URL that contains a playlist ID) above to display the contents of the playlist. From here, you can choose to watch the playlist immediately or view/edit the details of a video.
 
     <!--only displays if playlist has at least one video in it-->
-    <div *ngIf="playlistItems&&playlistItems.length>0">
+    <div id="videoListContainer" *ngIf="playlistItems&&playlistItems.length>0">
       <br />
       <!--routes user to embedded playlist view based on retrieved playlist ID associated with first video-->
       <a routerLink="/play/{{playlistItems[0].snippet.playlistId}}"><button mat-mini-fab color="primary">&#9658;</button></a>&nbsp;
@@ -48,7 +48,7 @@
     </div>
     <br />
 
-    <div *ngIf="playlistItems">
+    <div id="videoListFooter" *ngIf="playlistItems">
       <!--advances to previous/next page in playlist, if possible-->
       <button mat-stroked-button (click)="toPrevPage()" [disabled]="!playlistItemListResponse.prevPageToken">Previous Page</button>
       <button mat-stroked-button (click)="toNextPage()" [disabled]="!playlistItemListResponse.nextPageToken">Next Page</button>
