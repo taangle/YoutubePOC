@@ -60,4 +60,8 @@ export class VideoDetailComponent implements OnInit {
 
   }
 
+  isNaN(num: number): boolean {
+    return isNaN(num);
+  }
+
 }
