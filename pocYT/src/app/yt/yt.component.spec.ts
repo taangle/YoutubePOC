@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+﻿import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -602,7 +602,7 @@ describe('YtComponent', () => {
         expect(component.playlistItemListResponse).toEqual(ytServiceFake.playlistItemListResponseToReturn);
         expect(component.playlistItems).toEqual(ytServiceFake.fakeCloudPlaylist);
       }));
-
+      
       it('resets items to be deleted', fakeAsync(() => {
         ytServiceFake.fakeCloudPlaylist = new Array<PlaylistItem>(100);
         for (let i = 0; i < ytServiceFake.fakeCloudPlaylist.length; i++) {
