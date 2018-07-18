@@ -602,7 +602,7 @@ describe('YtComponent', () => {
         expect(component.playlistItemListResponse).toEqual(ytServiceFake.playlistItemListResponseToReturn);
         expect(component.playlistItems).toEqual(ytServiceFake.fakeCloudPlaylist);
       }));
-
+      
       it('resets items to be deleted', fakeAsync(() => {
         ytServiceFake.fakeCloudPlaylist = new Array<PlaylistItem>(100);
         for (let i = 0; i < ytServiceFake.fakeCloudPlaylist.length; i++) {
@@ -703,6 +703,25 @@ describe('YtComponent', () => {
         expect(component.getPlaylistItems).toHaveBeenCalledTimes(1);
         button.click();
         expect(component.getPlaylistItems).toHaveBeenCalledWith('diff_playlist_id_stub');
+      });
+
+      it('calls methods when playlist ID form is selected and Enter key is pressed', () => {
+        fixture.detectChanges();
+
+        let secondRow = toolbarRows[1];
+        let secondRowForm = secondRow.querySelector('mat-form-field');
+        let secondRowInput = secondRowForm.querySelector('input');
+        let newPlaylistId = 'test';
+        spyOn(component, 'clearErrors');
+        spyOn(component, 'clearPageToken');
+        spyOn(component, 'getPlaylistItems');
+
+        secondRowInput.value = newPlaylistId;
+        secondRowForm.dispatchEvent(new KeyboardEvent('keyup', { 'key': 'Enter' }));
+        expect(component.clearErrors).toHaveBeenCalled();
+        expect(component.clearPageToken).toHaveBeenCalled();
+        expect(component.getPlaylistItems).toHaveBeenCalledWith('test');
+        expect(secondRowInput.value).toEqual('');
       });
     });
 
@@ -941,6 +960,25 @@ describe('YtComponent', () => {
 
             addVideoButton.click();
             expect(component.addPlaylistItem).toHaveBeenCalledWith('diff_video_id_stub');
+          });
+
+          it('calls methods and clears input field when video ID form is selected and Enter key is pressed', () => {
+            component.playlistItemListResponse = ytServiceFake.fixedFakePlaylistItemListResponse;
+            component.playlistItems = component.playlistItemListResponse.items;
+            fixture.detectChanges();
+
+            let playlistCardContent = rootElement.querySelector('mat-card').querySelector('mat-card-content');
+            let playlistCardContentForm = playlistCardContent.querySelector('mat-form-field');
+            let playlistCardContentInput = playlistCardContentForm.querySelector('input');
+            let newVideoId = 'test';
+            spyOn(component, 'clearErrors');
+            spyOn(component, 'addPlaylistItem');
+
+            playlistCardContentInput.value = newVideoId;
+            playlistCardContentForm.dispatchEvent(new KeyboardEvent('keyup', { 'key': 'Enter' }));
+            expect(component.clearErrors).toHaveBeenCalled();
+            expect(component.addPlaylistItem).toHaveBeenCalledWith(newVideoId);
+            expect(playlistCardContentInput.value).toEqual('');
           });
 
           describe('next page button:', () => {
