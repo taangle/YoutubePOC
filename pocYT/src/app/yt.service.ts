@@ -142,14 +142,14 @@ export class YtService {
 
       //checks if user is unauthorized and if an access token exists, i.e. user is signed-in
       if (httpOptions.headers.get('Authorization')) {
-        errorSolutionText = 'Please sign in again with the correct YouTube account.';
+        errorSolutionText = 'Please sign in again.';
       } else {
         errorSolutionText = 'You\'re unauthorized to do this; please sign in.';
       }
 
     } else if (error.match(/(.*)403(.*)/)) {
 
-      errorSolutionText = 'I don\'t know what you\'re trying to do, but you can\'t do it.'; //forbidden
+      errorSolutionText = 'You\'re not allowed to do this.'; //forbidden
 
     } else if (error.match(/(.*)404(.*)/)) {
 

@@ -252,6 +252,18 @@ describe('VideoDetailComponent', () => {
       expect(component.item.snippet.position).toEqual(+newPosition - 1);
     });
 
+    it('calls savePlaylistItem when form is selected and Enter key is pressed', () => {
+      component.item = fakePlaylistItemWithDate;
+      fixture.detectChanges();
+
+      let detailCardContent = appElement.querySelector('mat-card').querySelector('mat-card-content');
+      let detailCardContentForm = detailCardContent.querySelector('mat-form-field');
+      spyOn(component, 'savePlaylistItem');
+
+      detailCardContentForm.dispatchEvent(new KeyboardEvent('keyup', { 'key': 'Enter' }));
+      expect(component.savePlaylistItem).toHaveBeenCalled();
+    });
+
     it('creates Go Back and Save buttons', () => {
       let buttons = appElement.querySelectorAll('button');
       let goBackButton = buttons[0];

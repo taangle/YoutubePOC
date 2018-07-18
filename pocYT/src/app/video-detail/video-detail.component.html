@@ -38,7 +38,7 @@
       If you're signed-in, you can update the position of this video in its playlist by changing the number and clicking "Save".
     </p>
 
-    <mat-form-field>
+    <mat-form-field (keyup.enter)="savePlaylistItem()">
       <!--currently, displays 0 when user clears position with backspace, then displays placeholder when backspace is hit again; 0 is overwritten upon typing so it's like an extra placeholder-->
       <!--+/-1 differentiates between display and array position; instantly commits position change to item object, so the updated position can be pulled when user clicks Save-->
       <input matInput [value]="item.snippet.position+1" (input)="item.snippet.position=$event.target.value-1" placeholder="New Position" />

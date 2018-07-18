@@ -113,6 +113,20 @@ describe('UserDetailComponent', () => {
       expect(component.error).toEqual(errorMessage);
       expect(component.errorSolution).toEqual(ytServiceFake.errorSolution);
     }));
+
+    it('only allows page change once service has completed', fakeAsync(() => {
+      spyOn(ytServiceFake, 'getPlaylists').and.returnValue(new Observable((observer) => {
+        expect(component.allowPageChangeButtonClick).toBeFalsy();
+        observer.next(Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse));
+        expect(component.allowPageChangeButtonClick).toBeFalsy();
+        observer.complete();
+      }));
+
+      expect(component.allowPageChangeButtonClick).toBeFalsy();
+      component.getPlaylists();
+      tick();
+      expect(component.allowPageChangeButtonClick).toBeTruthy();
+    }));
   });
 
   describe('toPlaylist', () => {
@@ -161,6 +175,13 @@ describe('UserDetailComponent', () => {
       tick();
       expect(component.getPlaylists).toHaveBeenCalled();
     }));
+
+    it('sets allowPageChangeButtonClick to false', fakeAsync(() => {
+      component.allowPageChangeButtonClick = true;
+      component.playlistListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
+      component.toPrevPage();
+      expect(component.allowPageChangeButtonClick).toBeFalsy();
+    }));
   });
 
   describe('toNextPage', () => {
@@ -182,6 +203,13 @@ describe('UserDetailComponent', () => {
       component.toNextPage();
       tick();
       expect(component.getPlaylists).toHaveBeenCalled();
+    }));
+
+    it('sets allowPageChangeButtonClick to false', fakeAsync(() => {
+      component.allowPageChangeButtonClick = true;
+      component.playlistListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
+      component.toNextPage();
+      expect(component.allowPageChangeButtonClick).toBeFalsy();
     }));
   });
 
@@ -344,28 +372,58 @@ describe('UserDetailComponent', () => {
       expect(component.toPlaylist).toHaveBeenCalledWith(component.playlists[0].id);
     });
 
-    it('calls toPrevPage when corresponding button is clicked', () => {
-      component.playlistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
-      component.playlistListResponse.prevPageToken = 'page_token';
+    it('calls toPrevPage when corresponding button is clicked, if allowed and token exists', () => {
+      component.playlistListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
       component.playlists = component.playlistListResponse.items;
       fixture.detectChanges();
 
-      let previousPageButton = appElement.querySelector('mat-card').querySelectorAll('button')[2];
+      let prevPageButton = appElement.querySelector('mat-card').querySelectorAll('button')[2];
       spyOn(component, 'toPrevPage');
 
-      previousPageButton.click();
+      prevPageButton.click();
+      expect(component.toPrevPage).not.toHaveBeenCalled();
+
+      component.allowPageChangeButtonClick = true;
+      fixture.detectChanges();
+      prevPageButton.click();
+      expect(component.toPrevPage).not.toHaveBeenCalled();
+
+      component.allowPageChangeButtonClick = false;
+      component.playlistListResponse.prevPageToken = 'page_token';
+      fixture.detectChanges();
+      prevPageButton.click();
+      expect(component.toPrevPage).not.toHaveBeenCalled();
+
+      component.allowPageChangeButtonClick = true;
+      fixture.detectChanges();
+      prevPageButton.click();
       expect(component.toPrevPage).toHaveBeenCalled();
     });
 
-    it('calls toNextPage when corresponding button is clicked', () => {
-      component.playlistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
-      component.playlistListResponse.nextPageToken = 'page_token';
+    it('calls toNextPage when corresponding button is clicked, if allowed and token exists', () => {
+      component.playlistListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
       component.playlists = component.playlistListResponse.items;
       fixture.detectChanges();
 
       let nextPageButton = appElement.querySelector('mat-card').querySelectorAll('button')[3];
       spyOn(component, 'toNextPage');
 
+      nextPageButton.click();
+      expect(component.toNextPage).not.toHaveBeenCalled();
+
+      component.allowPageChangeButtonClick = true;
+      fixture.detectChanges();
+      nextPageButton.click();
+      expect(component.toNextPage).not.toHaveBeenCalled();
+
+      component.allowPageChangeButtonClick = false;
+      component.playlistListResponse.nextPageToken = 'page_token';
+      fixture.detectChanges();
+      nextPageButton.click();
+      expect(component.toNextPage).not.toHaveBeenCalled();
+
+      component.allowPageChangeButtonClick = true;
+      fixture.detectChanges();
       nextPageButton.click();
       expect(component.toNextPage).toHaveBeenCalled();
     });
