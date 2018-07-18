@@ -11,6 +11,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTabsModule } from '@angular/material/tabs';
 
 import { AppComponent } from './app.component';
 import { YtRoutingModule } from './/yt-routing.module';
@@ -57,7 +58,8 @@ let gapiClientConfig: NgGapiClientConfig = {
     MatListModule,
     MatInputModule,
     MatCheckboxModule,
-    MatDividerModule
+    MatDividerModule,
+    MatTabsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

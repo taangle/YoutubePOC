@@ -1,17 +1,11 @@
 <mat-toolbar color="primary">
-  <span>{{title}}</span>
+  <nav mat-tab-nav-bar color="accent">
+    <a mat-tab-link routerLink="/playlist">Playlist View</a>
+    <a mat-tab-link routerLink="/user">User Overview</a>
+    <a mat-tab-link routerLink="/login">Sign In/Out</a>
+  </nav>
   <span class="fill-remaining-space"></span>
-  <span>
-    <button mat-button [matMenuTriggerFor]="menu">Menu</button>
-  </span>
+  <span>{{title}}</span>
 </mat-toolbar>
-
-<mat-menu #menu="matMenu">
-  <ng-template matMenuContent>
-    <a routerLink="/playlist"><button mat-menu-item>Playlist View</button></a>
-    <a routerLink="/user"><button mat-menu-item>User Overview</button></a>
-    <a routerLink="/login"><button mat-menu-item>Sign In/Out</button></a>
-  </ng-template>
-</mat-menu>
 
 <router-outlet></router-outlet>
