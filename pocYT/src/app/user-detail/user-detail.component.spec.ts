@@ -59,171 +59,173 @@ describe('UserDetailComponent', () => {
     fixture.detectChanges();
   }));
 
-  it('is created', () => {
-    expect(component).toBeTruthy();
-  });
-
-  describe('ngOnInit', () => {
-    beforeEach(() => {
-      spyOn(component, 'getPlaylists');
+  describe('(unit tests)', () => {
+    it('is created', () => {
+      expect(component).toBeTruthy();
     });
-
-    it('gets playlists if user is authenticated', () => {
-      authServiceSpy.isSignedIn.and.returnValue(true);
-      component.ngOnInit();
-      expect(component.getPlaylists).toHaveBeenCalled();
-    });
-
-    it('does not get playlists if user is not authenticated', () => {
-      authServiceSpy.isSignedIn.and.returnValue(false);
-      expect(component.getPlaylists).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('getPlaylists', () => {
-    it('asks ytService for playlists', fakeAsync(() => {
-      ytServiceFake.playlistListResponseToReturn = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
-      ytServiceFake.playlistListResponseToReturn.items = [Object.assign({}, ytServiceFake.fixedFakePlaylist)];
-      spyOn(ytServiceFake, 'getPlaylists').and.callThrough();
-      component.getPlaylists();
-      tick();
-      expect(ytServiceFake.getPlaylists).toHaveBeenCalled();
-    }));
-
-    it('populates playlistListResponse and playlists', fakeAsync(() => {
-      ytServiceFake.playlistListResponseToReturn = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
-      ytServiceFake.playlistListResponseToReturn.items = [Object.assign({}, ytServiceFake.fixedFakePlaylist)];
-      spyOn(ytServiceFake, 'getPlaylists').and.callThrough();
-      component.getPlaylists();
-      tick();
-      expect(component.playlistListResponse).toBe(ytServiceFake.playlistListResponseToReturn);
-      expect(component.playlists).toBe(ytServiceFake.playlistListResponseToReturn.items);
-    }));
-
-    it('populates error and errorSolution if something goes wrong with ytService', fakeAsync(() => {
-      let errorMessage: string = 'solution';
-      ytServiceFake.errorSolution = 'solution';
-      spyOn(ytServiceFake, 'getPlaylists').and.callFake(() => {
-        return new Observable((observer) => {
-          observer.error(errorMessage);
-        });
+  
+    describe('ngOnInit', () => {
+      beforeEach(() => {
+        spyOn(component, 'getPlaylists');
       });
-      component.getPlaylists();
-      tick();
-      expect(component.error).toEqual(errorMessage);
-      expect(component.errorSolution).toEqual(ytServiceFake.errorSolution);
-    }));
-
-    it('only allows page change once service has completed', fakeAsync(() => {
-      spyOn(ytServiceFake, 'getPlaylists').and.returnValue(new Observable((observer) => {
-        expect(component.allowPageChangeButtonClick).toBeFalsy();
-        observer.next(Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse));
-        expect(component.allowPageChangeButtonClick).toBeFalsy();
-        observer.complete();
+  
+      it('gets playlists if user is authenticated', () => {
+        authServiceSpy.isSignedIn.and.returnValue(true);
+        component.ngOnInit();
+        expect(component.getPlaylists).toHaveBeenCalled();
+      });
+  
+      it('does not get playlists if user is not authenticated', () => {
+        authServiceSpy.isSignedIn.and.returnValue(false);
+        expect(component.getPlaylists).not.toHaveBeenCalled();
+      });
+    });
+  
+    describe('getPlaylists', () => {
+      it('asks ytService for playlists', fakeAsync(() => {
+        ytServiceFake.playlistListResponseToReturn = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
+        ytServiceFake.playlistListResponseToReturn.items = [Object.assign({}, ytServiceFake.fixedFakePlaylist)];
+        spyOn(ytServiceFake, 'getPlaylists').and.callThrough();
+        component.getPlaylists();
+        tick();
+        expect(ytServiceFake.getPlaylists).toHaveBeenCalled();
       }));
-
-      expect(component.allowPageChangeButtonClick).toBeFalsy();
-      component.getPlaylists();
-      tick();
-      expect(component.allowPageChangeButtonClick).toBeTruthy();
-    }));
-  });
-
-  describe('toPlaylist', () => {
-    it('sets ytService.playlistItemPageToken to blank if the provided playlistId does not match the current ytService.playlistId', fakeAsync(() => {
-      ytServiceFake.playlistItemPageToken = 'page_token_stub';
-      ytServiceFake.playlistId = 'some_id';
-      component.toPlaylist('some_other_id');
-      tick();
-      expect(ytServiceFake.playlistItemPageToken).toEqual('');
-    }));
-
-    it('sets ytService.playlistId', fakeAsync(() => {
-      ytServiceFake.playlistItemPageToken = 'page_token_stub';
-      ytServiceFake.playlistId = 'some_id';
-      component.toPlaylist('some_other_id');
-      tick();
-      expect(ytServiceFake.playlistId).toEqual('some_other_id');
-    }));
-
-    it('asks router to navigate to playlist url', fakeAsync(() => {
-      ytServiceFake.playlistItemPageToken = 'page_token_stub';
-      ytServiceFake.playlistId = 'some_id';
-      component.toPlaylist('some_other_id');
-      tick();
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/playlist']);
-    }));
-  });
-
-  describe('toPrevPage', () => {
-    let prevPageTokenStub: string;
-    beforeEach(() => {
-      spyOn(component, 'getPlaylists');
-      prevPageTokenStub = 'prev_page_token_stub';
-      component.playlistListResponse = new PlaylistListResponse();
-      component.playlistListResponse.prevPageToken = prevPageTokenStub;
+  
+      it('populates playlistListResponse and playlists', fakeAsync(() => {
+        ytServiceFake.playlistListResponseToReturn = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
+        ytServiceFake.playlistListResponseToReturn.items = [Object.assign({}, ytServiceFake.fixedFakePlaylist)];
+        spyOn(ytServiceFake, 'getPlaylists').and.callThrough();
+        component.getPlaylists();
+        tick();
+        expect(component.playlistListResponse).toBe(ytServiceFake.playlistListResponseToReturn);
+        expect(component.playlists).toBe(ytServiceFake.playlistListResponseToReturn.items);
+      }));
+  
+      it('populates error and errorSolution if something goes wrong with ytService', fakeAsync(() => {
+        let errorMessage: string = 'solution';
+        ytServiceFake.errorSolution = 'solution';
+        spyOn(ytServiceFake, 'getPlaylists').and.callFake(() => {
+          return new Observable((observer) => {
+            observer.error(errorMessage);
+          });
+        });
+        component.getPlaylists();
+        tick();
+        expect(component.error).toEqual(errorMessage);
+        expect(component.errorSolution).toEqual(ytServiceFake.errorSolution);
+      }));
+  
+      it('only allows page change once service has completed', fakeAsync(() => {
+        spyOn(ytServiceFake, 'getPlaylists').and.returnValue(new Observable((observer) => {
+          expect(component.allowPageChangeButtonClick).toBeFalsy();
+          observer.next(Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse));
+          expect(component.allowPageChangeButtonClick).toBeFalsy();
+          observer.complete();
+        }));
+  
+        expect(component.allowPageChangeButtonClick).toBeFalsy();
+        component.getPlaylists();
+        tick();
+        expect(component.allowPageChangeButtonClick).toBeTruthy();
+      }));
     });
-
-    it('sets ytService.playlistPageToken to the response\'s prevPageToken', fakeAsync(() => {
-      component.toPrevPage();
-      tick();
-      expect(ytServiceFake.playlistPageToken).toEqual(prevPageTokenStub);
-    }));
-
-    it('gets playlists from service', fakeAsync(() => {
-      component.toPrevPage();
-      tick();
-      expect(component.getPlaylists).toHaveBeenCalled();
-    }));
-
-    it('sets allowPageChangeButtonClick to false', fakeAsync(() => {
-      component.allowPageChangeButtonClick = true;
-      component.playlistListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
-      component.toPrevPage();
-      expect(component.allowPageChangeButtonClick).toBeFalsy();
-    }));
-  });
-
-  describe('toNextPage', () => {
-    let nextPageTokenStub: string;
-    beforeEach(() => {
-      spyOn(component, 'getPlaylists');
-      nextPageTokenStub = 'next_page_token_stub';
-      component.playlistListResponse = new PlaylistListResponse();
-      component.playlistListResponse.nextPageToken = nextPageTokenStub;
+  
+    describe('toPlaylist', () => {
+      it('sets ytService.playlistItemPageToken to blank if the provided playlistId does not match the current ytService.playlistId', fakeAsync(() => {
+        ytServiceFake.playlistItemPageToken = 'page_token_stub';
+        ytServiceFake.playlistId = 'some_id';
+        component.toPlaylist('some_other_id');
+        tick();
+        expect(ytServiceFake.playlistItemPageToken).toEqual('');
+      }));
+  
+      it('sets ytService.playlistId', fakeAsync(() => {
+        ytServiceFake.playlistItemPageToken = 'page_token_stub';
+        ytServiceFake.playlistId = 'some_id';
+        component.toPlaylist('some_other_id');
+        tick();
+        expect(ytServiceFake.playlistId).toEqual('some_other_id');
+      }));
+  
+      it('asks router to navigate to playlist url', fakeAsync(() => {
+        ytServiceFake.playlistItemPageToken = 'page_token_stub';
+        ytServiceFake.playlistId = 'some_id';
+        component.toPlaylist('some_other_id');
+        tick();
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/playlist']);
+      }));
     });
-
-    it('sets ytService.playlistPageToken to the response\'s nextPageToken', fakeAsync(() => {
-      component.toNextPage();
-      tick();
-      expect(ytServiceFake.playlistPageToken).toEqual(nextPageTokenStub);
-    }));
-
-    it('gets playlists from service', fakeAsync(() => {
-      component.toNextPage();
-      tick();
-      expect(component.getPlaylists).toHaveBeenCalled();
-    }));
-
-    it('sets allowPageChangeButtonClick to false', fakeAsync(() => {
-      component.allowPageChangeButtonClick = true;
-      component.playlistListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
-      component.toNextPage();
-      expect(component.allowPageChangeButtonClick).toBeFalsy();
-    }));
-  });
-
-  describe('clearErrors', () => {
-    it('sets error and errorSolution to null', () => {
-      component.error = 'some_error';
-      component.errorSolution = 'some_solution';
-      component.clearErrors();
-      expect(component.error).toBeNull();
-      expect(component.errorSolution).toBeNull();
+  
+    describe('toPrevPage', () => {
+      let prevPageTokenStub: string;
+      beforeEach(() => {
+        spyOn(component, 'getPlaylists');
+        prevPageTokenStub = 'prev_page_token_stub';
+        component.playlistListResponse = new PlaylistListResponse();
+        component.playlistListResponse.prevPageToken = prevPageTokenStub;
+      });
+  
+      it('sets ytService.playlistPageToken to the response\'s prevPageToken', fakeAsync(() => {
+        component.toPrevPage();
+        tick();
+        expect(ytServiceFake.playlistPageToken).toEqual(prevPageTokenStub);
+      }));
+  
+      it('gets playlists from service', fakeAsync(() => {
+        component.toPrevPage();
+        tick();
+        expect(component.getPlaylists).toHaveBeenCalled();
+      }));
+  
+      it('sets allowPageChangeButtonClick to false', fakeAsync(() => {
+        component.allowPageChangeButtonClick = true;
+        component.playlistListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
+        component.toPrevPage();
+        expect(component.allowPageChangeButtonClick).toBeFalsy();
+      }));
+    });
+  
+    describe('toNextPage', () => {
+      let nextPageTokenStub: string;
+      beforeEach(() => {
+        spyOn(component, 'getPlaylists');
+        nextPageTokenStub = 'next_page_token_stub';
+        component.playlistListResponse = new PlaylistListResponse();
+        component.playlistListResponse.nextPageToken = nextPageTokenStub;
+      });
+  
+      it('sets ytService.playlistPageToken to the response\'s nextPageToken', fakeAsync(() => {
+        component.toNextPage();
+        tick();
+        expect(ytServiceFake.playlistPageToken).toEqual(nextPageTokenStub);
+      }));
+  
+      it('gets playlists from service', fakeAsync(() => {
+        component.toNextPage();
+        tick();
+        expect(component.getPlaylists).toHaveBeenCalled();
+      }));
+  
+      it('sets allowPageChangeButtonClick to false', fakeAsync(() => {
+        component.allowPageChangeButtonClick = true;
+        component.playlistListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
+        component.toNextPage();
+        expect(component.allowPageChangeButtonClick).toBeFalsy();
+      }));
+    });
+  
+    describe('clearErrors', () => {
+      it('sets error and errorSolution to null', () => {
+        component.error = 'some_error';
+        component.errorSolution = 'some_solution';
+        component.clearErrors();
+        expect(component.error).toBeNull();
+        expect(component.errorSolution).toBeNull();
+      });
     });
   });
 
-  describe('DOM', () => {
+  describe('(DOM)', () => {
     let appElement: HTMLElement;
 
     beforeEach(() => {

@@ -50,7 +50,7 @@ describe('YtComponent', () => {
     component = fixture.componentInstance;
   }));
 
-  describe('(unit tests):', () => {
+  describe('(unit tests)', () => {
     it('is created', () => {
       expect(component).toBeTruthy();
     });
@@ -653,7 +653,7 @@ describe('YtComponent', () => {
     });
   });
 
-  describe('DOM:', () => {
+  describe('(DOM)', () => {
     let debugElement: DebugElement;
     let rootElement: HTMLElement;
 
@@ -1016,7 +1016,7 @@ describe('YtComponent', () => {
             });
           });
 
-          describe('prev page button', () => {
+          describe('prev page button:', () => {
             let prevPageButton: HTMLButtonElement;
             
             beforeEach(() => {

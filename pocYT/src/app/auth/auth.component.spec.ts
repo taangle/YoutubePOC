@@ -37,52 +37,54 @@ describe('AuthComponent', () => {
     fixture.detectChanges();
   }));
 
-  it('is created', () => {
-    expect(component).toBeTruthy();
-  });
-
-  describe('ngOnInit', () => {
-    describe('sets the value of IS_SIGNED_IN to the return value of authService.isSignedIn()', () => {
-      it('when isSignedIn() returns false', () => {
-        stubAuthService.isSignedIn.and.returnValue(false);
-        component.ngOnInit;
-        expect(AuthServiceStub.IS_SIGNED_IN).toBeFalsy();
+  describe('(unit tests)', () => {
+    it('is created', () => {
+      expect(component).toBeTruthy();
+    });
+  
+    describe('ngOnInit', () => {
+      describe('sets the value of IS_SIGNED_IN to the return value of authService.isSignedIn()', () => {
+        it('when isSignedIn() returns false', () => {
+          stubAuthService.isSignedIn.and.returnValue(false);
+          component.ngOnInit;
+          expect(AuthServiceStub.IS_SIGNED_IN).toBeFalsy();
+        });
+  
+        it('when isSignedIn() returns true', () => {
+          stubAuthService.isSignedIn.and.returnValue(true);
+          component.ngOnInit;
+          expect(AuthServiceStub.IS_SIGNED_IN).toBeTruthy;
+        });
       });
-
-      it('when isSignedIn() returns true', () => {
-        stubAuthService.isSignedIn.and.returnValue(true);
-        component.ngOnInit;
-        expect(AuthServiceStub.IS_SIGNED_IN).toBeTruthy;
+    });
+  
+    describe('signIn', () => {
+      it('calls the authService signIn', () => { 
+        spyOn(stubAuthService, 'signIn');
+        component.signIn();
+        expect(stubAuthService.signIn).toHaveBeenCalled();
+      });
+    });
+  
+    describe('signOut', () => {
+      it('calls the authService signOut', () => {
+        spyOn(stubAuthService, 'signOut');
+        component.signOut();
+        expect(stubAuthService.signOut).toHaveBeenCalled();
+      });
+    });
+  
+    describe('isSignedIn', () => {
+      it('returns the value of IS_SIGNED_IN', () => {
+        AuthService.IS_SIGNED_IN = true;
+        expect(component.isSignedIn()).toEqual(true);
+        AuthService.IS_SIGNED_IN = false;
+        expect(component.isSignedIn()).toEqual(false);
       });
     });
   });
 
-  describe('signIn', () => {
-    it('calls the authService signIn', () => { 
-      spyOn(stubAuthService, 'signIn');
-      component.signIn();
-      expect(stubAuthService.signIn).toHaveBeenCalled();
-    });
-  });
-
-  describe('signOut', () => {
-    it('calls the authService signOut', () => {
-      spyOn(stubAuthService, 'signOut');
-      component.signOut();
-      expect(stubAuthService.signOut).toHaveBeenCalled();
-    });
-  });
-
-  describe('isSignedIn', () => {
-    it('returns the value of IS_SIGNED_IN', () => {
-      AuthService.IS_SIGNED_IN = true;
-      expect(component.isSignedIn()).toEqual(true);
-      AuthService.IS_SIGNED_IN = false;
-      expect(component.isSignedIn()).toEqual(false);
-    });
-  });
-
-  describe('DOM', () => {
+  describe('(DOM)', () => {
     let appElement: HTMLElement;
 
     beforeEach(() => {

@@ -46,27 +46,29 @@ describe('PlayComponent', () => {
     fixture.detectChanges();
   }));
 
-  it('is created', () => {
-    expect(component).toBeTruthy();
-  });
-
-  describe('ngOnInit', () => {
-    it('populates embedUrl using the value at \'id\'', () => {
-      let stubVal = 'ngOnInit_stub';
-      routeStub.paramMapValueToReturn = stubVal;
-      component.ngOnInit();
-      expect(component.embedUrl).toEqual('https://www.youtube.com/embed/videoseries?list=' + stubVal + '&autoplay=1&loop=1');
+  describe('(unit tests)', () => {
+    it('is created', () => {
+      expect(component).toBeTruthy();
     });
-  });
-
-  describe('goBack', () => {
-    it('asks location to go back', () => {
-      component.goBack();
-      expect(locationSpy.back).toHaveBeenCalled();
+  
+    describe('ngOnInit', () => {
+      it('populates embedUrl using the value at \'id\'', () => {
+        let stubVal = 'ngOnInit_stub';
+        routeStub.paramMapValueToReturn = stubVal;
+        component.ngOnInit();
+        expect(component.embedUrl).toEqual('https://www.youtube.com/embed/videoseries?list=' + stubVal + '&autoplay=1&loop=1');
+      });
     });
+  
+    describe('goBack', () => {
+      it('asks location to go back', () => {
+        component.goBack();
+        expect(locationSpy.back).toHaveBeenCalled();
+      });
+    });    
   });
 
-  describe('DOM', () => {
+  describe('(DOM)', () => {
     let appElement: HTMLElement;
 
     beforeEach(() => {
