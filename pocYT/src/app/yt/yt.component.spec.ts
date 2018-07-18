@@ -676,22 +676,33 @@ describe('YtComponent', () => {
         expect(firstRow.innerHTML).toContain("Playlist View");
       });
 
-      xit('*PENDING*contains field for playlist ID in second row', () => {
-        let secondRow: Element = toolbarRows.item(1);
-        expect(secondRow.querySelector('mat-form-field').querySelector('input')).toBeTruthy();
-      });
-
-      xit('*PENDING*contains button to show playlist in second row', () => {
-        let playlistIdStub: string = 'pl_id_stub';
+      it('contains field for playlist ID and button to show playlist in second row', () => {
+        let field: HTMLInputElement = toolbarRows.item(1).querySelector('mat-form-field').querySelector('input');
         let button: HTMLButtonElement = toolbarRows.item(1).querySelector('button');
-        let input: HTMLInputElement = toolbarRows.item(1).querySelector('input');
 
-        expect(input.getAttribute('placeholder').toLowerCase()).toContain('playlist id');
+        expect(field.getAttribute('placeholder').toLowerCase()).toContain('playlist id');
         expect(button.innerHTML.toLowerCase()).toContain('show playlist');
 
-        input.value = playlistIdStub;
-        input.dispatchEvent(new Event('input'));
+        spyOn(component, 'clearErrors');
+        spyOn(component, 'clearPageToken');
+        spyOn(component, 'getPlaylistItems');
+        field.value = 'playlist_id_stub';
+        field.dispatchEvent(new Event('input'));
         fixture.detectChanges();
+
+        expect(component.getPlaylistItems).not.toHaveBeenCalled();
+        button.click();
+        expect(component.clearErrors).toHaveBeenCalled();
+        expect(component.clearPageToken).toHaveBeenCalled();
+        expect(component.getPlaylistItems).toHaveBeenCalledWith('playlist_id_stub');
+
+        field.value = 'diff_playlist_id_stub';
+        field.dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+
+        expect(component.getPlaylistItems).toHaveBeenCalledTimes(1);
+        button.click();
+        expect(component.getPlaylistItems).toHaveBeenCalledWith('diff_playlist_id_stub');
       });
     });
 
