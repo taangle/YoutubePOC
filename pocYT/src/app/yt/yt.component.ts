@@ -24,7 +24,7 @@ export class YtComponent implements OnInit {
   playlistItemListResponse: PlaylistItemListResponse;
   error: string;
   errorSolution: string;
-  allowPageChange: boolean = false;
+  allowPageChangeButtonClick: boolean = false;
 
   constructor(private ytService: YtService) { }
 
@@ -59,7 +59,7 @@ export class YtComponent implements OnInit {
       this.errorSolution = this.ytService.giveErrorSolution(error);
       this.error = error;
     }, () => {
-      this.allowPageChange = true;
+      this.allowPageChangeButtonClick = true;
     });
 
   }
@@ -125,7 +125,7 @@ export class YtComponent implements OnInit {
   // Gives ytService the pageToken then asks ytService for the playlist
   toPrevPage(): void {
     this.shouldDelete.fill(false);
-    this.allowPageChange = false;
+    this.allowPageChangeButtonClick = false;
     this.ytService.playlistItemPageToken = this.playlistItemListResponse.prevPageToken;
     this.getPlaylistItems(this.ytService.playlistId);
   }
@@ -133,7 +133,7 @@ export class YtComponent implements OnInit {
   // Gives ytService the pageToken then asks ytService for the playlist
   toNextPage(): void {
     this.shouldDelete.fill(false);
-    this.allowPageChange = false;
+    this.allowPageChangeButtonClick = false;
     this.ytService.playlistItemPageToken = this.playlistItemListResponse.nextPageToken;
     this.getPlaylistItems(this.ytService.playlistId);
   }

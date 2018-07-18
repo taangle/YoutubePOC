@@ -41,8 +41,8 @@
     <br />
 
     <!--advances to previous/next page in list of playlists, if possible-->
-    <button mat-stroked-button (click)="toPrevPage()" [disabled]="!playlistListResponse.prevPageToken">Previous Page</button>
-    <button mat-stroked-button (click)="toNextPage()" [disabled]="!playlistListResponse.nextPageToken">Next Page</button>
+    <button mat-stroked-button (click)="toPrevPage()" [disabled]="!playlistListResponse.prevPageToken || !allowPageChangeButtonClick">Previous Page</button>
+    <button mat-stroked-button (click)="toNextPage()" [disabled]="!playlistListResponse.nextPageToken || !allowPageChangeButtonClick">Next Page</button>
   </mat-card-content>
 
 </mat-card>

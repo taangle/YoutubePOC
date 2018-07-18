@@ -188,16 +188,16 @@ describe('YtComponent', () => {
 
       it('only allows page change once service has completed', fakeAsync(() => {
         getPlaylistItemsSpy.and.returnValue(new Observable((observer) => {
-          expect(component.allowPageChange).toBeFalsy();
+          expect(component.allowPageChangeButtonClick).toBeFalsy();
           observer.next(Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse));
-          expect(component.allowPageChange).toBeFalsy();
+          expect(component.allowPageChangeButtonClick).toBeFalsy();
           observer.complete();
         }));
         
-        expect(component.allowPageChange).toBeFalsy();
+        expect(component.allowPageChangeButtonClick).toBeFalsy();
         component.getPlaylistItems(ytServiceFake.playlistIdStub);
         tick();
-        expect(component.allowPageChange).toBeTruthy();
+        expect(component.allowPageChangeButtonClick).toBeTruthy();
       }));
     });
   
@@ -566,12 +566,12 @@ describe('YtComponent', () => {
         expect(ytServiceFake.deletePlaylistItem).not.toHaveBeenCalled();
       }));
 
-      it('sets allowPageChange to false', fakeAsync(() => {
-        component.allowPageChange = true;
+      it('sets allowPageChangeButtonClick to false', fakeAsync(() => {
+        component.allowPageChangeButtonClick = true;
         component.playlistItemListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
         spyOn(component, 'getPlaylistItems');
         component.toPrevPage();
-        expect(component.allowPageChange).toBeFalsy();
+        expect(component.allowPageChangeButtonClick).toBeFalsy();
       }));
     });
   
@@ -625,12 +625,12 @@ describe('YtComponent', () => {
         expect(ytServiceFake.deletePlaylistItem).not.toHaveBeenCalled();
       }));
 
-      it('sets allowPageChange to false', fakeAsync(() => {
-        component.allowPageChange = true;
+      it('sets allowPageChangeButtonClick to false', fakeAsync(() => {
+        component.allowPageChangeButtonClick = true;
         component.playlistItemListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
         spyOn(component, 'getPlaylistItems');
         component.toNextPage();
-        expect(component.allowPageChange).toBeFalsy();
+        expect(component.allowPageChangeButtonClick).toBeFalsy();
       }));
     });
   
@@ -676,12 +676,12 @@ describe('YtComponent', () => {
         expect(firstRow.innerHTML).toContain("Playlist View");
       });
 
-      it('contains field for playlist ID in second row', () => {
+      xit('*PENDING*contains field for playlist ID in second row', () => {
         let secondRow: Element = toolbarRows.item(1);
         expect(secondRow.querySelector('mat-form-field').querySelector('input')).toBeTruthy();
       });
 
-      it('contains button to show playlist in second row', () => {
+      xit('*PENDING*contains button to show playlist in second row', () => {
         let playlistIdStub: string = 'pl_id_stub';
         let button: HTMLButtonElement = toolbarRows.item(1).querySelector('button');
         let input: HTMLInputElement = toolbarRows.item(1).querySelector('input');
@@ -942,25 +942,25 @@ describe('YtComponent', () => {
               nextPageButton = getVideoListFooter().querySelectorAll('button').item(1);
             });
 
-            it('calls toNextPage when clicked, if nextPageToken exists & allowPageChange is true', () => {
+            it('calls toNextPage when clicked, if nextPageToken exists & allowPageChangeButtonClick is true', () => {
               expect(nextPageButton.innerHTML.toLowerCase()).toContain('next page');
               spyOn(component, 'toNextPage');
 
               nextPageButton.click();
               expect(component.toNextPage).not.toHaveBeenCalled();
 
-              component.allowPageChange = true;
+              component.allowPageChangeButtonClick = true;
               fixture.detectChanges();
               nextPageButton.click();
               expect(component.toNextPage).not.toHaveBeenCalled();
 
-              component.allowPageChange = false;
+              component.allowPageChangeButtonClick = false;
               component.playlistItemListResponse.nextPageToken = 'next_page_token';
               fixture.detectChanges();
               nextPageButton.click();
               expect(component.toNextPage).not.toHaveBeenCalled();
 
-              component.allowPageChange = true;
+              component.allowPageChangeButtonClick = true;
               fixture.detectChanges();
               nextPageButton.click();
               expect(component.toNextPage).toHaveBeenCalled(); 
@@ -977,25 +977,25 @@ describe('YtComponent', () => {
               prevPageButton = getVideoListFooter().querySelectorAll('button').item(0);
             });
 
-            it('calls toPrevPage when clicked, if prevPageToken exists & allowPageChange is true', () => {
+            it('calls toPrevPage when clicked, if prevPageToken exists & allowPageChangeButtonClick is true', () => {
               expect(prevPageButton.innerHTML.toLowerCase()).toContain('previous page');
               spyOn(component, 'toPrevPage');
 
               prevPageButton.click();
               expect(component.toPrevPage).not.toHaveBeenCalled();
 
-              component.allowPageChange = true;
+              component.allowPageChangeButtonClick = true;
               fixture.detectChanges();
               prevPageButton.click();
               expect(component.toPrevPage).not.toHaveBeenCalled();
 
-              component.allowPageChange = false;
+              component.allowPageChangeButtonClick = false;
               component.playlistItemListResponse.prevPageToken = 'prev_page_token';
               fixture.detectChanges();
               prevPageButton.click();
               expect(component.toPrevPage).not.toHaveBeenCalled();
 
-              component.allowPageChange = true;
+              component.allowPageChangeButtonClick = true;
               fixture.detectChanges();
               prevPageButton.click();
               expect(component.toPrevPage).toHaveBeenCalled();

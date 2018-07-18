@@ -57,8 +57,8 @@
 
     <div id="videoListFooter" *ngIf="playlistItems">
       <!--advances to previous/next page in playlist, if possible-->
-      <button mat-stroked-button (click)="toPrevPage()" [disabled]="!playlistItemListResponse.prevPageToken || !allowPageChange">Previous Page</button>
-      <button mat-stroked-button (click)="toNextPage()" [disabled]="!playlistItemListResponse.nextPageToken || !allowPageChange">Next Page</button>
+      <button mat-stroked-button (click)="toPrevPage()" [disabled]="!playlistItemListResponse.prevPageToken || !allowPageChangeButtonClick">Previous Page</button>
+      <button mat-stroked-button (click)="toNextPage()" [disabled]="!playlistItemListResponse.nextPageToken || !allowPageChangeButtonClick">Next Page</button>
       <br />
       <br />
 

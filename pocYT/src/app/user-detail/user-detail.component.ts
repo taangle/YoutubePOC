@@ -17,6 +17,7 @@ export class UserDetailComponent implements OnInit {
   playlistListResponse: PlaylistListResponse;
   error: string;
   errorSolution: string;
+  allowPageChangeButtonClick: boolean = false;
 
   constructor(private authService: AuthService, private ytService: YtService, private router: Router) { }
 
@@ -39,6 +40,8 @@ export class UserDetailComponent implements OnInit {
     }, error => {
       this.errorSolution = this.ytService.giveErrorSolution(error);
       this.error = error;
+    }, () => {
+      this.allowPageChangeButtonClick = true;
     });
 
   }
@@ -57,12 +60,14 @@ export class UserDetailComponent implements OnInit {
 
   // Gives ytService the pageToken then asks ytService for the next page of playlists
   toPrevPage(): void {
+    this.allowPageChangeButtonClick = false;
     this.ytService.playlistPageToken = this.playlistListResponse.prevPageToken;
     this.getPlaylists();
   }
 
   // Gives ytService the pageToken then asks ytService for the previous page of playlists
   toNextPage(): void {
+    this.allowPageChangeButtonClick = false;
     this.ytService.playlistPageToken = this.playlistListResponse.nextPageToken;
     this.getPlaylists();
   }
