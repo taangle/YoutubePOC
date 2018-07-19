@@ -3,6 +3,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { AuthComponent } from './auth.component';
 import { AuthService } from '../auth.service';
@@ -18,12 +19,7 @@ describe('AuthComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [AuthComponent],
-      imports: [
-        BrowserAnimationsModule,
-        MatButtonModule,
-        MatToolbarModule,
-        MatCardModule
-      ],
+      schemas: [ NO_ERRORS_SCHEMA ],
       providers: [
         {
           provide: AuthService,
@@ -38,10 +34,6 @@ describe('AuthComponent', () => {
   }));
 
   describe('(unit tests)', () => {
-    it('is created', () => {
-      expect(component).toBeTruthy();
-    });
-  
     describe('ngOnInit', () => {
       describe('sets the value of IS_SIGNED_IN to the return value of authService.isSignedIn()', () => {
         it('when isSignedIn() returns false', () => {

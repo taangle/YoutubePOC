@@ -24,7 +24,6 @@ describe('YtService', () => {
       imports: [HttpClientTestingModule],
       providers: [
         YtService,
-        // Mock AuthService provider
         {
           provide: AuthService,
           useValue: authServiceSpy
@@ -39,10 +38,6 @@ describe('YtService', () => {
 
   afterEach(() => {
     httpTestingController.verify();
-  });
-
-  it('is created', () => {
-    expect(testedYtService).toBeTruthy();
   });
 
   describe('setAccessToken', () => {

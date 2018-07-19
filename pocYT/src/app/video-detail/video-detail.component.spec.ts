@@ -10,6 +10,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatDividerModule } from '@angular/material/divider';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { VideoDetailComponent } from './video-detail.component';
 import { YtService } from '../yt.service';
@@ -32,16 +33,9 @@ describe('VideoDetailComponent', () => {
     locationSpy = jasmine.createSpyObj('Location', ['back']);
 
     TestBed.configureTestingModule({
-      declarations: [VideoDetailComponent],
-      imports: [
-        RouterTestingModule,
-        BrowserAnimationsModule,
-        MatButtonModule,
-        MatToolbarModule,
-        MatCardModule,
-        MatInputModule,
-        MatDividerModule
-      ],
+      declarations: [ VideoDetailComponent ],
+      schemas: [ NO_ERRORS_SCHEMA ],
+      imports: [ RouterTestingModule ],
       providers: [
         {
           provide: YtService,
@@ -66,10 +60,6 @@ describe('VideoDetailComponent', () => {
   });
 
   describe('(unit tests)', () => {
-    it('is created', () => {
-      expect(component).toBeTruthy();
-    });
-  
     describe('ngOnInit', () => {
       it('calls its own getPlaylistItem', () => {
         spyOn(component, 'getPlaylistItem');

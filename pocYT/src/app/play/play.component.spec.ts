@@ -5,6 +5,7 @@ import { Location } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { PlayComponent } from './play.component';
 import { ActivatedRouteStub } from '../../test-files/activated-route.stub';
@@ -23,12 +24,8 @@ describe('PlayComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [ PlayComponent, SafePipe ],
-      imports: [
-        RouterTestingModule,
-        BrowserAnimationsModule,
-        MatButtonModule,
-        MatToolbarModule
-      ],
+      schemas: [ NO_ERRORS_SCHEMA ],
+      imports: [ RouterTestingModule ],
       providers: [
         {
           provide: ActivatedRoute,
@@ -47,10 +44,6 @@ describe('PlayComponent', () => {
   }));
 
   describe('(unit tests)', () => {
-    it('is created', () => {
-      expect(component).toBeTruthy();
-    });
-  
     describe('ngOnInit', () => {
       it('populates embedUrl using the value at \'id\'', () => {
         let stubVal = 'ngOnInit_stub';

@@ -8,11 +8,6 @@ describe('SafePipe', () => {
     sanitizerSpy = jasmine.createSpyObj('DomSanitizer', ['bypassSecurityTrustResourceUrl']);
   });
 
-  it('is created', () => {
-    const pipe = new SafePipe(sanitizerSpy);
-    expect(pipe).toBeTruthy();
-  });
-
   it('asks DomSanitizer to transform a string into a SafeResourceUrl', () => {
     const pipe = new SafePipe(sanitizerSpy);
     let str = 'string';

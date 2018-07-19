@@ -5,15 +5,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
+import { Observable } from 'rxjs';
+import { tick } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { UserDetailComponent } from './user-detail.component';
 import { AuthService } from 'src/app/auth.service';
 import { YtService } from 'src/app/yt.service';
-import { Router } from '@angular/router';
 import { FakeYtService } from 'src/test-files/yt.service.fake';
-import { tick } from '@angular/core/testing';
-import { Observable } from 'rxjs';
 import { PlaylistListResponse } from 'src/app/playlistListResponse';
+
 
 describe('UserDetailComponent', () => {
   let component: UserDetailComponent;
@@ -22,48 +24,38 @@ describe('UserDetailComponent', () => {
   let authServiceSpy: jasmine.SpyObj<AuthService>;
   let routerSpy;
 
-  beforeEach(async(() => {
-    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['isSignedIn']);
-    authServiceSpy.isSignedIn.and.returnValue(false);
-    ytServiceFake = new FakeYtService();
-
-    TestBed.configureTestingModule({
-      declarations: [UserDetailComponent],
-      imports: [
-        RouterTestingModule,
-        BrowserAnimationsModule,
-        MatButtonModule,
-        MatToolbarModule,
-        MatCardModule,
-        MatListModule
-      ],
-      providers: [
-        {
-          provide: AuthService,
-          useValue: authServiceSpy as AuthService
-        },
-        {
-          provide: YtService,
-          useValue: ytServiceFake as YtService
-        },
-        {
-          provide: Router,
-          useValue: routerSpy
-        }
-      ]
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(UserDetailComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  }));
-
   describe('(unit tests)', () => {
-    it('is created', () => {
-      expect(component).toBeTruthy();
-    });
+    beforeEach(async(() => {
+      routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+      authServiceSpy = jasmine.createSpyObj('AuthService', ['isSignedIn']);
+      authServiceSpy.isSignedIn.and.returnValue(false);
+      ytServiceFake = new FakeYtService();
   
+      TestBed.configureTestingModule({
+        declarations: [UserDetailComponent],
+        schemas: [ NO_ERRORS_SCHEMA ],
+        imports: [  RouterTestingModule ],
+        providers: [
+          {
+            provide: AuthService,
+            useValue: authServiceSpy as AuthService
+          },
+          {
+            provide: YtService,
+            useValue: ytServiceFake as YtService
+          },
+          {
+            provide: Router,
+            useValue: routerSpy
+          }
+        ]
+      }).compileComponents();
+  
+      fixture = TestBed.createComponent(UserDetailComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    }));
+
     describe('ngOnInit', () => {
       beforeEach(() => {
         spyOn(component, 'getPlaylists');
@@ -229,19 +221,10 @@ describe('UserDetailComponent', () => {
     let appElement: HTMLElement;
 
     beforeEach(() => {
-      //TestBed must be reset and configured without routerSpy provider because it will conflict with RouterTestingModule and create an error
-      //I can't seem to find an easier way to drop a single provider for one test only
-      TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         declarations: [UserDetailComponent],
-        imports: [
-          RouterTestingModule,
-          BrowserAnimationsModule,
-          MatButtonModule,
-          MatToolbarModule,
-          MatCardModule,
-          MatListModule
-        ],
+        schemas: [ NO_ERRORS_SCHEMA ],
+        imports: [ RouterTestingModule ],
         providers: [
           {
             provide: AuthService,

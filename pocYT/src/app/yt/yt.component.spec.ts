@@ -9,6 +9,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { YtComponent } from './yt.component';
 import { GoogleApiService } from "ng-gapi";
@@ -28,17 +29,8 @@ describe('YtComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [YtComponent],
-      imports: [
-        RouterTestingModule,
-        BrowserAnimationsModule,
-        MatButtonModule,
-        MatToolbarModule,
-        MatCardModule,
-        MatListModule,
-        MatInputModule,
-        MatCheckboxModule,
-        MatDividerModule
-      ],
+      schemas: [ NO_ERRORS_SCHEMA ],
+      imports: [ RouterTestingModule ],
       providers: [
         {
           provide: YtService,
@@ -51,10 +43,6 @@ describe('YtComponent', () => {
   }));
 
   describe('(unit tests)', () => {
-    it('is created', () => {
-      expect(component).toBeTruthy();
-    });
-  
     describe('ngOnInit:', () => {
       describe('(when ytService has no playlistId):', () => {
         it('does not ask service for playlist', () => {
