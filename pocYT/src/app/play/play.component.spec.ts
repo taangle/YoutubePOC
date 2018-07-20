@@ -39,7 +39,7 @@ describe('PlayComponent', () => {
             useValue: locationSpy
           }
         ]
-      }).compileComponents();
+      });
   
       fixture = TestBed.overrideComponent(PlayComponent, {
         set: {

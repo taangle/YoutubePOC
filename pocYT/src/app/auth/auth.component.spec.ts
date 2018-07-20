@@ -27,7 +27,7 @@ describe('AuthComponent', () => {
             useValue: stubAuthService
           }
         ]
-      }).compileComponents();
+      });
   
       fixture = TestBed.overrideComponent(AuthComponent, {
         set: {

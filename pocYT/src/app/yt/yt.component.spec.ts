@@ -38,7 +38,8 @@ describe('YtComponent', () => {
             useValue: ytServiceFake as YtService
           }
         ]
-      }).compileComponents();
+      });
+      
       fixture = TestBed.overrideComponent(YtComponent, {
         set: {
           template: '<div></div>'

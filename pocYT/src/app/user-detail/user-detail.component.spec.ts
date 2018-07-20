@@ -49,7 +49,7 @@ describe('UserDetailComponent', () => {
             useValue: routerSpy
           }
         ]
-      }).compileComponents();
+      });
   
       fixture = TestBed.overrideComponent(UserDetailComponent, {
         set: {

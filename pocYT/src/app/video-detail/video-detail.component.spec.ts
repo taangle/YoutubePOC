@@ -51,7 +51,7 @@ describe('VideoDetailComponent', () => {
             useValue: locationSpy
           }
         ]
-      }).compileComponents();
+      });
   
       fixture = TestBed.overrideComponent(VideoDetailComponent, {
         set: {
