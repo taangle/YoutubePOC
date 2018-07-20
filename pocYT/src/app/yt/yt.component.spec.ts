@@ -19,30 +19,36 @@ import { PlaylistItemListResponse } from '../playlistItemListResponse';
 import { FakeYtService } from 'src/test-files/yt.service.fake';
 import { DebugElement } from '@angular/core';
 
-describe('YtComponent', () => {
+fdescribe('YtComponent', () => {
   let component: YtComponent;
   let fixture: ComponentFixture<YtComponent>;
   let ytServiceFake: FakeYtService;
 
-  beforeEach(async(() => {
-    ytServiceFake = new FakeYtService();
-
-    TestBed.configureTestingModule({
-      declarations: [YtComponent],
-      schemas: [ NO_ERRORS_SCHEMA ],
-      imports: [ RouterTestingModule ],
-      providers: [
-        {
-          provide: YtService,
-          useValue: ytServiceFake as YtService
-        }
-      ]
-    }).compileComponents();
-    fixture = TestBed.createComponent(YtComponent);
-    component = fixture.componentInstance;
-  }));
+  
 
   describe('(unit tests)', () => {
+    beforeEach(async(() => {
+      ytServiceFake = new FakeYtService();
+  
+      TestBed.configureTestingModule({
+        declarations: [YtComponent],
+        schemas: [ NO_ERRORS_SCHEMA ],
+        imports: [ RouterTestingModule ],
+        providers: [
+          {
+            provide: YtService,
+            useValue: ytServiceFake as YtService
+          }
+        ]
+      }).compileComponents();
+      fixture = TestBed.overrideComponent(YtComponent, {
+        set: {
+          template: '<div></div>'
+        }
+      }).createComponent(YtComponent);
+      component = fixture.componentInstance;
+    }));
+
     describe('ngOnInit:', () => {
       describe('(when ytService has no playlistId):', () => {
         it('does not ask service for playlist', () => {
@@ -645,10 +651,26 @@ describe('YtComponent', () => {
     let debugElement: DebugElement;
     let rootElement: HTMLElement;
 
-    beforeEach(() => {
+    beforeEach(async(() => {
+      ytServiceFake = new FakeYtService();
+  
+      TestBed.configureTestingModule({
+        declarations: [YtComponent],
+        schemas: [ NO_ERRORS_SCHEMA ],
+        imports: [ RouterTestingModule ],
+        providers: [
+          {
+            provide: YtService,
+            useValue: ytServiceFake as YtService
+          }
+        ]
+      }).compileComponents();
+      fixture = TestBed.createComponent(YtComponent);
+      component = fixture.componentInstance;
+
       debugElement = fixture.debugElement;
       rootElement = fixture.nativeElement;
-    });
+    }));
 
     describe('mat-toolbar:', () => {
       let toolbar: Element;
