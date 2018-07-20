@@ -33,6 +33,11 @@ describe('YtRoutingModule', () => {
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
+      imports: [
+        RouterTestingModule.withRoutes(routes),
+        HttpClientTestingModule, //if you don't provide this in some way, a StaticInjectorError is thrown
+      ],
+      schemas: [ NO_ERRORS_SCHEMA ],
       declarations: [
         AppComponent,
         AuthComponent,
