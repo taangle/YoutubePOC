@@ -77,10 +77,6 @@ describe('AuthService', () => {
     testedAuthService = TestBed.get(AuthService);
   });
 
-  it('is created', () => {
-    expect(testedAuthService).toBeTruthy();
-  });
-
   describe('getToken', () => {
     it('throws error if no taken has been set', () => {
       expect(testedAuthService.getToken).toThrowError("No token set; authentication required.");

@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -14,16 +15,11 @@ describe('AppComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
-      ],
+      declarations: [ AppComponent ],
+      schemas: [ NO_ERRORS_SCHEMA ],
       imports: [
         FormsModule,
-        RouterTestingModule,
-        BrowserAnimationsModule,
-        MatButtonModule,
-        MatMenuModule,
-        MatToolbarModule
+        RouterTestingModule 
       ]
     }).compileComponents();
 

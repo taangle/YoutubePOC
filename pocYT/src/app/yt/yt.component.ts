@@ -25,6 +25,7 @@ export class YtComponent implements OnInit {
   error: string;
   errorSolution: string;
   allowPageChangeButtonClick: boolean = false;
+  allowDeleteButtonClick: boolean = false;
 
   constructor(private ytService: YtService) { }
 
@@ -56,9 +57,11 @@ export class YtComponent implements OnInit {
       this.playlistItemListResponse = playlistItemListResponse;
       this.playlistItems = this.playlistItemListResponse.items;
     }, error => {
+      this.ytService.playlistId = ''; //stops ytService from holding on to junk playlist IDs
       this.errorSolution = this.ytService.giveErrorSolution(error);
       this.error = error;
     }, () => {
+      this.allowDeleteButtonClick = true;
       this.allowPageChangeButtonClick = true;
     });
 
@@ -110,9 +113,11 @@ export class YtComponent implements OnInit {
       return;
     }
 
+    this.allowDeleteButtonClick = false;
     this.ytService.deletePlaylistItem(this.itemsToDelete).subscribe(() => {
         console.log("yt.component: item successfully deleted"); //currently, no "loading" indicator so this just prints to the console for each successful delete
-      }, error => {
+    }, error => {
+        this.allowDeleteButtonClick = true;
         this.errorSolution = this.ytService.giveErrorSolution(error);
         this.error = error;
       }, () => {

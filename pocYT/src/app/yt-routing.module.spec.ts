@@ -13,6 +13,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { GoogleAuthService } from "ng-gapi";
 
@@ -32,19 +33,6 @@ describe('YtRoutingModule', () => {
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule.withRoutes(routes),
-        HttpClientTestingModule, //if you don't provide this in some way, a StaticInjectorError is thrown
-        BrowserAnimationsModule,
-        MatButtonModule,
-        MatMenuModule,
-        MatToolbarModule,
-        MatCardModule,
-        MatListModule,
-        MatInputModule,
-        MatCheckboxModule,
-        MatDividerModule
-      ],
       declarations: [
         AppComponent,
         AuthComponent,
@@ -53,6 +41,11 @@ describe('YtRoutingModule', () => {
         VideoDetailComponent,
         YtComponent,
         SafePipe
+      ],
+      schemas: [ NO_ERRORS_SCHEMA ],
+      imports: [
+        RouterTestingModule.withRoutes(routes),
+        HttpClientTestingModule, //if you don't provide this in some way, a StaticInjectorError is thrown
       ],
       providers: [
         {

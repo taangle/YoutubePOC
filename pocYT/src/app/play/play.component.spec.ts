@@ -5,6 +5,7 @@ import { Location } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { PlayComponent } from './play.component';
 import { ActivatedRouteStub } from '../../test-files/activated-route.stub';
@@ -23,12 +24,8 @@ describe('PlayComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [ PlayComponent, SafePipe ],
-      imports: [
-        RouterTestingModule,
-        BrowserAnimationsModule,
-        MatButtonModule,
-        MatToolbarModule
-      ],
+      schemas: [ NO_ERRORS_SCHEMA ],
+      imports: [ RouterTestingModule ],
       providers: [
         {
           provide: ActivatedRoute,
@@ -46,27 +43,25 @@ describe('PlayComponent', () => {
     fixture.detectChanges();
   }));
 
-  it('is created', () => {
-    expect(component).toBeTruthy();
-  });
-
-  describe('ngOnInit', () => {
-    it('populates embedUrl using the value at \'id\'', () => {
-      let stubVal = 'ngOnInit_stub';
-      routeStub.paramMapValueToReturn = stubVal;
-      component.ngOnInit();
-      expect(component.embedUrl).toEqual('https://www.youtube.com/embed/videoseries?list=' + stubVal + '&autoplay=1&loop=1');
+  describe('(unit tests)', () => {
+    describe('ngOnInit', () => {
+      it('populates embedUrl using the value at \'id\'', () => {
+        let stubVal = 'ngOnInit_stub';
+        routeStub.paramMapValueToReturn = stubVal;
+        component.ngOnInit();
+        expect(component.embedUrl).toEqual('https://www.youtube.com/embed/videoseries?list=' + stubVal + '&autoplay=1&loop=1');
+      });
     });
+  
+    describe('goBack', () => {
+      it('asks location to go back', () => {
+        component.goBack();
+        expect(locationSpy.back).toHaveBeenCalled();
+      });
+    });    
   });
 
-  describe('goBack', () => {
-    it('asks location to go back', () => {
-      component.goBack();
-      expect(locationSpy.back).toHaveBeenCalled();
-    });
-  });
-
-  describe('DOM', () => {
+  describe('(DOM)', () => {
     let appElement: HTMLElement;
 
     beforeEach(() => {
