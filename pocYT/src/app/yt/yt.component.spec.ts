@@ -19,7 +19,7 @@ import { PlaylistItemListResponse } from '../playlistItemListResponse';
 import { FakeYtService } from 'src/test-files/yt.service.fake';
 import { DebugElement } from '@angular/core';
 
-describe('YtComponent', () => {
+fdescribe('YtComponent', () => {
   let component: YtComponent;
   let fixture: ComponentFixture<YtComponent>;
   let ytServiceFake: FakeYtService;
