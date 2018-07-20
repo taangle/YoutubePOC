@@ -51,7 +51,11 @@ describe('UserDetailComponent', () => {
         ]
       }).compileComponents();
   
-      fixture = TestBed.createComponent(UserDetailComponent);
+      fixture = TestBed.overrideComponent(UserDetailComponent, {
+        set: {
+          template: '<div></div>'
+        }
+      }).createComponent(UserDetailComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
     }));

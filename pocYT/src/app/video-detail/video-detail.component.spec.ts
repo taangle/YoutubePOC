@@ -26,40 +26,42 @@ describe('VideoDetailComponent', () => {
   let locationSpy;
   let ytServiceFake: FakeYtService;
 
-  beforeEach(async(() => {
-    ytServiceFake = new FakeYtService();
-    routeStub = new ActivatedRouteStub();
-    routeStub.paramMapValueToReturn = 'initial_stub';
-    locationSpy = jasmine.createSpyObj('Location', ['back']);
-
-    TestBed.configureTestingModule({
-      declarations: [ VideoDetailComponent ],
-      schemas: [ NO_ERRORS_SCHEMA ],
-      imports: [ RouterTestingModule ],
-      providers: [
-        {
-          provide: YtService,
-          useValue: ytServiceFake
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: routeStub
-        },
-        {
-          provide: Location,
-          useValue: locationSpy
-        }
-      ]
-    }).compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(VideoDetailComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
   describe('(unit tests)', () => {
+    beforeEach(async(() => {
+      ytServiceFake = new FakeYtService();
+      routeStub = new ActivatedRouteStub();
+      routeStub.paramMapValueToReturn = 'initial_stub';
+      locationSpy = jasmine.createSpyObj('Location', ['back']);
+  
+      TestBed.configureTestingModule({
+        declarations: [ VideoDetailComponent ],
+        schemas: [ NO_ERRORS_SCHEMA ],
+        imports: [ RouterTestingModule ],
+        providers: [
+          {
+            provide: YtService,
+            useValue: ytServiceFake
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: routeStub
+          },
+          {
+            provide: Location,
+            useValue: locationSpy
+          }
+        ]
+      }).compileComponents();
+  
+      fixture = TestBed.overrideComponent(VideoDetailComponent, {
+        set: {
+          template: '<div></div>'
+        }
+      }).createComponent(VideoDetailComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    }));
+
     describe('ngOnInit', () => {
       it('calls its own getPlaylistItem', () => {
         spyOn(component, 'getPlaylistItem');
@@ -148,11 +150,40 @@ describe('VideoDetailComponent', () => {
     let appElement: HTMLElement;
     let fakePlaylistItemWithDate: PlaylistItem;
 
-    beforeEach(() => {
+    beforeEach(async(() => {
+      ytServiceFake = new FakeYtService();
+      routeStub = new ActivatedRouteStub();
+      routeStub.paramMapValueToReturn = 'initial_stub';
+      locationSpy = jasmine.createSpyObj('Location', ['back']);
+  
+      TestBed.configureTestingModule({
+        declarations: [ VideoDetailComponent ],
+        schemas: [ NO_ERRORS_SCHEMA ],
+        imports: [ RouterTestingModule ],
+        providers: [
+          {
+            provide: YtService,
+            useValue: ytServiceFake
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: routeStub
+          },
+          {
+            provide: Location,
+            useValue: locationSpy
+          }
+        ]
+      }).compileComponents();
+  
+      fixture = TestBed.createComponent(VideoDetailComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
       appElement = fixture.nativeElement;
       fakePlaylistItemWithDate = ytServiceFake.fixedFakePlaylistItem;
       fakePlaylistItemWithDate.snippet.publishedAt = '2013-10-18T14:55:24.000Z'; //DatePipe will throw an error if this field can't be converted to date
-    });
+    }));
 
     it('creates toolbar with appropriate text', () => {
       let toolbar = appElement.querySelector('mat-toolbar');
