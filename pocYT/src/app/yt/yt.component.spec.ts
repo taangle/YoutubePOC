@@ -161,7 +161,7 @@ describe('YtComponent', () => {
         expect(component.playlistItemListResponse).toEqual(expectedResponse);
       }));
   
-      it('populates error and errorSolution if ytService has a problem', fakeAsync(() => {
+      it('populates error and errorSolution and clears playlistId if ytService has a problem', fakeAsync(() => {
         let errorStub = 'error_stub';
         let solutionStub = 'solution_stub';
         getPlaylistItemsSpy.and.callFake((str) => {
@@ -174,23 +174,28 @@ describe('YtComponent', () => {
   
         component.getPlaylistItems(ytServiceFake.playlistIdStub);
         tick();
+        expect(ytServiceFake.playlistId).toEqual('');
         expect(component.error).toEqual(errorStub);
         expect(component.errorSolution).toEqual(solutionStub);
         expect(ytServiceFake.giveErrorSolution).toHaveBeenCalledWith(errorStub);
       }));
 
-      it('only allows page change once service has completed', fakeAsync(() => {
+      it('only allows page change and deletion once service has completed', fakeAsync(() => {
         getPlaylistItemsSpy.and.returnValue(new Observable((observer) => {
           expect(component.allowPageChangeButtonClick).toBeFalsy();
+          expect(component.allowDeleteButtonClick).toBeFalsy();
           observer.next(Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse));
           expect(component.allowPageChangeButtonClick).toBeFalsy();
+          expect(component.allowDeleteButtonClick).toBeFalsy();
           observer.complete();
         }));
         
         expect(component.allowPageChangeButtonClick).toBeFalsy();
+        expect(component.allowDeleteButtonClick).toBeFalsy();
         component.getPlaylistItems(ytServiceFake.playlistIdStub);
         tick();
         expect(component.allowPageChangeButtonClick).toBeTruthy();
+        expect(component.allowDeleteButtonClick).toBeTruthy();
       }));
     });
   
@@ -432,7 +437,8 @@ describe('YtComponent', () => {
         component.toggleToDelete(0);
         component.deletePlaylistItems();
         tick();
-  
+
+        expect(component.allowDeleteButtonClick).toBeFalsy();
         expect(ytServiceFake.deletePlaylistItem).toHaveBeenCalledTimes(1);
         expect(component.getPlaylistItems).toHaveBeenCalledWith(ytServiceFake.playlistIdStub);
 
@@ -473,7 +479,7 @@ describe('YtComponent', () => {
         });
       }));
   
-      it('populates error and errorSolution if ytService has a problem, does not reset toggle status', fakeAsync(() => {
+      it('populates error and errorSolution if ytService has a problem, does not reset toggle status but resets delete button', fakeAsync(() => {
         let errorStub = 'delete_error_stub';
         let solutionStub = 'delete_solution_stub';
         let deleteSpy = spyOn(ytServiceFake, 'deletePlaylistItem').and.returnValue(new Observable((observer) => {
@@ -491,6 +497,7 @@ describe('YtComponent', () => {
 
         expect(component.error).toEqual(errorStub);
         expect(component.errorSolution).toEqual(solutionStub);
+        expect(component.allowDeleteButtonClick).toBeTruthy();
 
         deleteSpy.and.returnValue(new Observable((observer) => {
           observer.next();
@@ -886,6 +893,25 @@ describe('YtComponent', () => {
                 checkbox.click();
                 expect(component.toggleToDelete).toHaveBeenCalledWith(index);
               });
+            });
+
+            it('clears errors and calls deletePlaylistItems when Delete button is clicked', () => {
+              component.playlistItems = new Array<PlaylistItem>(50);
+              component.playlistItems.fill(Object.assign({}, ytServiceFake.fixedFakePlaylistItem));
+              component.playlistItemListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
+              component.allowDeleteButtonClick = true;
+              fixture.detectChanges();
+
+              let deleteButton = rootElement.querySelectorAll('button')[2];
+              spyOn(component, 'clearErrors');
+              spyOn(component, 'deletePlaylistItems');
+
+              deleteButton.click();
+              fixture.detectChanges();
+
+              expect(component.allowDeleteButtonClick).toBeTruthy();
+              expect(component.clearErrors).toHaveBeenCalled();
+              expect(component.deletePlaylistItems).toHaveBeenCalled();
             });
 
             it('contains button and link to video page, along with position and title', () => {

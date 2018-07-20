@@ -42,7 +42,7 @@
       <!--routes user to embedded playlist view based on retrieved playlist ID associated with first video-->
       <a routerLink="/play/{{playlistItems[0].snippet.playlistId}}"><button mat-mini-fab color="primary">&#9658;</button></a>&nbsp;
       <!--deletes all playlistItems marked by checkboxes-->
-      <button mat-raised-button color="primary" (click)="clearErrors(); deletePlaylistItems()">DELETE SELECTED VIDEOS</button>
+      <button mat-raised-button color="primary" (click)="clearErrors(); deletePlaylistItems()" [disabled]="!allowDeleteButtonClick">DELETE SELECTED VIDEOS</button>
       <mat-list dense>
         <!--lists titles of all PlaylistItems in playlist; each can be clicked for more information or queued for deletion by clicking the corresponding checkbox-->
         <mat-list-item *ngFor="let item of playlistItems; let i = index">

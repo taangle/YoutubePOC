@@ -17,8 +17,6 @@ describe('PlayComponent', () => {
   let routeStub: ActivatedRouteStub;
   let locationSpy;
 
-  
-
   describe('(unit tests)', () => {
     beforeEach(async(() => {
       routeStub = new ActivatedRouteStub();

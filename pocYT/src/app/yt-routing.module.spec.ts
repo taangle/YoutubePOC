@@ -47,6 +47,11 @@ describe('YtRoutingModule', () => {
         YtComponent,
         SafePipe
       ],
+      schemas: [ NO_ERRORS_SCHEMA ],
+      imports: [
+        RouterTestingModule.withRoutes(routes),
+        HttpClientTestingModule, //if you don't provide this in some way, a StaticInjectorError is thrown
+      ],
       providers: [
         {
           //if you don't provide this in some way, a StaticInjectorError is thrown
