@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { YtService } from '../yt.service';
 import { PlaylistItem } from '../playlistItem';
 import { PlaylistItemListResponse } from '../playlistItemListResponse';
-import { forEach } from '@angular/router/src/utils/collection';
 
 @Component({
   selector: 'app-yt',
