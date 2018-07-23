@@ -32,8 +32,7 @@ export class VideoDetailComponent implements OnInit {
     this.ytService.getPlaylistItem(id).subscribe(
       playlistItemListResponse => this.item = playlistItemListResponse.items[0], 
       error => {
-        this.errorSolution = this.ytService.giveErrorSolution(error);
-        this.error = error;
+        this.setError(error);
       });
   }
 
@@ -44,24 +43,34 @@ export class VideoDetailComponent implements OnInit {
   }
 
   // Asks ytService to update the current item, makes sure that ytService has an id, and calls goBack
-  savePlaylistItem(): void {
+  savePlaylistItem(position: number): void {
 
-    this.ytService.updatePlaylistItem(this.item).subscribe(
-      () => {
-        //navigates user back to playlist page if user lands on a detail page independently (without routing)
-        if (!this.ytService.playlistId) {
-          this.ytService.playlistId = this.item.snippet.playlistId;
-        }
-        this.goBack();
-      }, error => {
-        this.errorSolution = this.ytService.giveErrorSolution(error);
-        this.error = error;
-      });
+    if (isNaN(position) || position < 1) {
+      return;
+    }
+
+    this.item.snippet.position = position;
+    this.ytService.updatePlaylistItem(this.item).subscribe(() => {
+      //navigates user back to playlist page if user lands on a detail page independently (without routing)
+      if (!this.ytService.playlistId) {
+        this.ytService.playlistId = this.item.snippet.playlistId;
+      }
+      this.goBack();
+    }, error => {
+      this.setError(error);
+    });
 
   }
 
   isNaN(num: number): boolean {
     return isNaN(num);
+  }
+
+  private setError(error) {
+
+    this.errorSolution = this.ytService.giveErrorSolution(error);
+    this.error = error;
+
   }
 
 }

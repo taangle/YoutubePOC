@@ -1,8 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatButtonModule } from '@angular/material/button';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatCardModule } from '@angular/material/card';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { AuthComponent } from './auth.component';
@@ -13,27 +9,31 @@ describe('AuthComponent', () => {
   let fixture: ComponentFixture<AuthComponent>;
   let stubAuthService;
 
-  beforeEach(async(() => {
-    stubAuthService = new AuthServiceStub();
-    spyOn(stubAuthService, 'isSignedIn').and.returnValue(false);
-
-    TestBed.configureTestingModule({
-      declarations: [AuthComponent],
-      schemas: [ NO_ERRORS_SCHEMA ],
-      providers: [
-        {
-          provide: AuthService,
-          useValue: stubAuthService
-        }
-      ]
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(AuthComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  }));
-
   describe('(unit tests)', () => {
+    beforeEach(async(() => {
+      stubAuthService = new AuthServiceStub();
+      spyOn(stubAuthService, 'isSignedIn').and.returnValue(false);
+  
+      TestBed.configureTestingModule({
+        declarations: [AuthComponent],
+        schemas: [ NO_ERRORS_SCHEMA ],
+        providers: [
+          {
+            provide: AuthService,
+            useValue: stubAuthService
+          }
+        ]
+      });
+  
+      fixture = TestBed.overrideComponent(AuthComponent, {
+        set: {
+          template: '<div></div>'
+        }
+      }).createComponent(AuthComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    }));
+
     describe('ngOnInit', () => {
       describe('sets the value of IS_SIGNED_IN to the return value of authService.isSignedIn()', () => {
         it('when isSignedIn() returns false', () => {
@@ -79,9 +79,27 @@ describe('AuthComponent', () => {
   describe('(DOM)', () => {
     let appElement: HTMLElement;
 
-    beforeEach(() => {
+    beforeEach(async(() => {
+      stubAuthService = new AuthServiceStub();
+      spyOn(stubAuthService, 'isSignedIn').and.returnValue(false);
+  
+      TestBed.configureTestingModule({
+        declarations: [AuthComponent],
+        schemas: [ NO_ERRORS_SCHEMA ],
+        providers: [
+          {
+            provide: AuthService,
+            useValue: stubAuthService
+          }
+        ]
+      }).compileComponents();
+  
+      fixture = TestBed.createComponent(AuthComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
       appElement = fixture.nativeElement;
-    });
+    }));
 
     it('creates toolbar with appropriate text', () => {
       let toolbar = appElement.querySelector('mat-toolbar');

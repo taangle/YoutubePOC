@@ -1,5 +1,6 @@
-import { SafePipe } from './safe.pipe';
 import { DomSanitizer } from '@angular/platform-browser';
+
+import { SafePipe } from './safe.pipe';
 
 describe('SafePipe', () => {
   let sanitizerSpy;

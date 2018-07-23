@@ -9,8 +9,10 @@
   <mat-card-header>
     <mat-card-title id="sign-in-status">
       Current Status:
-      <span *ngIf="isSignedIn()">Signed In</span>
-      <span *ngIf="!isSignedIn()">Signed Out</span>
+      <span *ngIf="isSignedIn(); else signedOutNotice">Signed In</span>
+      <ng-template #signedOutNotice>
+        <span>Signed Out</span>
+      </ng-template>
     </mat-card-title>
   </mat-card-header>
 

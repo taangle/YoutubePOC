@@ -26,40 +26,42 @@ describe('VideoDetailComponent', () => {
   let locationSpy;
   let ytServiceFake: FakeYtService;
 
-  beforeEach(async(() => {
-    ytServiceFake = new FakeYtService();
-    routeStub = new ActivatedRouteStub();
-    routeStub.paramMapValueToReturn = 'initial_stub';
-    locationSpy = jasmine.createSpyObj('Location', ['back']);
-
-    TestBed.configureTestingModule({
-      declarations: [ VideoDetailComponent ],
-      schemas: [ NO_ERRORS_SCHEMA ],
-      imports: [ RouterTestingModule ],
-      providers: [
-        {
-          provide: YtService,
-          useValue: ytServiceFake
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: routeStub
-        },
-        {
-          provide: Location,
-          useValue: locationSpy
-        }
-      ]
-    }).compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(VideoDetailComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
   describe('(unit tests)', () => {
+    beforeEach(async(() => {
+      ytServiceFake = new FakeYtService();
+      routeStub = new ActivatedRouteStub();
+      routeStub.paramMapValueToReturn = 'initial_stub';
+      locationSpy = jasmine.createSpyObj('Location', ['back']);
+  
+      TestBed.configureTestingModule({
+        declarations: [ VideoDetailComponent ],
+        schemas: [ NO_ERRORS_SCHEMA ],
+        imports: [ RouterTestingModule ],
+        providers: [
+          {
+            provide: YtService,
+            useValue: ytServiceFake
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: routeStub
+          },
+          {
+            provide: Location,
+            useValue: locationSpy
+          }
+        ]
+      });
+  
+      fixture = TestBed.overrideComponent(VideoDetailComponent, {
+        set: {
+          template: '<div></div>'
+        }
+      }).createComponent(VideoDetailComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    }));
+
     describe('ngOnInit', () => {
       it('calls its own getPlaylistItem', () => {
         spyOn(component, 'getPlaylistItem');
@@ -108,6 +110,7 @@ describe('VideoDetailComponent', () => {
     describe('savePlaylistItem', () => {
       let itemToSave: PlaylistItem;
       let playlistIdStub = 'playlistId_stub';
+      let newPosition = 1;
   
       beforeEach(() => {
         itemToSave = Object.assign({}, ytServiceFake.fixedFakePlaylistItem);
@@ -115,19 +118,30 @@ describe('VideoDetailComponent', () => {
         component.item = itemToSave;
         spyOn(component, 'goBack');
       });
+
+      it('does not call ytService if new position is invalid', fakeAsync(() => {
+        spyOn(ytServiceFake, 'updatePlaylistItem');
+
+        component.savePlaylistItem(NaN);
+        tick();
+        expect(ytServiceFake.updatePlaylistItem).not.toHaveBeenCalled();
+        component.savePlaylistItem(-1);
+        tick();
+        expect(ytServiceFake.updatePlaylistItem).not.toHaveBeenCalled();
+      }));
   
       it('asks ytService to update item', fakeAsync(() => {
         spyOn(ytServiceFake, 'updatePlaylistItem').and.callFake(() => {
           return new Observable();
         });
-        component.savePlaylistItem();
+        component.savePlaylistItem(newPosition);
         tick();
         expect(ytServiceFake.updatePlaylistItem).toHaveBeenCalledWith(itemToSave);
       }));
   
       it('sets ytService.playlistId if it does not exist, calls goBack', fakeAsync(() => {
         ytServiceFake.playlistId = undefined;
-        component.savePlaylistItem();
+        component.savePlaylistItem(newPosition);
         tick();
         expect(ytServiceFake.playlistId).toEqual(itemToSave.snippet.playlistId);
         expect(component.goBack).toHaveBeenCalled();
@@ -136,7 +150,7 @@ describe('VideoDetailComponent', () => {
       it('leaves ytService.playlistId alone if it already exists, calls goBack', fakeAsync(() => {
         let differentPlaylistIdStub = 'some_other_id_stub';
         ytServiceFake.playlistId = differentPlaylistIdStub;
-        component.savePlaylistItem();
+        component.savePlaylistItem(newPosition);
         tick();
         expect(ytServiceFake.playlistId).toEqual(differentPlaylistIdStub);
         expect(component.goBack).toHaveBeenCalled();
@@ -148,11 +162,40 @@ describe('VideoDetailComponent', () => {
     let appElement: HTMLElement;
     let fakePlaylistItemWithDate: PlaylistItem;
 
-    beforeEach(() => {
+    beforeEach(async(() => {
+      ytServiceFake = new FakeYtService();
+      routeStub = new ActivatedRouteStub();
+      routeStub.paramMapValueToReturn = 'initial_stub';
+      locationSpy = jasmine.createSpyObj('Location', ['back']);
+  
+      TestBed.configureTestingModule({
+        declarations: [ VideoDetailComponent ],
+        schemas: [ NO_ERRORS_SCHEMA ],
+        imports: [ RouterTestingModule ],
+        providers: [
+          {
+            provide: YtService,
+            useValue: ytServiceFake
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: routeStub
+          },
+          {
+            provide: Location,
+            useValue: locationSpy
+          }
+        ]
+      }).compileComponents();
+  
+      fixture = TestBed.createComponent(VideoDetailComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
       appElement = fixture.nativeElement;
       fakePlaylistItemWithDate = ytServiceFake.fixedFakePlaylistItem;
       fakePlaylistItemWithDate.snippet.publishedAt = '2013-10-18T14:55:24.000Z'; //DatePipe will throw an error if this field can't be converted to date
-    });
+    }));
 
     it('creates toolbar with appropriate text', () => {
       let toolbar = appElement.querySelector('mat-toolbar');
@@ -164,6 +207,12 @@ describe('VideoDetailComponent', () => {
       let noCards = appElement.querySelectorAll('mat-card');
 
       expect(noCards.length).toEqual(0);
+    });
+
+    it('generates Go Back button when item does not exist', () => {
+      let goBackButton = appElement.querySelector('button');
+
+      expect(goBackButton.innerHTML).toContain('Go Back');
     });
 
     it('creates card with header, content if item exists', () => {
@@ -227,21 +276,20 @@ describe('VideoDetailComponent', () => {
 
       expect(detailCardContentForm).toBeTruthy();
       expect(detailCardContentFormInput.value).toEqual(`${component.item.snippet.position + 1}`);
-      expect(detailCardContentFormInput.placeholder).toEqual('New Position');
+      expect(detailCardContentFormInput.placeholder).toEqual('Enter a number > 0');
     });
 
-    it('updates item\'s position when input value is changed', () => {
+    it('gives uneditable position warning if playlist item position is initially NaN and disables Save button', () => {
       component.item = fakePlaylistItemWithDate;
+      component.item.snippet.position = NaN;
       fixture.detectChanges();
 
-      let detailCardContent = appElement.querySelector('mat-card').querySelector('mat-card-content');
-      let detailCardContentInput = detailCardContent.querySelector('input');
-      let newPosition = '9';
+      let warning = appElement.querySelector('mat-card').querySelectorAll('p')[5];
+      let buttons = appElement.querySelectorAll('button');
+      let saveButton = buttons[1];
 
-      detailCardContentInput.value = newPosition;
-      detailCardContentInput.dispatchEvent(new Event('input')); //[value] won't change without (input) being triggered
-      fixture.detectChanges();
-      expect(component.item.snippet.position).toEqual(+newPosition - 1);
+      expect(warning.innerHTML).toContain('You can\'t update the position of items in this playlist.');
+      expect(saveButton.disabled).toBeTruthy();
     });
 
     it('calls savePlaylistItem when form is selected and Enter key is pressed', () => {
@@ -256,14 +304,16 @@ describe('VideoDetailComponent', () => {
       expect(component.savePlaylistItem).toHaveBeenCalled();
     });
 
-    it('creates Go Back and Save buttons', () => {
+    it('creates Go Back and Save buttons when item exists', () => {
+      component.item = fakePlaylistItemWithDate;
+      fixture.detectChanges();
+
       let buttons = appElement.querySelectorAll('button');
       let goBackButton = buttons[0];
       let saveButton = buttons[1];
 
       expect(goBackButton.innerHTML).toContain('Go Back');
       expect(saveButton.innerHTML).toContain('SAVE');
-      expect(saveButton.disabled).toBeTruthy();
     });
 
     it('triggers goBack when corresponding button is clicked', () => {

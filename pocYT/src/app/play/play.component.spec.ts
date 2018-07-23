@@ -2,9 +2,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatButtonModule } from '@angular/material/button';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { PlayComponent } from './play.component';
@@ -17,33 +14,37 @@ describe('PlayComponent', () => {
   let routeStub: ActivatedRouteStub;
   let locationSpy;
 
-  beforeEach(async(() => {
-    routeStub = new ActivatedRouteStub();
-    routeStub.paramMapValueToReturn = 'initial_stub';
-    locationSpy = jasmine.createSpyObj('Location', ['back']);
-
-    TestBed.configureTestingModule({
-      declarations: [ PlayComponent, SafePipe ],
-      schemas: [ NO_ERRORS_SCHEMA ],
-      imports: [ RouterTestingModule ],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: routeStub 
-        },
-        {
-          provide: Location,
-          useValue: locationSpy
-        }
-      ]
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(PlayComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  }));
-
   describe('(unit tests)', () => {
+    beforeEach(async(() => {
+      routeStub = new ActivatedRouteStub();
+      routeStub.paramMapValueToReturn = 'initial_stub';
+      locationSpy = jasmine.createSpyObj('Location', ['back']);
+  
+      TestBed.configureTestingModule({
+        declarations: [ PlayComponent, SafePipe ],
+        schemas: [ NO_ERRORS_SCHEMA ],
+        imports: [ RouterTestingModule ],
+        providers: [
+          {
+            provide: ActivatedRoute,
+            useValue: routeStub 
+          },
+          {
+            provide: Location,
+            useValue: locationSpy
+          }
+        ]
+      });
+  
+      fixture = TestBed.overrideComponent(PlayComponent, {
+        set: {
+          template: '<div></div>'
+        }
+      }).createComponent(PlayComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    }));
+
     describe('ngOnInit', () => {
       it('populates embedUrl using the value at \'id\'', () => {
         let stubVal = 'ngOnInit_stub';
@@ -64,9 +65,33 @@ describe('PlayComponent', () => {
   describe('(DOM)', () => {
     let appElement: HTMLElement;
 
-    beforeEach(() => {
+    beforeEach(async(() => {
+      routeStub = new ActivatedRouteStub();
+      routeStub.paramMapValueToReturn = 'initial_stub';
+      locationSpy = jasmine.createSpyObj('Location', ['back']);
+  
+      TestBed.configureTestingModule({
+        declarations: [ PlayComponent, SafePipe ],
+        schemas: [ NO_ERRORS_SCHEMA ],
+        imports: [ RouterTestingModule ],
+        providers: [
+          {
+            provide: ActivatedRoute,
+            useValue: routeStub 
+          },
+          {
+            provide: Location,
+            useValue: locationSpy
+          }
+        ]
+      }).compileComponents();
+  
+      fixture = TestBed.createComponent(PlayComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
       appElement = fixture.nativeElement;
-    });
+    }));
 
     it('creates a toolbar with appropriate text', () => {
       let toolbar = appElement.querySelector('mat-toolbar');

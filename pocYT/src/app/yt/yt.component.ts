@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { YtService } from '../yt.service';
 import { PlaylistItem } from '../playlistItem';
 import { PlaylistItemListResponse } from '../playlistItemListResponse';
-import { forEach } from '@angular/router/src/utils/collection';
 
 @Component({
   selector: 'app-yt',
@@ -46,20 +45,14 @@ export class YtComponent implements OnInit {
       return;
     }
 
-    this.splitUrl = [];
-    this.splitUrl = playlistId.split(this.ytPlaylistDelimiter);
-    if (this.splitUrl[0] !== playlistId) {
-      this.splitUrl = this.splitUrl[1].split('&');
-      playlistId = this.splitUrl[0];
-    }
+    playlistId = this.parseId(playlistId, this.ytPlaylistDelimiter);
 
     this.ytService.getPlaylistItems(playlistId).subscribe(playlistItemListResponse => {
       this.playlistItemListResponse = playlistItemListResponse;
       this.playlistItems = this.playlistItemListResponse.items;
     }, error => {
       this.ytService.playlistId = ''; //stops ytService from holding on to junk playlist IDs
-      this.errorSolution = this.ytService.giveErrorSolution(error);
-      this.error = error;
+      this.setError(error);
     }, () => {
       this.allowDeleteButtonClick = true;
       this.allowPageChangeButtonClick = true;
@@ -75,25 +68,17 @@ export class YtComponent implements OnInit {
       return;
     }
 
-    this.splitUrl = [];
-    this.splitUrl = videoId.split(this.ytVideoDelimiter);
-    if (this.splitUrl[0] !== videoId) {
-      this.splitUrl = this.splitUrl[1].split('&');
-      videoId = this.splitUrl[0];
-    }
+    videoId = this.parseId(videoId, this.ytVideoDelimiter);
 
     this.ytService.addPlaylistItem(videoId).subscribe(playlistItem => {
       //max display is 50 PlaylistItems, so this shouldn't display a new video entry if it is added to the end of a 50+-video playlist
       if (this.playlistItems.length < 50 && this.playlistItems.length > 0) {
-        playlistItem.snippet.position = this.playlistItems[this.playlistItems.length - 1].snippet.position + 1; //updates position since returned playlistItem has none initially
-        this.playlistItems.push(playlistItem);
-        this.playlistItemListResponse.pageInfo.totalResults += 1; //updates display total to reflect actual total
+        this.updateDisplayWithNewVideo(playlistItem);
       } else {
         this.getPlaylistItems(this.ytService.playlistId); //has to refresh display list if adding to full page; makes another GET call
       }
     }, error => {
-      this.errorSolution = this.ytService.giveErrorSolution(error);
-      this.error = error;
+        this.setError(error);
     });
 
   }
@@ -101,13 +86,7 @@ export class YtComponent implements OnInit {
   // Asks ytService to delete array of items marked for deletion, then gets the playlist from ytService
   deletePlaylistItems(): void {
 
-    this.itemsToDelete = []; //resets array of items marked for deletion
-    for (let i in this.playlistItems) {
-      //adds playlistItem to itemsToDelete if the corresponding index in shouldDelete is true, then changes element at that index back to false
-      if (this.shouldDelete[i]) {
-        this.itemsToDelete.push(this.playlistItems[i]);
-      }
-    }
+    this.populateItemsToDelete();
     //returns if user never marked any playlistItems for deletion
     if (this.itemsToDelete.length == 0) {
       return;
@@ -118,8 +97,7 @@ export class YtComponent implements OnInit {
         console.log("yt.component: item successfully deleted"); //currently, no "loading" indicator so this just prints to the console for each successful delete
     }, error => {
         this.allowDeleteButtonClick = true;
-        this.errorSolution = this.ytService.giveErrorSolution(error);
-        this.error = error;
+        this.setError(error);
       }, () => {
         this.getPlaylistItems(this.ytService.playlistId); //makes another GET call to refresh display after all marked playlistItems are deleted
         this.shouldDelete = new Array(50).fill(false); //resets deletion flags
@@ -160,6 +138,46 @@ export class YtComponent implements OnInit {
   clearPageToken(): void {
 
     this.ytService.playlistItemPageToken = '';
+
+  }
+
+  private setError(error) {
+
+    this.errorSolution = this.ytService.giveErrorSolution(error);
+    this.error = error;
+
+  }
+
+  private parseId(id: string, delimiter: string) {
+
+    this.splitUrl = [];
+    let newId = id;
+    this.splitUrl = newId.split(delimiter);
+    if (this.splitUrl[0] !== newId) {
+      this.splitUrl = this.splitUrl[1].split('&');
+      newId = this.splitUrl[0];
+    }
+    return newId;
+
+  }
+
+  private updateDisplayWithNewVideo(playlistItem: PlaylistItem) {
+
+    playlistItem.snippet.position = this.playlistItems[this.playlistItems.length - 1].snippet.position + 1; //updates position since returned playlistItem has none initially
+    this.playlistItems.push(playlistItem);
+    this.playlistItemListResponse.pageInfo.totalResults += 1; //updates display total to reflect actual total
+
+  }
+
+  private populateItemsToDelete() {
+
+    this.itemsToDelete = []; //resets array of items marked for deletion
+    for (let i in this.playlistItems) {
+      //adds playlistItem to itemsToDelete if the corresponding index in shouldDelete is true, then changes element at that index back to false
+      if (this.shouldDelete[i]) {
+        this.itemsToDelete.push(this.playlistItems[i]);
+      }
+    }
 
   }
 

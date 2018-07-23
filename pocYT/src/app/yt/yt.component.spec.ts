@@ -1,48 +1,43 @@
-﻿import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatButtonModule } from '@angular/material/button';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatCardModule } from '@angular/material/card';
-import { MatListModule } from '@angular/material/list';
-import { MatInputModule } from '@angular/material/input';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDividerModule } from '@angular/material/divider';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { YtComponent } from './yt.component';
-import { GoogleApiService } from "ng-gapi";
 import { YtService } from '../yt.service';
 import { PlaylistItem } from '../playlistItem';
 import { PlaylistItemListResponse } from '../playlistItemListResponse';
 import { FakeYtService } from 'src/test-files/yt.service.fake';
-import { DebugElement } from '@angular/core';
 
 describe('YtComponent', () => {
   let component: YtComponent;
   let fixture: ComponentFixture<YtComponent>;
   let ytServiceFake: FakeYtService;
 
-  beforeEach(async(() => {
-    ytServiceFake = new FakeYtService();
-
-    TestBed.configureTestingModule({
-      declarations: [YtComponent],
-      schemas: [ NO_ERRORS_SCHEMA ],
-      imports: [ RouterTestingModule ],
-      providers: [
-        {
-          provide: YtService,
-          useValue: ytServiceFake as YtService
-        }
-      ]
-    }).compileComponents();
-    fixture = TestBed.createComponent(YtComponent);
-    component = fixture.componentInstance;
-  }));
-
   describe('(unit tests)', () => {
+    beforeEach(async(() => {
+      ytServiceFake = new FakeYtService();
+  
+      TestBed.configureTestingModule({
+        declarations: [YtComponent],
+        schemas: [ NO_ERRORS_SCHEMA ],
+        imports: [ RouterTestingModule ],
+        providers: [
+          {
+            provide: YtService,
+            useValue: ytServiceFake as YtService
+          }
+        ]
+      });
+      
+      fixture = TestBed.overrideComponent(YtComponent, {
+        set: {
+          template: '<div></div>'
+        }
+      }).createComponent(YtComponent);
+      component = fixture.componentInstance;
+    }));
+
     describe('ngOnInit:', () => {
       describe('(when ytService has no playlistId):', () => {
         it('does not ask service for playlist', () => {
@@ -652,10 +647,26 @@ describe('YtComponent', () => {
     let debugElement: DebugElement;
     let rootElement: HTMLElement;
 
-    beforeEach(() => {
+    beforeEach(async(() => {
+      ytServiceFake = new FakeYtService();
+  
+      TestBed.configureTestingModule({
+        declarations: [YtComponent],
+        schemas: [ NO_ERRORS_SCHEMA ],
+        imports: [ RouterTestingModule ],
+        providers: [
+          {
+            provide: YtService,
+            useValue: ytServiceFake as YtService
+          }
+        ]
+      }).compileComponents();
+      fixture = TestBed.createComponent(YtComponent);
+      component = fixture.componentInstance;
+
       debugElement = fixture.debugElement;
       rootElement = fixture.nativeElement;
-    });
+    }));
 
     describe('mat-toolbar:', () => {
       let toolbar: Element;

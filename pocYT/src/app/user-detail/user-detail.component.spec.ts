@@ -1,10 +1,5 @@
 import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatButtonModule } from '@angular/material/button';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatCardModule } from '@angular/material/card';
-import { MatListModule } from '@angular/material/list';
 import { Observable } from 'rxjs';
 import { tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
@@ -49,9 +44,13 @@ describe('UserDetailComponent', () => {
             useValue: routerSpy
           }
         ]
-      }).compileComponents();
+      });
   
-      fixture = TestBed.createComponent(UserDetailComponent);
+      fixture = TestBed.overrideComponent(UserDetailComponent, {
+        set: {
+          template: '<div></div>'
+        }
+      }).createComponent(UserDetailComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
     }));
