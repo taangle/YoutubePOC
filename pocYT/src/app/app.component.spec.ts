@@ -1,12 +1,9 @@
 import { TestBed, async, ComponentFixture } from '@angular/core/testing';
-import { AppComponent } from './app.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatButtonModule } from '@angular/material/button';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+
+import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
   let component: AppComponent;

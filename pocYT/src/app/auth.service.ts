@@ -87,7 +87,7 @@ export class AuthService {
 
   }
 
-  //unsure what form authentication error takes
+  //just prints error since one should only occur when user closes sign-in pop-up or Google has some error on their end
   private handleAuthError(error: any) {
 
     console.error(error);

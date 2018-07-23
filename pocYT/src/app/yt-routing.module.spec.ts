@@ -1,4 +1,3 @@
-import { routes } from './yt-routing.module';
 import { Location } from "@angular/common";
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -15,8 +14,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
-import { GoogleAuthService } from "ng-gapi";
-
+import { routes } from './yt-routing.module';
 import { AppComponent } from 'src/app/app.component';
 import { AuthComponent } from 'src/app/auth/auth.component';
 import { PlayComponent } from 'src/app/play/play.component';
@@ -24,6 +22,8 @@ import { UserDetailComponent } from 'src/app/user-detail/user-detail.component';
 import { VideoDetailComponent } from 'src/app/video-detail/video-detail.component';
 import { YtComponent } from 'src/app/yt/yt.component';
 import { SafePipe } from 'src/app/safe.pipe';
+
+import { GoogleAuthService } from "ng-gapi";
 
 describe('YtRoutingModule', () => {
   let location: Location;

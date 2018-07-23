@@ -3,6 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs';
 
 import { AuthService } from './auth.service';
+
 import { GoogleAuthService } from "ng-gapi";
 
 describe('AuthService', () => {

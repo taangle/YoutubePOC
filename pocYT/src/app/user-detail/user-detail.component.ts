@@ -38,8 +38,7 @@ export class UserDetailComponent implements OnInit {
       this.playlistListResponse = playlistListResponse;
       this.playlists = this.playlistListResponse.items;
     }, error => {
-      this.errorSolution = this.ytService.giveErrorSolution(error);
-      this.error = error;
+      this.setError(error);
     }, () => {
       this.allowPageChangeButtonClick = true;
     });
@@ -76,6 +75,13 @@ export class UserDetailComponent implements OnInit {
 
     this.error = null;
     this.errorSolution = null;
+
+  }
+
+  private setError(error) {
+
+    this.errorSolution = this.ytService.giveErrorSolution(error);
+    this.error = error;
 
   }
 

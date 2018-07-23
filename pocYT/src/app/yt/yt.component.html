@@ -4,6 +4,7 @@
   </mat-toolbar-row>
 
   <mat-toolbar-row>
+    <!--hitting Enter key does the same thing as clicking button-->
     <mat-form-field (keyup.enter)="clearErrors(); clearPageToken(); getPlaylistItems(playlistId.value); playlistId.value=''">
       <input matInput placeholder="Playlist ID" #playlistId />
     </mat-form-field>&nbsp;
@@ -68,6 +69,7 @@
         If you're signed-in, you can also add a video to the playlist by pasting a YouTube video ID (or any URL that contains a video ID) in the box at the bottom or delete videos by checking the boxes next to the videos you want to delete before clicking "Delete Selected Videos".
       </p>
 
+      <!--hitting Enter key does the same thing as clicking button-->
       <mat-form-field (keyup.enter)="clearErrors(); addPlaylistItem(videoId.value); videoId.value=''">
         <input matInput placeholder="Video ID" #videoId />
       </mat-form-field>&nbsp;

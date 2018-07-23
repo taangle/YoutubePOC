@@ -17,7 +17,7 @@
 </mat-card>
 <br />
 
-<mat-card *ngIf="item">
+<mat-card *ngIf="item; else backButton">
 
   <mat-card-header>
     <mat-card-title id="video-title">{{item.snippet.title}}</mat-card-title>
@@ -34,26 +34,36 @@
 
     <mat-divider [inset]="true"></mat-divider>
 
-    <div *ngIf="!isNaN(item.snippet.position)">
+    <div *ngIf="!isNaN(item.snippet.position); else notEditableWarning">
       <p>
-      If you're signed-in, you can update the position of this video in its playlist by changing the number and clicking "Save".
+        If you're signed-in, you can update the position of this video in its playlist by changing the number and clicking "Save".
       </p>
     </div>
-    <div *ngIf="isNaN(item.snippet.position)">
-        <p>
+    <!--guards against deprecated Favorites/Liked Videos playlists, which can't have their videos' positions updated-->
+    <ng-template #notEditableWarning>
+      <p>
         You can't update the position of items in this playlist.
-        </p>
-    </div>
-    
+      </p>
+    </ng-template>
 
-    <mat-form-field (keyup.enter)="savePlaylistItem()">
-      <!--currently, displays 0 when user clears position with backspace, then displays placeholder when backspace is hit again; 0 is overwritten upon typing so it's like an extra placeholder-->
-      <!--+/-1 differentiates between display and array position; instantly commits position change to item object, so the updated position can be pulled when user clicks Save-->
-      <input matInput [value]="item.snippet.position+1" (input)="item.snippet.position=$event.target.value-1" placeholder="New Position" />
+    <!--hitting Enter key does the same thing as clicking button-->
+    <mat-form-field (keyup.enter)="savePlaylistItem(position.value-1)">
+      <!--+/-1 differentiates between display and array position; +1 for display, -1 for when user clicks Save and actual playlist position gets updated-->
+      <input matInput [value]="item.snippet.position+1" placeholder="Enter a number > 0" #position />
     </mat-form-field>
+
   </mat-card-content>
+
+  <mat-card-actions>
+
+    <button mat-raised-button color="primary" (click)="goBack()">Go Back</button>
+    <button mat-raised-button color="primary" (click)="savePlaylistItem(position.value-1)" [disabled]="isNaN(item.snippet.position)">SAVE</button>
+
+  </mat-card-actions>
 
 </mat-card>
 
-<button mat-raised-button color="primary" (click)="goBack()">Go Back</button>
-<button mat-raised-button color="primary" (click)="savePlaylistItem()" [disabled]="!item">SAVE</button>
+<!--extra back button in case item ID doesn't exist and user is routed to an error page-->
+<ng-template #backButton>
+  <button mat-raised-button color="primary" (click)="goBack()">Go Back</button>
+</ng-template>
