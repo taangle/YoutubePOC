@@ -79,7 +79,7 @@ describe('AuthService', () => {
   });
 
   describe('getToken', () => {
-    it('throws error if no taken has been set', () => {
+    it('throws error if no token has been set', () => {
       expect(testedAuthService.getToken).toThrowError("No token set; authentication required.");
     });
   

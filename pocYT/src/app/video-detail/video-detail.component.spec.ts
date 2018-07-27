@@ -298,10 +298,11 @@ describe('VideoDetailComponent', () => {
 
       let detailCardContent = appElement.querySelector('mat-card').querySelector('mat-card-content');
       let detailCardContentForm = detailCardContent.querySelector('mat-form-field');
+      let positionInput = detailCardContentForm.querySelector('input');
       spyOn(component, 'savePlaylistItem');
 
       detailCardContentForm.dispatchEvent(new KeyboardEvent('keyup', { 'key': 'Enter' }));
-      expect(component.savePlaylistItem).toHaveBeenCalled();
+      expect(component.savePlaylistItem).toHaveBeenCalledWith(+positionInput.value - 1);
     });
 
     it('creates Go Back and Save buttons when item exists', () => {
@@ -329,10 +330,11 @@ describe('VideoDetailComponent', () => {
       fixture.detectChanges();
 
       let saveButton = appElement.querySelectorAll('button')[1];
+      let positionInput = appElement.querySelector('input');
       spyOn(component, 'savePlaylistItem');
 
       saveButton.click();
-      expect(component.savePlaylistItem).toHaveBeenCalled();
+      expect(component.savePlaylistItem).toHaveBeenCalledWith(+positionInput.value - 1);
     });
 
     it('creates card with header, content when error and errorSolution exist', () => {
