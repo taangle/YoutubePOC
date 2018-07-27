@@ -327,6 +327,20 @@ describe('UserDetailComponent', () => {
       expect(itemViewButton.innerHTML).toContain('VIEW/EDIT');
     });
 
+    it('calls toPlaylist when View/Edit button is clicked', () => {
+      component.playlistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
+      component.playlists = component.playlistListResponse.items;
+      fixture.detectChanges();
+
+      let playlistsCardContent = appElement.querySelector('mat-card').querySelector('mat-card-content');
+      let playlistsCardContentList = playlistsCardContent.querySelector('mat-list');
+      let itemViewButton = playlistsCardContent.querySelectorAll('button')[1];
+      spyOn(component, 'toPlaylist');
+
+      itemViewButton.click();
+      expect(component.toPlaylist).toHaveBeenCalledWith(component.playlists[0].id);
+    });
+
     it('displays and initially disables Previous/Next Page buttons', () => {
       component.playlistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
       component.playlists = component.playlistListResponse.items;

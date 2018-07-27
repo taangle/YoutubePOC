@@ -47,7 +47,7 @@ describe('YtComponent', () => {
       });
   
       describe('(when ytService has a playlistId):', () => {
-        it('asks service for playlsit', () => {
+        it('asks service for playlist', () => {
           spyOn(component, 'getPlaylistItems');
           ytServiceFake.playlistId = ytServiceFake.playlistIdStub;
           component.ngOnInit();
@@ -803,7 +803,7 @@ describe('YtComponent', () => {
         fixture.detectChanges();
         expect(mainCard.querySelector('mat-card-header')).toBeTruthy();
         expect(mainCard.querySelector('mat-card-header').innerHTML.toLocaleLowerCase()).toContain(
-          new String('total results: ' + component.playlistItemListResponse.pageInfo.totalResults).toLocaleLowerCase()
+          ('total results: ' + component.playlistItemListResponse.pageInfo.totalResults).toLocaleLowerCase()
         );
       });
 
