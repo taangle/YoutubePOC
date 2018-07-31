@@ -286,7 +286,7 @@ describe('YtService', () => {
     });
 
     describe('getAuthorizedChannel', () => {
-      xit('returns observable of response', () => {
+      xit('*PENDING*returns observable of response', () => {
 
       });
     });

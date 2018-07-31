@@ -93,7 +93,7 @@ describe('UserDetailComponent', () => {
         expect(component.playlists).toBe(ytServiceFake.playlistListResponseToReturn.items);
       }));
 
-      xit('populates channelTitle', () => {
+      xit('*PENDING*populates channelTitle', () => {
 
       });
   
@@ -247,7 +247,7 @@ describe('UserDetailComponent', () => {
       appElement = fixture.nativeElement;
     });
 
-    xit('creates toolbar with appropriate text', () => {
+    xit('*PENDING*creates toolbar with appropriate text', () => {
       let toolbar = appElement.querySelector('mat-toolbar');
 
       expect(toolbar.innerHTML).toContain('User Overview');
