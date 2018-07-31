@@ -255,10 +255,10 @@ describe('UserDetailComponent', () => {
       let defaultCard = appElement.querySelector('mat-card');
       let defaultCardContent = defaultCard.querySelector('mat-card-content');
       expect(defaultCard).toBeTruthy();
-      expect(defaultCardContent.innerHTML.toLowerCase()).toContain('sign in');
+      expect(defaultCardContent.innerHTML.toLowerCase()).toContain('no playlists');
 
       populatePlaylistFieldsAndDetectChanges();
-      expect(appElement.querySelector('mat-card').querySelector('mat-card-content')).not.toContain('sign in');
+      expect(appElement.querySelector('mat-card').querySelector('mat-card-content')).not.toContain('no playlists');
     });
 
     it('creates card with header, content when playlists and playlistListResponse exist', () => {
