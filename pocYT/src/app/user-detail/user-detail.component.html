@@ -2,7 +2,7 @@
   User Overview
   <span *ngIf="playlists&&playlists[0].snippet.channelTitle">: {{playlists[0].snippet.channelTitle}}</span>
 </mat-toolbar>
-<br />
+<br *ngIf="error&&errorSolution" />
 
 <mat-card *ngIf="error&&errorSolution">
 

@@ -12,7 +12,7 @@
     <button mat-stroked-button (click)="clearErrors(); clearPageToken(); getPlaylistItems(playlistId.value); playlistId.value=''">SHOW PLAYLIST</button>
   </mat-toolbar-row>
 </mat-toolbar>
-<br />
+<br *ngIf="error&&errorSolution" />
 
 <mat-card id="ytComponentErrorCard" *ngIf="error&&errorSolution">
 
