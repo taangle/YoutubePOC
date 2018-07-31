@@ -10,6 +10,7 @@ import { AuthService } from 'src/app/auth.service';
 import { YtService } from 'src/app/yt.service';
 import { FakeYtService } from 'src/test-files/yt.service.fake';
 import { PlaylistListResponse } from 'src/app/playlistListResponse';
+import { Playlist } from 'src/app/playlist';
 
 
 describe('UserDetailComponent', () => {
@@ -248,21 +249,20 @@ describe('UserDetailComponent', () => {
       expect(toolbar.innerHTML).toContain('User Overview');
     });
 
-    it('creates card with default message', () => {
+    it('creates default card if there are no playlists to show', () => {
       fixture.detectChanges();
 
       let defaultCard = appElement.querySelector('mat-card');
       let defaultCardContent = defaultCard.querySelector('mat-card-content');
-
       expect(defaultCard).toBeTruthy();
-      expect(defaultCardContent.innerHTML).toContain('Please');
-      expect(defaultCardContent.innerHTML).toContain('sign in');
+      expect(defaultCardContent.innerHTML.toLowerCase()).toContain('sign in');
+
+      populatePlaylistFieldsAndDetectChanges();
+      expect(appElement.querySelector('mat-card').querySelector('mat-card-content')).not.toContain('sign in');
     });
 
     it('creates card with header, content when playlists and playlistListResponse exist', () => {
-      component.playlistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
-      component.playlists = component.playlistListResponse.items;
-      fixture.detectChanges();
+      populatePlaylistFieldsAndDetectChanges();
 
       let playlistsCard = appElement.querySelector('mat-card')
       let playlistsCardHeader = playlistsCard.querySelector('mat-card-header');
@@ -274,9 +274,7 @@ describe('UserDetailComponent', () => {
     });
 
     it('creates card with header with title with total playlist count', () => {
-      component.playlistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
-      component.playlists = component.playlistListResponse.items;
-      fixture.detectChanges();
+      populatePlaylistFieldsAndDetectChanges();
 
       let playlistsCardHeader = appElement.querySelector('mat-card').querySelector('mat-card-header');
       let playlistsCardHeaderTitle = playlistsCardHeader.querySelector('mat-card-title');
@@ -286,9 +284,7 @@ describe('UserDetailComponent', () => {
     });
 
     it('creates card with content containing page description', () => {
-      component.playlistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
-      component.playlists = component.playlistListResponse.items;
-      fixture.detectChanges();
+      populatePlaylistFieldsAndDetectChanges();
 
       let playlistsCardContent = appElement.querySelector('mat-card').querySelector('mat-card-content');
       let playlistsCardContentDescription = playlistsCardContent.querySelector('p');
@@ -297,9 +293,7 @@ describe('UserDetailComponent', () => {
     });
 
     it('creates card with list of user\'s playlists', () => {
-      component.playlistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
-      component.playlists = component.playlistListResponse.items;
-      fixture.detectChanges();
+      populatePlaylistFieldsAndDetectChanges();
 
       let playlistsCardContent = appElement.querySelector('mat-card').querySelector('mat-card-content');
       let playlistsCardContentList = playlistsCardContent.querySelector('mat-list');
@@ -309,9 +303,7 @@ describe('UserDetailComponent', () => {
     });
 
     it('displays item titles and creates Play and View/Edit buttons', () => {
-      component.playlistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
-      component.playlists = component.playlistListResponse.items;
-      fixture.detectChanges();
+      populatePlaylistFieldsAndDetectChanges();
 
       let playlistsCardContent = appElement.querySelector('mat-card').querySelector('mat-card-content');
       let playlistsCardContentList = playlistsCardContent.querySelector('mat-list');
@@ -329,9 +321,7 @@ describe('UserDetailComponent', () => {
     });
 
     it('calls toPlaylist when View/Edit button is clicked', () => {
-      component.playlistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
-      component.playlists = component.playlistListResponse.items;
-      fixture.detectChanges();
+      populatePlaylistFieldsAndDetectChanges();
 
       let playlistsCardContent = appElement.querySelector('mat-card').querySelector('mat-card-content');
       let playlistsCardContentList = playlistsCardContent.querySelector('mat-list');
@@ -343,9 +333,7 @@ describe('UserDetailComponent', () => {
     });
 
     it('displays and initially disables Previous/Next Page buttons', () => {
-      component.playlistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
-      component.playlists = component.playlistListResponse.items;
-      fixture.detectChanges();
+      populatePlaylistFieldsAndDetectChanges();
 
       let playlistsCardContent = appElement.querySelector('mat-card').querySelector('mat-card-content');
       let playlistsCardContentButtons = playlistsCardContent.querySelectorAll('button');
@@ -359,9 +347,7 @@ describe('UserDetailComponent', () => {
     });
 
     it('calls toPlaylist with corresponding playlist ID when View/Edit is clicked', () => {
-      component.playlistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
-      component.playlists = component.playlistListResponse.items;
-      fixture.detectChanges();
+      populatePlaylistFieldsAndDetectChanges();
 
       let item = appElement.querySelector('mat-card').querySelector('mat-list').querySelector('mat-list-item');
       let itemViewButton = item.querySelectorAll('button')[1];
@@ -372,9 +358,7 @@ describe('UserDetailComponent', () => {
     });
 
     it('calls toPrevPage when corresponding button is clicked, if allowed and token exists', () => {
-      component.playlistListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
-      component.playlists = component.playlistListResponse.items;
-      fixture.detectChanges();
+      populatePlaylistFieldsAndDetectChanges();
 
       let prevPageButton = appElement.querySelector('mat-card').querySelectorAll('button')[2];
       spyOn(component, 'toPrevPage');
@@ -400,9 +384,7 @@ describe('UserDetailComponent', () => {
     });
 
     it('calls toNextPage when corresponding button is clicked, if allowed and token exists', () => {
-      component.playlistListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
-      component.playlists = component.playlistListResponse.items;
-      fixture.detectChanges();
+      populatePlaylistFieldsAndDetectChanges();
 
       let nextPageButton = appElement.querySelector('mat-card').querySelectorAll('button')[3];
       spyOn(component, 'toNextPage');
@@ -464,5 +446,11 @@ describe('UserDetailComponent', () => {
       expect(errorCardContentError.innerHTML).toContain(component.error);
       expect(errorCardContentSolution.innerHTML).toContain(component.errorSolution);
     });
+
+    function populatePlaylistFieldsAndDetectChanges() {
+      component.playlistListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
+      component.playlists = component.playlistListResponse.items;
+      fixture.detectChanges();
+    }
   });
 });
