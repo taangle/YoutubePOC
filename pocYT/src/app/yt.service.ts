@@ -8,6 +8,7 @@ import { PlaylistItem } from './playlistItem';
 import { PlaylistItemListResponse } from './playlistItemListResponse';
 import { Playlist } from './playlist';
 import { PlaylistListResponse } from './playlistListResponse';
+import { ChannelListResponse } from 'src/app/channelListResponse';
 
 export const httpOptions = {
 
@@ -28,6 +29,7 @@ export class YtService {
   public playlistItemPageToken: string = ''; //holds current page in current playlist
   private ytPlaylistItemsUrl = 'https://www.googleapis.com/youtube/v3/playlistItems'; //API base URL for playlistItem requests
   private ytPlaylistsUrl = 'https://www.googleapis.com/youtube/v3/playlists'; //API base URL for playlist requests
+  private ytChannelsUrl = 'https://www.googleapis.com/youtube/v3/channels'; //API base URL for channel requests
   private apiKey = 'AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc'; //Will's API key
   private maxResults = 50; //results returned per GET request
 
@@ -129,6 +131,12 @@ export class YtService {
     //concatenates Observables from each to-be-deleted PlaylistItem in items array; each will be executed in series when subscribed to
     return from(items).pipe(concatMap(item => <Observable<PlaylistItem>>this.http.delete<PlaylistItem>(this.ytPlaylistItemsUrl + '?key=' + this.apiKey + '&id=' + item.id, httpOptions).pipe(catchError(this.handleError))));
 
+  }
+
+  getAuthorizedChannel(): Observable<ChannelListResponse> {
+    this.setAccessToken();
+
+    return this.http.get<ChannelListResponse>(this.ytChannelsUrl + '?part=snippet&mine=true&key=' + this.apiKey, httpOptions);
   }
 
   //error handler that provides user-friendly advice/details for common error codes

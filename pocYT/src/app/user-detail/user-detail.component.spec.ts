@@ -92,6 +92,10 @@ describe('UserDetailComponent', () => {
         expect(component.playlistListResponse).toBe(ytServiceFake.playlistListResponseToReturn);
         expect(component.playlists).toBe(ytServiceFake.playlistListResponseToReturn.items);
       }));
+
+      xit('populates channelTitle', () => {
+
+      });
   
       it('populates error and errorSolution if something goes wrong with ytService', fakeAsync(() => {
         let errorMessage: string = 'solution';
@@ -243,7 +247,7 @@ describe('UserDetailComponent', () => {
       appElement = fixture.nativeElement;
     });
 
-    it('creates toolbar with appropriate text', () => {
+    xit('creates toolbar with appropriate text', () => {
       let toolbar = appElement.querySelector('mat-toolbar');
 
       expect(toolbar.innerHTML).toContain('User Overview');

@@ -5,6 +5,7 @@ import { AuthService } from '../auth.service';
 import { YtService } from '../yt.service';
 import { Playlist } from '../playlist';
 import { PlaylistListResponse } from '../playlistListResponse';
+import { ChannelListResponse } from 'src/app/channelListResponse';
 
 @Component({
   selector: 'app-user-detail',
@@ -15,6 +16,7 @@ export class UserDetailComponent implements OnInit {
 
   playlists: Playlist[];
   playlistListResponse: PlaylistListResponse;
+  channelTitle: string;
   error: string;
   errorSolution: string;
   allowPageChangeButtonClick: boolean = false;
@@ -37,6 +39,7 @@ export class UserDetailComponent implements OnInit {
     this.ytService.getPlaylists().subscribe(playlistListResponse => {
       this.playlistListResponse = playlistListResponse;
       this.playlists = this.playlistListResponse.items;
+      this.updateChannelTitle();
     }, error => {
       this.setError(error);
     }, () => {
@@ -85,4 +88,14 @@ export class UserDetailComponent implements OnInit {
 
   }
 
+  private updateChannelTitle(): void {
+    if (this.playlists.length > 0) {
+      this.channelTitle = this.playlists[0].snippet.channelTitle;
+    }
+    else {
+      this.ytService.getAuthorizedChannel().subscribe((response: ChannelListResponse) => {
+        this.channelTitle = response.items[0].snippet.title;
+      });
+    }
+  }
 }

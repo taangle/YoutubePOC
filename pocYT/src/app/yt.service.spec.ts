@@ -284,6 +284,12 @@ describe('YtService', () => {
         expect(errorText).toContain('404');
       });
     });
+
+    describe('getAuthorizedChannel', () => {
+      xit('returns observable of response', () => {
+
+      });
+    });
   });
 
   describe('PUT', () => {
