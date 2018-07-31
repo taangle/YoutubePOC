@@ -255,8 +255,7 @@ describe('UserDetailComponent', () => {
       let defaultCardContent = defaultCard.querySelector('mat-card-content');
 
       expect(defaultCard).toBeTruthy();
-      expect(defaultCardContent.innerHTML).toContain('Please');
-      expect(defaultCardContent.innerHTML).toContain('sign in');
+      expect(defaultCardContent.innerHTML.toLowerCase()).toContain('no playlists');
     });
 
     it('creates card with header, content when playlists and playlistListResponse exist', () => {
