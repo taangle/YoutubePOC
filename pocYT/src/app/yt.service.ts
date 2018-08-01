@@ -54,7 +54,7 @@ export class YtService {
     this.setAccessToken(); //authorization needed due to "mine" filter in GET request
 
     //only gets playlists of signed-in user; pageToken not needed for request to be "complete", so keeping the parameter there makes sure user stays on the correct page in user view
-    return this.http.get<PlaylistListResponse>(this.ytPlaylistsUrl + '?key=' + this.apiKey + '&part=snippet&mine=true&maxResults=' + this.maxResults + '&pageToken=' + this.playlistPageToken, httpOptions).pipe(catchError(this.handleError));
+    return this.http.get<PlaylistListResponse>(this.ytPlaylistsUrl + '?key=' + this.apiKey + '&part=snippet,status&mine=true&maxResults=' + this.maxResults + '&pageToken=' + this.playlistPageToken, httpOptions).pipe(catchError(this.handleError));
 
   }
 

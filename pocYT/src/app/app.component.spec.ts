@@ -27,10 +27,6 @@ describe('AppComponent', () => {
     appElement = fixture.nativeElement;
   }));
 
-  it('creates the app', async(() => {
-    expect(component).toBeTruthy();
-  }));
-
   it(`has as title 'YouTube POC'`, async(() => {
     expect(component.title).toEqual('YouTube POC');
   }));

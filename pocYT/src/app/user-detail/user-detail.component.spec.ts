@@ -255,7 +255,7 @@ describe('UserDetailComponent', () => {
       let defaultCardContent = defaultCard.querySelector('mat-card-content');
 
       expect(defaultCard).toBeTruthy();
-      expect(defaultCardContent.innerHTML).toContain('Please sign in');
+      expect(defaultCardContent.innerHTML.toLowerCase()).toContain('no playlists');
     });
 
     it('creates card with header, content when playlists and playlistListResponse exist', () => {
@@ -307,7 +307,7 @@ describe('UserDetailComponent', () => {
       expect(playlistsCardContentListItems.length).toEqual(component.playlists.length);
     });
 
-    it('displays item titles and creates Play and View/Edit buttons', () => {
+    it('displays item titles, privacy statuses and creates Play and View/Edit buttons', () => {
       component.playlistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
       component.playlists = component.playlistListResponse.items;
       fixture.detectChanges();
@@ -317,14 +317,33 @@ describe('UserDetailComponent', () => {
       let playlistsCardContentListItems = playlistsCardContentList.querySelectorAll('mat-list-item');
       let item = playlistsCardContentListItems[0];
       let itemRouterLink = item.querySelector('a');
+      let itemPrivacyStatus = item.querySelector('mat-chip');
       let playlistsCardContentButtons = playlistsCardContent.querySelectorAll('button');
       let itemPlayButton = playlistsCardContentButtons[0];
       let itemViewButton = playlistsCardContentButtons[1];
 
       expect(itemRouterLink.href).toContain(item.id);
       expect(item.innerHTML).toContain(component.playlists[0].snippet.title);
+      expect(itemPrivacyStatus.innerHTML).toContain(component.playlists[0].status.privacyStatus);
       expect(itemPlayButton.innerHTML).toContain('\u25BA');
       expect(itemViewButton.innerHTML).toContain('VIEW/EDIT');
+    });
+
+    it('disables Play button when playlist is private', () => {
+      component.playlistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
+      component.playlists = component.playlistListResponse.items;
+      component.playlists[0].status.privacyStatus = 'private';
+      fixture.detectChanges();
+
+      let playlistsCardContent = appElement.querySelector('mat-card').querySelector('mat-card-content');
+      let playlistsCardContentList = playlistsCardContent.querySelector('mat-list');
+      let playlistsCardContentListItems = playlistsCardContentList.querySelectorAll('mat-list-item');
+      let item = playlistsCardContentListItems[0];
+      let itemRouterLink = item.querySelector('a');
+      let itemPlayButton = playlistsCardContent.querySelectorAll('button')[0];
+
+      expect(itemRouterLink).toBeNull();
+      expect(itemPlayButton.disabled).toBeTruthy();
     });
 
     it('calls toPlaylist when View/Edit button is clicked', () => {

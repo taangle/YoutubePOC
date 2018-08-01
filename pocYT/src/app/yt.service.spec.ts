@@ -62,7 +62,7 @@ describe('YtService', () => {
       let expectedPlaylistListResponse: PlaylistListResponse;
       let unexpectedResponse;
       let pageTokenStub: string = 'page_token';
-      let GETPlaylistsUrl: string = ytPlaylistUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet&mine=true&maxResults=50&pageToken=' + pageTokenStub;
+      let GETPlaylistsUrl: string = ytPlaylistUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet,status&mine=true&maxResults=50&pageToken=' + pageTokenStub;
 
       beforeEach(() => {
         testedYtService.playlistPageToken = pageTokenStub;

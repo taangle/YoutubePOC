@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
 
-  title = 'YouTube POC';
+  public title: string = 'YouTube POC';
 
 }
