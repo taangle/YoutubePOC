@@ -29,6 +29,7 @@ export class UserDetailComponent implements OnInit {
     //checks if user is signed-in; if so, gets a list of their playlists
     if (this.authService.isSignedIn()) {
       this.getPlaylists();
+      this.updateChannelTitle();
     }
 
   }
@@ -39,7 +40,6 @@ export class UserDetailComponent implements OnInit {
     this.ytService.getPlaylists().subscribe(playlistListResponse => {
       this.playlistListResponse = playlistListResponse;
       this.playlists = this.playlistListResponse.items;
-      this.updateChannelTitle();
     }, error => {
       this.setError(error);
     }, () => {
@@ -89,13 +89,11 @@ export class UserDetailComponent implements OnInit {
   }
 
   private updateChannelTitle(): void {
-    if (this.playlists.length > 0) {
-      this.currentChannelTitle = this.playlists[0].snippet.channelTitle;
+    if (this.authService.isSignedIn()) {
+      this.currentChannelTitle = this.ytService.lastChannelTitle;
     }
     else {
-      this.ytService.getAuthorizedChannel().subscribe((response: ChannelListResponse) => {
-        this.currentChannelTitle = response.items[0].snippet.title;
-      });
+      this.currentChannelTitle = null;
     }
   }
 }

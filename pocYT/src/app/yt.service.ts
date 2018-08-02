@@ -9,6 +9,7 @@ import { PlaylistItemListResponse } from './playlistItemListResponse';
 import { Playlist } from './playlist';
 import { PlaylistListResponse } from './playlistListResponse';
 import { ChannelListResponse } from 'src/app/channelListResponse';
+import { StorageService } from 'src/app/storage.service';
 
 export const httpOptions = {
 
@@ -27,22 +28,29 @@ export class YtService {
   public playlistId: string; //holds current playlist ID
   public playlistPageToken: string = ''; //holds current page in current list of playlists
   public playlistItemPageToken: string = ''; //holds current page in current playlist
-  private ytPlaylistItemsUrl = 'https://www.googleapis.com/youtube/v3/playlistItems'; //API base URL for playlistItem requests
-  private ytPlaylistsUrl = 'https://www.googleapis.com/youtube/v3/playlists'; //API base URL for playlist requests
-  private ytChannelsUrl = 'https://www.googleapis.com/youtube/v3/channels'; //API base URL for channel requests
+  public get lastChannelTitle() : string {
+    if (this._lastChannelTitle) {
+      return this._lastChannelTitle;
+    }
+    return this.storage.getChannelTitle();
+  }
+  private _lastChannelTitle: string;
+  private PLAYLIST_ITEMS_URL = 'https://www.googleapis.com/youtube/v3/playlistItems'; //API base URL for playlistItem requests
+  private PLAYLISTS_URL = 'https://www.googleapis.com/youtube/v3/playlists'; //API base URL for playlist requests
+  private CHANNELS_URL = 'https://www.googleapis.com/youtube/v3/channels'; //API base URL for channel requests
   private apiKey = 'AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc'; //Will's API key
   private maxResults = 50; //results returned per GET request
 
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  constructor(private http: HttpClient, private storage: StorageService) { }
 
   //gets access token from authService and stores it as an HttpHeader to be used with unauthorized requests while user is signed in to Google/YouTube; clears access token if user has signed out
   setAccessToken(): void {
 
     try {
 
-      httpOptions.headers = httpOptions.headers.set('Authorization', 'Bearer ' + this.authService.getToken());
+      httpOptions.headers = httpOptions.headers.set('Authorization', 'Bearer ' + this.storage.getAuthToken());
 
-    } catch (Error) { //authService throws Error if there is no access token, i.e. user is signed-out
+    } catch (Error) { //storage throws Error if there is no access token, i.e. user is signed-out
 
       httpOptions.headers = httpOptions.headers.delete('Authorization');
 
@@ -56,7 +64,7 @@ export class YtService {
     this.setAccessToken(); //authorization needed due to "mine" filter in GET request
 
     //only gets playlists of signed-in user; pageToken not needed for request to be "complete", so keeping the parameter there makes sure user stays on the correct page in user view
-    return this.http.get<PlaylistListResponse>(this.ytPlaylistsUrl + '?key=' + this.apiKey + '&part=snippet&mine=true&maxResults=' + this.maxResults + '&pageToken=' + this.playlistPageToken, httpOptions).pipe(catchError(this.handleError));
+    return this.http.get<PlaylistListResponse>(this.PLAYLISTS_URL + '?key=' + this.apiKey + '&part=snippet&mine=true&maxResults=' + this.maxResults + '&pageToken=' + this.playlistPageToken, httpOptions).pipe(catchError(this.handleError));
 
   }
 
@@ -67,7 +75,7 @@ export class YtService {
 
     //only returns snippet data; pageToken not needed for request to be "complete", so keeping the parameter there makes sure user stays on the correct playlist page
     this.playlistId = playlistId;
-    return this.http.get<PlaylistItemListResponse>(this.ytPlaylistItemsUrl + '?key=' + this.apiKey + '&part=snippet&playlistId=' + playlistId + '&maxResults=' + this.maxResults + '&pageToken=' + this.playlistItemPageToken, httpOptions).pipe(catchError(this.handleError));
+    return this.http.get<PlaylistItemListResponse>(this.PLAYLIST_ITEMS_URL + '?key=' + this.apiKey + '&part=snippet&playlistId=' + playlistId + '&maxResults=' + this.maxResults + '&pageToken=' + this.playlistItemPageToken, httpOptions).pipe(catchError(this.handleError));
 
   }
 
@@ -77,7 +85,7 @@ export class YtService {
     this.setAccessToken(); //authorization needed for GET request on private playlist items (only applicable when user is signed-in)
 
     //only returns snippet data
-    return this.http.get<PlaylistItemListResponse>(this.ytPlaylistItemsUrl + '?key=' + this.apiKey + '&part=snippet&id=' + id, httpOptions).pipe(catchError(this.handleError));
+    return this.http.get<PlaylistItemListResponse>(this.PLAYLIST_ITEMS_URL + '?key=' + this.apiKey + '&part=snippet&id=' + id, httpOptions).pipe(catchError(this.handleError));
 
   }
 
@@ -87,7 +95,7 @@ export class YtService {
     this.setAccessToken();
     
     //currently, only updates item's position; potential to change contentDetails data
-    return this.http.put(this.ytPlaylistItemsUrl + '?key=' + this.apiKey + '&part=snippet', {
+    return this.http.put(this.PLAYLIST_ITEMS_URL + '?key=' + this.apiKey + '&part=snippet', {
       "id": item.id,
       "snippet":
         {
@@ -109,7 +117,7 @@ export class YtService {
     this.setAccessToken();
 
     //currently, only adds snippet data; potential to add contentDetails data, status data
-    return this.http.post<PlaylistItem>(this.ytPlaylistItemsUrl + '?key=' + this.apiKey + '&part=snippet', {
+    return this.http.post<PlaylistItem>(this.PLAYLIST_ITEMS_URL + '?key=' + this.apiKey + '&part=snippet', {
       "snippet":
         {
           "playlistId": this.playlistId,
@@ -129,14 +137,24 @@ export class YtService {
     this.setAccessToken();
 
     //concatenates Observables from each to-be-deleted PlaylistItem in items array; each will be executed in series when subscribed to
-    return from(items).pipe(concatMap(item => <Observable<PlaylistItem>>this.http.delete<PlaylistItem>(this.ytPlaylistItemsUrl + '?key=' + this.apiKey + '&id=' + item.id, httpOptions).pipe(catchError(this.handleError))));
+    return from(items).pipe(concatMap(item => <Observable<PlaylistItem>>this.http.delete<PlaylistItem>(this.PLAYLIST_ITEMS_URL + '?key=' + this.apiKey + '&id=' + item.id, httpOptions).pipe(catchError(this.handleError))));
 
   }
 
-  getAuthorizedChannel(): Observable<ChannelListResponse> {
+  setChannelTitle() {
     this.setAccessToken();
 
-    return this.http.get<ChannelListResponse>(this.ytChannelsUrl + '?part=snippet&mine=true&key=' + this.apiKey, httpOptions);
+    httpOptions.headers = httpOptions.headers.set('Cache-Control', 'no-cache');
+    console.log('sending channel request, options: ' + JSON.stringify(httpOptions));
+    this.http.get<ChannelListResponse>(this.CHANNELS_URL + '?part=snippet&mine=true&key=' + this.apiKey, httpOptions).subscribe((response: ChannelListResponse) => {
+      this._lastChannelTitle = response.items[0].snippet.title;
+      this.storage.setChannelTitle(this.lastChannelTitle);
+    });
+    httpOptions.headers = httpOptions.headers.delete('Cache-Control');
+  }
+
+  deleteChannelTitle() {
+    this.storage.deleteChannelTitle();
   }
 
   //error handler that provides user-friendly advice/details for common error codes

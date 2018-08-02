@@ -5,39 +5,27 @@ import { Router } from '@angular/router';
 
 import { GoogleAuthService } from "ng-gapi";
 import GoogleUser = gapi.auth2.GoogleUser;
+import { YtService } from 'src/app/yt.service';
+import { StorageService } from 'src/app/storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  public static SESSION_STORAGE_KEY: string = 'accessToken'; //currently, can't tell when token expires
-
-  constructor(private googleAuth: GoogleAuthService, private ngZone: NgZone, private router: Router) { }
-
-  public getToken(): string {
-
-    let token: string = sessionStorage.getItem(AuthService.SESSION_STORAGE_KEY);
-    if (!token) {
-
-      throw new Error("No token set; authentication required."); //throws error for signed-out user
-
-    }
-    return token;
-    
-  }
+  constructor(private googleAuthService: GoogleAuthService, private ngZone: NgZone, private router: Router, private ytService: YtService, private storage: StorageService) { }
 
   public signIn(): void {
 
-    this.googleAuth.getAuth().subscribe((auth) => {
-      auth.signIn().then(user => this.signInSuccessHandler(user), error => this.handleAuthError(error));
+    this.googleAuthService.getAuth().subscribe((googleAuth: gapi.auth2.GoogleAuth) => {
+      googleAuth.signIn().then(user => this.signInSuccessHandler(user), error => this.handleAuthError(error));
     }, error => this.handleAuthError(error));
 
   }
 
   public signOut(): void {
 
-    this.googleAuth.getAuth().subscribe((auth) => {
+    this.googleAuthService.getAuth().subscribe((auth) => {
       auth.signOut().then(() => this.signOutSuccessHandler(), error => this.handleAuthError(error));
     }, error => this.handleAuthError(error));
 
@@ -48,7 +36,7 @@ export class AuthService {
 
     try {
       
-      this.getToken();
+      this.storage.getAuthToken();
       return true;
 
     } catch (Error) {
@@ -61,7 +49,10 @@ export class AuthService {
 
   private signInSuccessHandler(user: GoogleUser) {
 
-    sessionStorage.setItem(AuthService.SESSION_STORAGE_KEY, user.getAuthResponse().access_token);
+    console.log("~~signInHandler: " + user.getId());
+
+    this.storage.setAuthToken(user.getAuthResponse().access_token);
+    this.ytService.setChannelTitle(); 
     //redirects to user view page; this is done here so that the redirect happens after the user completely signs in (no early redirect)
     //and since only authComponent will call authService.signIn/signOut
     //NgZone is used so that userDetailComponent.ngOnInit is called when redirect occurs; otherwise, page won't update on redirect with
@@ -72,7 +63,8 @@ export class AuthService {
 
   private signOutSuccessHandler() {
 
-    sessionStorage.removeItem(AuthService.SESSION_STORAGE_KEY);
+    this.storage.deleteAuthToken();
+    this.ytService.deleteChannelTitle();
     //redirects to user view page; this is done here so that the redirect happens after the user completely signs in (no early redirect)
     //and since only authComponent will call authService.signIn/signOut
     //NgZone is used so that ytComponent.ngOnInit is called when redirect occurs; otherwise, page won't update on redirect with

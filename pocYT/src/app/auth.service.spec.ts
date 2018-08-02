@@ -78,18 +78,6 @@ describe('AuthService', () => {
     testedAuthService = TestBed.get(AuthService);
   });
 
-  describe('getToken', () => {
-    it('throws error if no token has been set', () => {
-      expect(testedAuthService.getToken).toThrowError("No token set; authentication required.");
-    });
-  
-    it('returns the token if it has been set', () => {
-      let testVal = 'test val';
-      sessionStorage.setItem(AuthService.SESSION_STORAGE_KEY, testVal);
-      expect(testedAuthService.getToken()).toEqual(testVal);
-    });
-  });
-
   describe('signIn', () => {
     it('calls getAuth and the googleAuth signIn', async () => {
       testedAuthService.signIn();
