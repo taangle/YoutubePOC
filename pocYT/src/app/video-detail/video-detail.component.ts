@@ -45,7 +45,7 @@ export class VideoDetailComponent implements OnInit {
   // Asks ytService to update the current item, makes sure that ytService has an id, and calls goBack
   savePlaylistItem(position: number): void {
 
-    if (isNaN(position) || position < 1) {
+    if (isNaN(position) || position < 0) {
       return;
     }
 
