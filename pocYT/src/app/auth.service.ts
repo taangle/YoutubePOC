@@ -12,8 +12,6 @@ import GoogleUser = gapi.auth2.GoogleUser;
 export class AuthService {
 
   public static SESSION_STORAGE_KEY: string = 'accessToken'; //currently, can't tell when token expires
-  public static IS_SIGNED_IN: boolean = false; //signed-in status
-  private user: GoogleUser = null;
 
   constructor(private googleAuth: GoogleAuthService, private ngZone: NgZone, private router: Router) { }
 
@@ -25,14 +23,14 @@ export class AuthService {
       throw new Error("No token set; authentication required."); //throws error for signed-out user
 
     }
-    return sessionStorage.getItem(AuthService.SESSION_STORAGE_KEY);
-
+    return token;
+    
   }
 
   public signIn(): void {
 
     this.googleAuth.getAuth().subscribe((auth) => {
-      auth.signIn().then(res => this.signInSuccessHandler(res), error => this.handleAuthError(error));
+      auth.signIn().then(user => this.signInSuccessHandler(user), error => this.handleAuthError(error));
     }, error => this.handleAuthError(error));
 
   }
@@ -49,7 +47,7 @@ export class AuthService {
   public isSignedIn(): boolean {
 
     try {
-
+      
       this.getToken();
       return true;
 
@@ -61,11 +59,9 @@ export class AuthService {
 
   }
 
-  private signInSuccessHandler(res: GoogleUser) {
+  private signInSuccessHandler(user: GoogleUser) {
 
-    this.user = res;
-    sessionStorage.setItem(AuthService.SESSION_STORAGE_KEY, res.getAuthResponse().access_token);
-    AuthService.IS_SIGNED_IN = this.isSignedIn(); //should become true
+    sessionStorage.setItem(AuthService.SESSION_STORAGE_KEY, user.getAuthResponse().access_token);
     //redirects to user view page; this is done here so that the redirect happens after the user completely signs in (no early redirect)
     //and since only authComponent will call authService.signIn/signOut
     //NgZone is used so that userDetailComponent.ngOnInit is called when redirect occurs; otherwise, page won't update on redirect with
@@ -76,9 +72,7 @@ export class AuthService {
 
   private signOutSuccessHandler() {
 
-    this.user = null;
     sessionStorage.removeItem(AuthService.SESSION_STORAGE_KEY);
-    AuthService.IS_SIGNED_IN = this.isSignedIn(); //should become false
     //redirects to user view page; this is done here so that the redirect happens after the user completely signs in (no early redirect)
     //and since only authComponent will call authService.signIn/signOut
     //NgZone is used so that ytComponent.ngOnInit is called when redirect occurs; otherwise, page won't update on redirect with

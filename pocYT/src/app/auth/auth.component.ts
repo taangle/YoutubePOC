@@ -7,15 +7,9 @@ import { AuthService } from '../auth.service';
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
 })
-export class AuthComponent implements OnInit {
+export class AuthComponent {
 
   constructor(private authService: AuthService) { }
-
-  ngOnInit() {
-
-    AuthService.IS_SIGNED_IN = this.authService.isSignedIn();
-
-  }
 
   signIn(): void {
 
@@ -31,7 +25,7 @@ export class AuthComponent implements OnInit {
 
   isSignedIn(): boolean {
 
-    return AuthService.IS_SIGNED_IN;
+    return this.authService.isSignedIn();
 
   }
 

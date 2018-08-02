@@ -33,22 +33,6 @@ describe('AuthComponent', () => {
       component = fixture.componentInstance;
       fixture.detectChanges();
     }));
-
-    describe('ngOnInit', () => {
-      describe('sets the value of IS_SIGNED_IN to the return value of authService.isSignedIn()', () => {
-        it('when isSignedIn() returns false', () => {
-          stubAuthService.isSignedIn.and.returnValue(false);
-          component.ngOnInit;
-          expect(AuthServiceStub.IS_SIGNED_IN).toBeFalsy();
-        });
-  
-        it('when isSignedIn() returns true', () => {
-          stubAuthService.isSignedIn.and.returnValue(true);
-          component.ngOnInit;
-          expect(AuthServiceStub.IS_SIGNED_IN).toBeTruthy;
-        });
-      });
-    });
   
     describe('signIn', () => {
       it('calls the authService signIn', () => { 
@@ -67,10 +51,10 @@ describe('AuthComponent', () => {
     });
   
     describe('isSignedIn', () => {
-      it('returns the value of IS_SIGNED_IN', () => {
-        AuthService.IS_SIGNED_IN = true;
+      it('returns signed in status from auth service', () => {
+        stubAuthService.isSignedIn.and.returnValue(true);
         expect(component.isSignedIn()).toEqual(true);
-        AuthService.IS_SIGNED_IN = false;
+        stubAuthService.isSignedIn.and.returnValue(false);
         expect(component.isSignedIn()).toEqual(false);
       });
     });
@@ -130,11 +114,11 @@ describe('AuthComponent', () => {
     it('displays correct sign-in status', () => {
       let cardHeaderTitle = appElement.querySelector('mat-card').querySelector('mat-card-header').querySelector('mat-card-title');
 
-      AuthService.IS_SIGNED_IN = true;
+      stubAuthService.isSignedIn.and.returnValue(true);
       fixture.detectChanges();
       expect(cardHeaderTitle.innerHTML).toContain('Signed In');
 
-      AuthService.IS_SIGNED_IN = false;
+      stubAuthService.isSignedIn.and.returnValue(false);
       fixture.detectChanges();
       expect(cardHeaderTitle.innerHTML).toContain('Signed Out');
     });
@@ -182,8 +166,6 @@ class AuthServiceStub extends AuthService {
   constructor() {
     super(null, null, null);
   }
-
-  public static IS_SIGNED_IN: boolean;
 
   public signIn(): void {}
 
