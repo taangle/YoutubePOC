@@ -16,7 +16,7 @@ export class UserDetailComponent implements OnInit {
 
   playlists: Playlist[];
   playlistListResponse: PlaylistListResponse;
-  channelTitle: string;
+  currentChannelTitle: string;
   error: string;
   errorSolution: string;
   allowPageChangeButtonClick: boolean = false;
@@ -90,11 +90,11 @@ export class UserDetailComponent implements OnInit {
 
   private updateChannelTitle(): void {
     if (this.playlists.length > 0) {
-      this.channelTitle = this.playlists[0].snippet.channelTitle;
+      this.currentChannelTitle = this.playlists[0].snippet.channelTitle;
     }
     else {
       this.ytService.getAuthorizedChannel().subscribe((response: ChannelListResponse) => {
-        this.channelTitle = response.items[0].snippet.title;
+        this.currentChannelTitle = response.items[0].snippet.title;
       });
     }
   }
