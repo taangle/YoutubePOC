@@ -45,7 +45,7 @@
       <a routerLink="/play/{{currentPlaylist?.id}}" *ngIf="currentPlaylist?.status.privacyStatus!=='private'; else disabledButton"><button mat-mini-fab color="primary">&#9658;</button></a>&nbsp;
       <!--private playlists can't be embedded, so button will be disabled if status is private-->
       <ng-template #disabledButton>
-        <button mat-mini-fab color="primary" [disabled]="true">&#9658;</button>
+        <span matTooltip="You can't watch private playlists in this application" matTooltipPosition="right"><button mat-mini-fab color="primary" [disabled]="true">&#9658;</button></span>
       </ng-template>
       <!--deletes all playlistItems marked by checkboxes-->
       <button mat-raised-button color="primary" (click)="clearErrors(); deletePlaylistItems()" [disabled]="!allowDeleteButtonClick">DELETE SELECTED VIDEOS</button>

@@ -4,12 +4,6 @@ import { Observable } from 'rxjs';
 import { Location, DatePipe, formatDate } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { fakeAsync, tick } from '@angular/core/testing';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatButtonModule } from '@angular/material/button';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatCardModule } from '@angular/material/card';
-import { MatInputModule } from '@angular/material/input';
-import { MatDividerModule } from '@angular/material/divider';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { VideoDetailComponent } from './video-detail.component';

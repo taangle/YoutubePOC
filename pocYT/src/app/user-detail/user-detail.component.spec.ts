@@ -317,14 +317,12 @@ describe('UserDetailComponent', () => {
       let playlistsCardContentListItems = playlistsCardContentList.querySelectorAll('mat-list-item');
       let item = playlistsCardContentListItems[0];
       let itemRouterLink = item.querySelector('a');
-      let itemPrivacyStatus = item.querySelector('mat-chip');
       let playlistsCardContentButtons = playlistsCardContent.querySelectorAll('button');
       let itemPlayButton = playlistsCardContentButtons[0];
       let itemViewButton = playlistsCardContentButtons[1];
 
       expect(itemRouterLink.href).toContain(item.id);
       expect(item.innerHTML).toContain(component.playlists[0].snippet.title);
-      expect(itemPrivacyStatus.innerHTML).toContain(component.playlists[0].status.privacyStatus);
       expect(itemPlayButton.innerHTML).toContain('\u25BA');
       expect(itemViewButton.innerHTML).toContain('VIEW/EDIT');
     });
@@ -340,9 +338,11 @@ describe('UserDetailComponent', () => {
       let playlistsCardContentListItems = playlistsCardContentList.querySelectorAll('mat-list-item');
       let item = playlistsCardContentListItems[0];
       let itemRouterLink = item.querySelector('a');
+      let itemButtonTooltip = item.querySelector('span');
       let itemPlayButton = playlistsCardContent.querySelectorAll('button')[0];
 
       expect(itemRouterLink).toBeNull();
+      expect(itemButtonTooltip.getAttribute('matTooltip')).toContain('You can\'t watch private playlists');
       expect(itemPlayButton.disabled).toBeTruthy();
     });
 

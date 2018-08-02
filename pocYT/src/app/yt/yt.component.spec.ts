@@ -893,8 +893,10 @@ describe('YtComponent', () => {
             fixture.detectChanges();
 
             let container = getVideoListContainer();
+            let buttonTooltip = container.querySelector('span');
             let playButton = container.querySelectorAll('button')[0];
 
+            expect(buttonTooltip.getAttribute('matTooltip')).toContain('You can\'t watch private playlists');
             expect(playButton.disabled).toBeTruthy();
           });
 

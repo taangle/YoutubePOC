@@ -36,12 +36,11 @@
         <a routerLink="/play/{{item.id}}" *ngIf="item.status.privacyStatus!=='private'; else disabledButton"><button mat-mini-fab color="primary">&#9658;</button></a>&nbsp;
         <!--private playlists can't be embedded, so button will be disabled if status is private-->
         <ng-template #disabledButton>
-          <button mat-mini-fab color="primary" [disabled]="true">&#9658;</button>
+          <span matTooltip="You can't watch private playlists in this application" matTooltipPosition="right"><button mat-mini-fab color="primary" [disabled]="true">&#9658;</button></span>
         </ng-template>
         <!--redirects user to ytComponent, which will display contents of clicked playlist based on its ID-->
         <button mat-raised-button color="primary" (click)="toPlaylist(item.id)">VIEW/EDIT</button>&nbsp;
         {{item.snippet.title}}&nbsp;&nbsp;&nbsp;&nbsp;
-        <mat-chip>{{item.status.privacyStatus}}</mat-chip>
       </mat-list-item>
     </mat-list>
     <br />
