@@ -40,25 +40,25 @@ describe('YtService', () => {
     httpTestingController.verify();
   });
 
-  describe('setAccessToken', () => {
+  xdescribe('*PENDING*setAccessToken:', () => {
 
-    it('changes the header to contain the access token', () => {
-      let stubToken: string = 'stub token';
-      authServiceSpy.getToken.and.returnValue(stubToken);
-      testedYtService.setAccessToken();
-      expect(httpOptions.headers.get('Authorization')).toContain(stubToken);
-    });
+    // it('changes the header to contain the access token', () => {
+    //   let stubToken: string = 'stub token';
+    //   authServiceSpy.getToken.and.returnValue(stubToken);
+    //   testedYtService.setAccessToken();
+    //   expect(httpOptions.headers.get('Authorization')).toContain(stubToken);
+    // });
 
-    it('deletes the Authorization header if the authService throws an error', () => {
-      authServiceSpy.getToken.and.throwError('error');
-      testedYtService.setAccessToken();
-      expect(httpOptions.headers.has('Authorization')).toBe(false);
-    });
+    // it('deletes the Authorization header if the authService throws an error', () => {
+    //   authServiceSpy.getToken.and.throwError('error');
+    //   testedYtService.setAccessToken();
+    //   expect(httpOptions.headers.has('Authorization')).toBe(false);
+    // });
   });
 
-  describe('GET', () => {
+  describe('GET:', () => {
 
-    describe('getPlaylists', () => {
+    describe('getPlaylists:', () => {
       let expectedPlaylistListResponse: PlaylistListResponse;
       let unexpectedResponse;
       let pageTokenStub: string = 'page_token';
@@ -124,7 +124,7 @@ describe('YtService', () => {
       });
     });
 
-    describe('getPlaylistItems', () => {
+    describe('getPlaylistItems:', () => {
       let expectedPlaylistResponse: PlaylistItemListResponse;
       let unexpectedResponse;
       let playlistIdStub: string = 'playlist_id';
@@ -219,7 +219,7 @@ describe('YtService', () => {
       });
     });
 
-    describe('getPlaylistItem', () => {
+    describe('getPlaylistItem:', () => {
       let expectedListResponse: PlaylistItemListResponse;
       let expectedItemResponse: PlaylistItem;
       let unexpectedItemResponse: PlaylistItem;
@@ -285,16 +285,16 @@ describe('YtService', () => {
       });
     });
 
-    describe('getAuthorizedChannel', () => {
+    describe('getCurrentChannel:', () => {
       xit('*PENDING*returns observable of response', () => {
 
       });
     });
   });
 
-  describe('PUT', () => {
+  describe('PUT:', () => {
 
-    describe('updatePlaylistItem', () => {
+    describe('updatePlaylistItem:', () => {
       let PUTurl: string;
       let updatePlaylistItem: PlaylistItem;
 
@@ -389,8 +389,8 @@ describe('YtService', () => {
     });
   });
 
-  describe('POST', () => {
-    describe('addPlaylistItem', () => {
+  describe('POST:', () => {
+    describe('addPlaylistItem:', () => {
       let videoIdStub: string;
       let postPlaylistItem: PlaylistItem;
       let POSTurl: string;
@@ -488,8 +488,8 @@ describe('YtService', () => {
     });
   });
 
-  describe('DELETE', () => {
-    describe('deletePlaylistItem', () => {
+  describe('DELETE:', () => {
+    describe('deletePlaylistItem:', () => {
       let deletePlaylistItem: PlaylistItem;
       let playlistItemIdStub: string;
       let DELETEurl: string;

@@ -2,14 +2,38 @@ import { TestBed, inject } from '@angular/core/testing';
 
 import { StorageService } from './storage.service';
 
-describe('StorageService', () => {
+fdescribe('StorageService', () => {
+  let service: StorageService;
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [StorageService]
     });
+
+  service = TestBed.get(StorageService);
   });
 
-  xit('should be created', inject([StorageService], (service: StorageService) => {
-    expect(service).toBeTruthy();
-  }));
+  describe('setAuthToken', () => {
+    
+  });
+
+  describe('getAuthToken', () => {
+
+  });
+
+  describe('deleteAuthToken', () => {
+    
+  });
+
+  describe('setChannelTitle', () => {
+
+  });
+
+  describe('getChannelTitle', () => {
+
+  });
+
+  describe('deleteChannelTitle', () => {
+
+  });
 });

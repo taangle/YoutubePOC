@@ -164,7 +164,7 @@ describe('AuthComponent', () => {
 class AuthServiceStub extends AuthService {
 
   constructor() {
-    super(null, null, null);
+    super(null, null, null, null, null);
   }
 
   public signIn(): void {}
