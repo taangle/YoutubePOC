@@ -30,9 +30,13 @@ export class AuthService {
 
   public signOut(): void {
 
-    this.googleAuthService.getAuth().subscribe((auth) => {
-      auth.signOut().then(() => this.signOutSuccessHandler(), error => this.handleAuthError(error));
-    }, error => this.handleAuthError(error));
+    this.googleAuthService.getAuth().subscribe(
+      (googleAuth: gapi.auth2.GoogleAuth) => {
+        googleAuth.signOut().then(() => this.signOutSuccessHandler(), error => this.handleAuthError(error));
+      }, error => {
+        this.handleAuthError(error)
+      }
+    );
 
   }
 
