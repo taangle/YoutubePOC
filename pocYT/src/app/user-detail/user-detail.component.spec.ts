@@ -307,7 +307,7 @@ describe('UserDetailComponent', () => {
       expect(playlistsCardContentListItems.length).toEqual(component.playlists.length);
     });
 
-    it('displays item titles and creates Play and View/Edit buttons', () => {
+    it('displays item titles, privacy statuses and creates Play and View/Edit buttons', () => {
       component.playlistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
       component.playlists = component.playlistListResponse.items;
       fixture.detectChanges();
@@ -325,6 +325,25 @@ describe('UserDetailComponent', () => {
       expect(item.innerHTML).toContain(component.playlists[0].snippet.title);
       expect(itemPlayButton.innerHTML).toContain('\u25BA');
       expect(itemViewButton.innerHTML).toContain('VIEW/EDIT');
+    });
+
+    it('disables Play button when playlist is private', () => {
+      component.playlistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
+      component.playlists = component.playlistListResponse.items;
+      component.playlists[0].status.privacyStatus = 'private';
+      fixture.detectChanges();
+
+      let playlistsCardContent = appElement.querySelector('mat-card').querySelector('mat-card-content');
+      let playlistsCardContentList = playlistsCardContent.querySelector('mat-list');
+      let playlistsCardContentListItems = playlistsCardContentList.querySelectorAll('mat-list-item');
+      let item = playlistsCardContentListItems[0];
+      let itemRouterLink = item.querySelector('a');
+      let itemButtonTooltip = item.querySelector('span');
+      let itemPlayButton = playlistsCardContent.querySelectorAll('button')[0];
+
+      expect(itemRouterLink).toBeNull();
+      expect(itemButtonTooltip.getAttribute('matTooltip')).toContain('You can\'t watch private playlists');
+      expect(itemPlayButton.disabled).toBeTruthy();
     });
 
     it('calls toPlaylist when View/Edit button is clicked', () => {

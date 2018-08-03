@@ -49,7 +49,16 @@
     <!--hitting Enter key does the same thing as clicking button-->
     <mat-form-field (keyup.enter)="savePlaylistItem(position.value-1)">
       <!--+/-1 differentiates between display and array position; +1 for display, -1 for when user clicks Save and actual playlist position gets updated-->
-      <input matInput [value]="item.snippet.position+1" placeholder="Enter a number > 0" #position />
+      <input matInput [value]="item.snippet.position+1" placeholder="Position" [formControl]="positionFormControl" [errorStateMatcher]="matcher" #position />
+      <mat-error *ngIf="positionFormControl.hasError('pattern')&&!positionFormControl.hasError('min')&&!positionFormControl.hasError('required')">
+        New position must be a number
+      </mat-error>
+      <mat-error *ngIf="positionFormControl.hasError('min')&&!positionFormControl.hasError('required')">
+        New position must be greater than 0
+      </mat-error>
+      <mat-error *ngIf="positionFormControl.hasError('required')">
+        Enter a number greater than 0
+      </mat-error>
     </mat-form-field>
 
   </mat-card-content>

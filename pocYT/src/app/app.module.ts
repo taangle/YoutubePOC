@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { AppComponent } from './app.component';
 import { YtRoutingModule } from './/yt-routing.module';
@@ -44,6 +45,7 @@ let gapiClientConfig: NgGapiClientConfig = {
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     YtRoutingModule,
     HttpClientModule,
     GoogleApiModule.forRoot({
@@ -59,7 +61,8 @@ let gapiClientConfig: NgGapiClientConfig = {
     MatInputModule,
     MatCheckboxModule,
     MatDividerModule,
-    MatTabsModule
+    MatTabsModule,
+    MatTooltipModule
   ],
   providers: [],
   bootstrap: [AppComponent]

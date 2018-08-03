@@ -1,6 +1,7 @@
 <mat-toolbar>
   <mat-toolbar-row>
     Playlist View
+    <span *ngIf="currentPlaylist">: {{currentPlaylist.snippet.title}}</span>
   </mat-toolbar-row>
 
   <mat-toolbar-row>
@@ -41,7 +42,11 @@
     <div id="videoListContainer" *ngIf="playlistItems&&playlistItems.length>0">
       <br />
       <!--routes user to embedded playlist view based on retrieved playlist ID associated with first video-->
-      <a routerLink="/play/{{playlistItems[0].snippet.playlistId}}"><button mat-mini-fab color="primary">&#9658;</button></a>&nbsp;
+      <a routerLink="/play/{{currentPlaylist?.id}}" *ngIf="currentPlaylist?.status.privacyStatus!=='private'; else disabledButton"><button mat-mini-fab color="primary">&#9658;</button></a>&nbsp;
+      <!--private playlists can't be embedded, so button will be disabled if status is private-->
+      <ng-template #disabledButton>
+        <span matTooltip="You can't watch private playlists in this application" matTooltipPosition="right"><button mat-mini-fab color="primary" [disabled]="true">&#9658;</button></span>
+      </ng-template>
       <!--deletes all playlistItems marked by checkboxes-->
       <button mat-raised-button color="primary" (click)="clearErrors(); deletePlaylistItems()" [disabled]="!allowDeleteButtonClick">DELETE SELECTED VIDEOS</button>
       <mat-list dense>
