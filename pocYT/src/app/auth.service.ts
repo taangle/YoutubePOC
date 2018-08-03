@@ -18,9 +18,13 @@ export class AuthService {
 
   public signIn(): void {
 
-    this.googleAuthService.getAuth().subscribe((googleAuth: gapi.auth2.GoogleAuth) => {
-      googleAuth.signIn().then(user => this.signInSuccessHandler(user), error => this.handleAuthError(error));
-    }, error => this.handleAuthError(error));
+    this.googleAuthService.getAuth().subscribe(
+      (googleAuth: gapi.auth2.GoogleAuth) => {
+        googleAuth.signIn().then((user: GoogleUser) => this.signInSuccessHandler(user), error => this.handleAuthError(error));
+      }, error => {
+        this.handleAuthError(error);
+      }
+    );
 
   }
 
@@ -53,6 +57,7 @@ export class AuthService {
     this.storage.setAuthToken(user.getAuthResponse().access_token);
     this.ytService.getCurrentChannel().subscribe((response: ChannelListResponse) => {
       this.ytService.lastChannelTitle = response.items[0].snippet.title;
+      //NgZone is used so that userDetailComponent.ngOnInit is called when redirect occurs
       this.ngZone.run(() => this.router.navigate(['/user']));
     });
 
@@ -62,10 +67,7 @@ export class AuthService {
 
     this.storage.deleteAuthToken();
     this.ytService.deleteChannelTitle();
-    //redirects to user view page; this is done here so that the redirect happens after the user completely signs in (no early redirect)
-    //and since only authComponent will call authService.signIn/signOut
-    //NgZone is used so that ytComponent.ngOnInit is called when redirect occurs; otherwise, page won't update on redirect with
-    //last-viewed playlist (something to do with services not interacting with components that way)
+    //NgZone is used so that ytComponent.ngOnInit is called when redirect occurss
     this.ngZone.run(() => this.router.navigate(['/playlist']));
 
   }
