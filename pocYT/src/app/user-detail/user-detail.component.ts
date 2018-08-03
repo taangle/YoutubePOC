@@ -29,8 +29,8 @@ export class UserDetailComponent implements OnInit {
     //checks if user is signed-in; if so, gets a list of their playlists
     if (this.authService.isSignedIn()) {
       this.getPlaylists();
-      this.updateChannelTitle();
     }
+    this.updateChannelTitle();
 
   }
 

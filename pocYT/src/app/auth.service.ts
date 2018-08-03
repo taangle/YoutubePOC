@@ -7,6 +7,7 @@ import { GoogleAuthService } from "ng-gapi";
 import GoogleUser = gapi.auth2.GoogleUser;
 import { YtService } from 'src/app/yt.service';
 import { StorageService } from 'src/app/storage.service';
+import { ChannelListResponse } from 'src/app/channelListResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -49,15 +50,11 @@ export class AuthService {
 
   private signInSuccessHandler(user: GoogleUser) {
 
-    console.log("~~signInHandler: " + user.getId());
-
     this.storage.setAuthToken(user.getAuthResponse().access_token);
-    this.ytService.setChannelTitle(); 
-    //redirects to user view page; this is done here so that the redirect happens after the user completely signs in (no early redirect)
-    //and since only authComponent will call authService.signIn/signOut
-    //NgZone is used so that userDetailComponent.ngOnInit is called when redirect occurs; otherwise, page won't update on redirect with
-    //user's playlists (something to do with services not interacting with components that way)
-    this.ngZone.run(() => this.router.navigate(['/user']));
+    this.ytService.getCurrentChannel().subscribe((response: ChannelListResponse) => {
+      this.ytService.lastChannelTitle = response.items[0].snippet.title;
+      this.ngZone.run(() => this.router.navigate(['/user']));
+    });
 
   }
 

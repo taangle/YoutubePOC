@@ -11,12 +11,10 @@ export class StorageService {
   constructor() { }
 
   setAuthToken(token: string): void {
-    console.log('storage: SETTING auth token');
     sessionStorage.setItem(StorageService.AUTH_TOKEN_KEY, token);
   }
 
   getAuthToken(): string {
-    console.log('storage: GETTING auth token');
     let token: string = sessionStorage.getItem(StorageService.AUTH_TOKEN_KEY);
     if (!token) {
       throw new Error("No token set; authentication required."); //throws error for signed-out user

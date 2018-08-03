@@ -34,6 +34,10 @@ export class YtService {
     }
     return this.storage.getChannelTitle();
   }
+  public set lastChannelTitle(v: string) {
+    this._lastChannelTitle = v;
+    this.storage.setChannelTitle(v);
+  }
   private _lastChannelTitle: string;
   private PLAYLIST_ITEMS_URL = 'https://www.googleapis.com/youtube/v3/playlistItems'; //API base URL for playlistItem requests
   private PLAYLISTS_URL = 'https://www.googleapis.com/youtube/v3/playlists'; //API base URL for playlist requests
@@ -141,16 +145,14 @@ export class YtService {
 
   }
 
-  setChannelTitle() {
+  getCurrentChannel(): Observable<ChannelListResponse> {
     this.setAccessToken();
 
     httpOptions.headers = httpOptions.headers.set('Cache-Control', 'no-cache');
     console.log('sending channel request, options: ' + JSON.stringify(httpOptions));
-    this.http.get<ChannelListResponse>(this.CHANNELS_URL + '?part=snippet&mine=true&key=' + this.apiKey, httpOptions).subscribe((response: ChannelListResponse) => {
-      this._lastChannelTitle = response.items[0].snippet.title;
-      this.storage.setChannelTitle(this.lastChannelTitle);
-    });
+    let request = this.http.get<ChannelListResponse>(this.CHANNELS_URL + '?part=snippet&mine=true&key=' + this.apiKey, httpOptions);
     httpOptions.headers = httpOptions.headers.delete('Cache-Control');
+    return request;
   }
 
   deleteChannelTitle() {
