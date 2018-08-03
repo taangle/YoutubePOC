@@ -1,7 +1,7 @@
 <mat-toolbar>
   Video Detail
 </mat-toolbar>
-<br />
+<br *ngIf="error&&errorSolution" />
 
 <mat-card *ngIf="error&&errorSolution">
 
