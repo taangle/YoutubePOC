@@ -5,6 +5,7 @@ import { Location, DatePipe, formatDate } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 
 import { VideoDetailComponent } from './video-detail.component';
 import { YtService } from '../yt.service';
@@ -104,7 +105,7 @@ describe('VideoDetailComponent', () => {
     describe('savePlaylistItem', () => {
       let itemToSave: PlaylistItem;
       let playlistIdStub = 'playlistId_stub';
-      let newPosition = 1;
+      let newPosition = 0;
   
       beforeEach(() => {
         itemToSave = Object.assign({}, ytServiceFake.fixedFakePlaylistItem);
@@ -270,7 +271,26 @@ describe('VideoDetailComponent', () => {
 
       expect(detailCardContentForm).toBeTruthy();
       expect(detailCardContentFormInput.value).toEqual(`${component.item.snippet.position + 1}`);
-      expect(detailCardContentFormInput.placeholder).toEqual('Enter a number > 0');
+      expect(detailCardContentFormInput.placeholder).toEqual('Position');
+    });
+
+    it('creates errors on invalid input', () => {
+      component.item = fakePlaylistItemWithDate;
+      fixture.detectChanges();
+
+      let formInput = appElement.querySelector('mat-card').querySelector('input');
+
+      component.positionFormControl.setValue(new FormControl('', [
+        Validators.required,
+        Validators.pattern('[0-9]*'),
+        Validators.min(1)
+      ]));
+      formInput.value = 'asdf';
+      formInput.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+
+      let inputError = appElement.querySelector('mat-card').querySelector('mat-error');
+      expect(inputError.innerHTML).toContain('New position must be a number');
     });
 
     it('gives uneditable position warning if playlist item position is initially NaN and disables Save button', () => {
