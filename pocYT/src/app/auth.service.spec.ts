@@ -12,7 +12,7 @@ import { ChannelListResponse } from 'src/app/channelListResponse';
 import { Channel } from 'src/app/channel';
 import { Router } from '@angular/router';
 
-fdescribe('AuthService', () => {
+describe('AuthService', () => {
   let testedAuthService: AuthService;
   let googleAuthServiceSpy: jasmine.SpyObj<GoogleAuthService>;
   let googleAuthSpy: jasmine.SpyObj<gapi.auth2.GoogleAuth>;
