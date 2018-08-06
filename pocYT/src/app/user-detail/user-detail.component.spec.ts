@@ -61,15 +61,20 @@ describe('UserDetailComponent', () => {
         spyOn(component, 'getPlaylists');
       });
   
-      it('gets playlists if user is authenticated', () => {
+      it('gets playlists and updates title from ytService if user is authenticated', () => {
+        spyOnProperty(ytServiceFake, 'lastChannelTitle').and.returnValue('stubTitle');
         authServiceSpy.isSignedIn.and.returnValue(true);
         component.ngOnInit();
         expect(component.getPlaylists).toHaveBeenCalled();
+        expect(component.currentChannelTitle).toEqual("stubTitle");
       });
   
-      it('does not get playlists if user is not authenticated', () => {
+      it('does not get playlists and nulls title if user is not authenticated', () => {
+        component.currentChannelTitle = 'stub';
         authServiceSpy.isSignedIn.and.returnValue(false);
+        component.ngOnInit();
         expect(component.getPlaylists).not.toHaveBeenCalled();
+        expect(component.currentChannelTitle).toBe(null);
       });
     });
   
@@ -92,10 +97,6 @@ describe('UserDetailComponent', () => {
         expect(component.playlistListResponse).toBe(ytServiceFake.playlistListResponseToReturn);
         expect(component.playlists).toBe(ytServiceFake.playlistListResponseToReturn.items);
       }));
-
-      xit('*PENDING*populates channelTitle', () => {
-
-      });
   
       it('populates error and errorSolution if something goes wrong with ytService', fakeAsync(() => {
         let errorMessage: string = 'solution';
@@ -239,7 +240,7 @@ describe('UserDetailComponent', () => {
             useValue: ytServiceFake as YtService
           }
         ]
-      }).compileComponents();
+      });
 
       fixture = TestBed.createComponent(UserDetailComponent);
       component = fixture.componentInstance;
@@ -247,10 +248,23 @@ describe('UserDetailComponent', () => {
       appElement = fixture.nativeElement;
     });
 
-    xit('*PENDING*creates toolbar with appropriate text', () => {
+    it('creates toolbar with appropriate text', () => {
       let toolbar = appElement.querySelector('mat-toolbar');
 
+      component.currentChannelTitle = null;
+      fixture.detectChanges();
       expect(toolbar.innerHTML).toContain('User Overview');
+      expect(toolbar.innerHTML).not.toContain('stubTitle');
+
+      component.currentChannelTitle = 'stubTitle';
+      fixture.detectChanges();
+      expect(toolbar.innerHTML).toContain('User Overview');
+      expect(toolbar.innerHTML).toContain('stubTitle');
+
+      component.currentChannelTitle = null;
+      fixture.detectChanges();
+      expect(toolbar.innerHTML).toContain('User Overview');
+      expect(toolbar.innerHTML).not.toContain('stubTitle');
     });
 
     it('creates default card if there are no playlists to show', () => {

@@ -29,8 +29,11 @@ export class UserDetailComponent implements OnInit {
     //checks if user is signed-in; if so, gets a list of their playlists
     if (this.authService.isSignedIn()) {
       this.getPlaylists();
+      this.currentChannelTitle = this.ytService.lastChannelTitle;
     }
-    this.updateChannelTitle();
+    else {
+      this.currentChannelTitle = null;
+    }
 
   }
 
@@ -86,14 +89,5 @@ export class UserDetailComponent implements OnInit {
     this.errorSolution = this.ytService.giveErrorSolution(error);
     this.error = error;
 
-  }
-
-  private updateChannelTitle(): void {
-    if (this.authService.isSignedIn()) {
-      this.currentChannelTitle = this.ytService.lastChannelTitle;
-    }
-    else {
-      this.currentChannelTitle = null;
-    }
   }
 }
