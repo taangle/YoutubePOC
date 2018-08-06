@@ -168,19 +168,20 @@ fdescribe('AuthService', () => {
       tick();
       expect(storageServiceSpy.deleteAuthToken).toHaveBeenCalled();
     }));
+
+    it('asks ytService to delete channel title', fakeAsync(() => {
+      testedAuthService.signOut();
+      tick();
+      expect(ytServiceFake.deleteChannelTitle).toHaveBeenCalled();
+    }));
   });
 
-  xdescribe('*PENDING*isSignedIn', () => {
-    // it('returns true if the token exists', () => {
-    //   sessionStorage.setItem(AuthService.SESSION_STORAGE_KEY, 'token');
-    //   expect(testedAuthService.isSignedIn()).toBe(true);
-    // });
-
-    // it('returns false if the token does not exist', () => {
-    //   spyOn(testedAuthService, 'getToken').and.callFake(() => {
-    //     throw new Error('No token set; authentication required.');
-    //   });
-    //   expect(testedAuthService.isSignedIn()).toBe(false);
-    // });
+  describe('isSignedIn', () => {
+    it('returns true if storage has an auth token, otherwise false', () => {
+      storageServiceSpy.getAuthToken.and.returnValue('stub');
+      expect(testedAuthService.isSignedIn()).toBeTruthy();
+      storageServiceSpy.getAuthToken.and.throwError("Error");
+      expect(testedAuthService.isSignedIn()).toBeFalsy();
+    });
   });
 });
