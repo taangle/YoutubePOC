@@ -70,7 +70,7 @@ export class AuthService {
   private signOutSuccessHandler() {
 
     this.storage.deleteAuthToken();
-    this.ytService.deleteChannelTitle();
+    this.storage.deleteChannelTitle();
     //NgZone is used so that ytComponent.ngOnInit is called when redirect occurss
     this.ngZone.run(() => this.router.navigate(['/playlist']));
 

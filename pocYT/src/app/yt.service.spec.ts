@@ -1,5 +1,5 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { TestBed, tick, fakeAsync } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController, TestRequest } from '@angular/common/http/testing';
 import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 
 import { YtService, httpOptions } from './yt.service';
@@ -8,25 +8,28 @@ import { PlaylistItemListResponse } from './playlistItemListResponse';
 import { PlaylistItem } from './playlistItem';
 import { PlaylistListResponse } from './playlistListResponse';
 import { Playlist } from './playlist';
+import { StorageService } from 'src/app/storage.service';
+import { ChannelListResponse } from 'src/app/channelListResponse';
 
 describe('YtService', () => {
   let testedYtService: YtService;
+  let storageServiceSpy: jasmine.SpyObj<StorageService>;
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
-  let authServiceSpy: jasmine.SpyObj<AuthService>;
   let ytUrl: string = 'https://www.googleapis.com/youtube/v3/playlistItems';
   let ytPlaylistUrl: string = 'https://www.googleapis.com/youtube/v3/playlists';
+  let ytChannelUrl: string = 'https://www.googleapis.com/youtube/v3/channels';
 
   beforeEach(() => {
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['signIn', 'getToken']);
+    storageServiceSpy = jasmine.createSpyObj('StorageService', ['getChannelTitle', 'setChannelTitle', 'deleteChannelTitle', 'getAuthToken']);
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
         YtService,
         {
-          provide: AuthService,
-          useValue: authServiceSpy
+          provide: StorageService,
+          useValue: storageServiceSpy
         }
       ]
     });
@@ -40,33 +43,17 @@ describe('YtService', () => {
     httpTestingController.verify();
   });
 
-  xdescribe('*PENDING*setAccessToken:', () => {
-
-    // it('changes the header to contain the access token', () => {
-    //   let stubToken: string = 'stub token';
-    //   authServiceSpy.getToken.and.returnValue(stubToken);
-    //   testedYtService.setAccessToken();
-    //   expect(httpOptions.headers.get('Authorization')).toContain(stubToken);
-    // });
-
-    // it('deletes the Authorization header if the authService throws an error', () => {
-    //   authServiceSpy.getToken.and.throwError('error');
-    //   testedYtService.setAccessToken();
-    //   expect(httpOptions.headers.has('Authorization')).toBe(false);
-    // });
-  });
-
   describe('GET:', () => {
 
     describe('getPlaylists:', () => {
-      let expectedPlaylistListResponse: PlaylistListResponse;
+      let expectedResponse: PlaylistListResponse;
       let unexpectedResponse;
       let pageTokenStub: string = 'page_token';
       let GETPlaylistsUrl: string = ytPlaylistUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet&mine=true&maxResults=50&pageToken=' + pageTokenStub;
 
       beforeEach(() => {
         testedYtService.playlistPageToken = pageTokenStub;
-        expectedPlaylistListResponse = {
+        expectedResponse = {
           kind: "kind",
           etag: "etag",
           nextPageToken: "next",
@@ -82,18 +69,18 @@ describe('YtService', () => {
 
       it('returns expected playlists (one call)', async () => {
         testedYtService.getPlaylists().subscribe(
-          (playlistListResponse: PlaylistListResponse) => {
-            expect(playlistListResponse).toBe(expectedPlaylistListResponse);
+          (response: PlaylistListResponse) => {
+            expect(response).toBe(expectedResponse);
           },
           fail
         );
 
-        const request = httpTestingController.expectOne(GETPlaylistsUrl);
+        const request: TestRequest = httpTestingController.expectOne(GETPlaylistsUrl);
         expect(request.request.method).toEqual('GET');
-        request.flush(expectedPlaylistListResponse);
+        request.flush(expectedResponse);
       });
 
-      it('returns a not found error', () => {
+      it('returns a not found error', fakeAsync(() => {
         let errorText: string;
         testedYtService.getPlaylists().subscribe(
           fail,
@@ -119,8 +106,21 @@ describe('YtService', () => {
           }
         );
         request.flush(expectedResponseBody, expectedResponse);
+        tick();
 
         expect(errorText).toContain('404');
+      }));
+
+      it('sends request with auth header if token exists', () => {
+        storageServiceSpy.getAuthToken.and.returnValue('token');
+        testedYtService.getPlaylists().subscribe(() => {});
+        const request: TestRequest = httpTestingController.expectOne(GETPlaylistsUrl);
+        expect(request.request.headers.has('Authorization')).toBe(true);
+        
+        storageServiceSpy.getAuthToken.and.throwError('error');
+        testedYtService.getPlaylists().subscribe(() => {});
+        const nonAuthRequest: TestRequest = httpTestingController.expectOne(GETPlaylistsUrl);
+        expect(nonAuthRequest.request.headers.has('Authorization')).toBe(false);
       });
     });
 
@@ -286,8 +286,18 @@ describe('YtService', () => {
     });
 
     describe('getCurrentChannel:', () => {
-      xit('*PENDING*returns observable of response', () => {
+      let GETChannelsUrl: string = ytChannelUrl + '?part=snippet&mine=true&key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc';
 
+      it('returns expected channel', () => {
+        let expectedResponse: ChannelListResponse = new ChannelListResponse();
+
+        testedYtService.getCurrentChannel().subscribe((response: ChannelListResponse) => {
+          expect(response).toBe(expectedResponse);
+        }, fail);
+
+        const request: TestRequest = httpTestingController.expectOne(GETChannelsUrl)
+        expect(request.request.method).toEqual('GET');
+        request.flush(expectedResponse);
       });
     });
   });

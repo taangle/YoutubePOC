@@ -48,7 +48,7 @@ export class YtService {
   constructor(private http: HttpClient, private storage: StorageService) { }
 
   //gets access token from authService and stores it as an HttpHeader to be used with unauthorized requests while user is signed in to Google/YouTube; clears access token if user has signed out
-  setAccessToken(): void {
+  private setAccessToken(): void {
 
     try {
 
@@ -153,10 +153,6 @@ export class YtService {
     let request = this.http.get<ChannelListResponse>(this.CHANNELS_URL + '?part=snippet&mine=true&key=' + this.apiKey, httpOptions);
     httpOptions.headers = httpOptions.headers.delete('Cache-Control');
     return request;
-  }
-
-  deleteChannelTitle() {
-    this.storage.deleteChannelTitle();
   }
 
   //error handler that provides user-friendly advice/details for common error codes

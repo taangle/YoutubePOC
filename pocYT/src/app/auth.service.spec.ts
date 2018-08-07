@@ -21,57 +21,10 @@ describe('AuthService', () => {
   let stubAccessToken: string = 'stub token';
   let routerSpy: jasmine.SpyObj<Router>;
 
-  //#region Old
-  // // Mocks sessionStorage
-  // function setUpStorageSpies() {
-  //   let store = {};
-  //   mockStorage = {
-  //     getItem: (key: string): string => {
-  //       return store[key];
-  //     },
-  //     setItem: (key: string, value: string) => {
-  //       store[key] = value;
-  //     },
-  //     removeItem: (key: string): void => {
-  //       store[key] = null;
-  //     }
-  //   };
-  //   spyOn(sessionStorage, 'getItem').and.callFake(mockStorage.getItem);
-  //   spyOn(sessionStorage, 'setItem').and.callFake(mockStorage.setItem);
-  //   spyOn(sessionStorage, 'removeItem').and.callFake(mockStorage.removeItem);
-  // }
-  
-  // function setUpGoogleAuthSpies() {
-  //   googleAuthServiceSpy = jasmine.createSpyObj('GoogleAuthService', ['getAuth']);
-  //   googleAuthSpy = jasmine.createSpyObj('GoogleAuth', ['signIn', 'signOut']);
-
-  //   function subscription(observer) {
-  //     observer.next(googleAuthSpy);
-  //     observer.complete();
-  //   }
-
-  //   googleAuthServiceSpy.getAuth.and.callFake(() => {
-  //     return new Observable<gapi.auth2.GoogleAuth>(subscription);
-  //   });
-
-  //   googleAuthSpy.signIn.and.callFake(() => {
-  //     return new Promise(() => {
-  //       sessionStorage.setItem(AuthService.SESSION_STORAGE_KEY, 'test_token');
-  //     });
-  //   });
-
-  //   googleAuthSpy.signOut.and.callFake(() => {
-  //     return new Promise(() => {
-  //       sessionStorage.removeItem(AuthService.SESSION_STORAGE_KEY);
-  //     });
-  //   });
-  // }
-  //#endregion
-
   beforeEach(() => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate'])
     googleAuthServiceSpy = jasmine.createSpyObj('GoogleAuthService', ['getAuth']);
-    storageServiceSpy = jasmine.createSpyObj('StorageService', ['getAuthToken', 'setAuthToken', 'deleteAuthToken']);
+    storageServiceSpy = jasmine.createSpyObj('StorageService', ['getAuthToken', 'setAuthToken', 'deleteAuthToken', 'deleteChannelTitle']);
     ytServiceFake = new FakeYtService();
 
     TestBed.configureTestingModule({
@@ -159,8 +112,6 @@ describe('AuthService', () => {
         subscriber.next(googleAuthSpy);
         subscriber.complete();
       }));
-
-      spyOn(ytServiceFake, 'deleteChannelTitle');
     });
 
     it('deletes token', fakeAsync(() => {
@@ -169,10 +120,10 @@ describe('AuthService', () => {
       expect(storageServiceSpy.deleteAuthToken).toHaveBeenCalled();
     }));
 
-    it('asks ytService to delete channel title', fakeAsync(() => {
+    it('deletes channel title', fakeAsync(() => {
       testedAuthService.signOut();
       tick();
-      expect(ytServiceFake.deleteChannelTitle).toHaveBeenCalled();
+      expect(storageServiceSpy.deleteChannelTitle).toHaveBeenCalled();
     }));
   });
 
