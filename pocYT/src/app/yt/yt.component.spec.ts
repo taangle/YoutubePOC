@@ -8,6 +8,7 @@ import { YtService } from '../yt.service';
 import { PlaylistItem } from '../playlistItem';
 import { PlaylistItemListResponse } from '../playlistItemListResponse';
 import { FakeYtService } from 'src/test-files/yt.service.fake';
+import { PlaylistListResponse } from '../playlistListResponse';
 
 describe('YtComponent', () => {
   let component: YtComponent;
@@ -60,95 +61,108 @@ describe('YtComponent', () => {
     describe('getPlaylistItems:', () => {
       let blankPlaylistId = '   ';
       let getPlaylistItemsSpy;
+      let getPlaylistSpy;
   
       beforeEach(() => {
         getPlaylistItemsSpy = spyOn(ytServiceFake, 'getPlaylistItems').and.callThrough();
+        getPlaylistSpy = spyOn(ytServiceFake, 'getPlaylist').and.callThrough();
       });
   
       it('should not call out to service on blank input', fakeAsync(() => {
         component.getPlaylistItems(blankPlaylistId);
         tick();
         expect(getPlaylistItemsSpy).not.toHaveBeenCalled();
+        expect(getPlaylistSpy).not.toHaveBeenCalled();
       }));
   
       it('calls ytService with given playlistId input and update playlistItemListResponse and playlistItems', fakeAsync(() => {
         let expectedResponse = new PlaylistItemListResponse();
+        let expectedPlaylistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
+        expectedPlaylistListResponse.items = [ytServiceFake.fixedFakePlaylist];
         ytServiceFake.playlistItemListResponseToReturn = expectedResponse;
+        ytServiceFake.playlistListResponseToReturn = expectedPlaylistListResponse;
         component.getPlaylistItems(ytServiceFake.playlistIdStub);
         tick();
         expect(getPlaylistItemsSpy).toHaveBeenCalledWith(ytServiceFake.playlistIdStub);
         expect(component.playlistItemListResponse).toEqual(expectedResponse);
+        expect(getPlaylistSpy).toHaveBeenCalledWith(ytServiceFake.playlistIdStub);
+        expect(component.playlistListResponse).toEqual(expectedPlaylistListResponse);
   
         let idStub = 'PLWQB0T3rGCzEPRWOqrfSrJW_-A7RsT4qS     ';
         let actualId = 'PLWQB0T3rGCzEPRWOqrfSrJW_-A7RsT4qS';
-        expectedResponse = new PlaylistItemListResponse();
-        ytServiceFake.playlistItemListResponseToReturn = expectedResponse;
         component.getPlaylistItems(idStub);
         tick();
         expect(getPlaylistItemsSpy).toHaveBeenCalledWith(actualId);
         expect(component.playlistItemListResponse).toEqual(expectedResponse);
+        expect(getPlaylistSpy).toHaveBeenCalledWith(actualId);
+        expect(component.playlistListResponse).toEqual(expectedPlaylistListResponse);
   
         idStub = '      PLWQB0T3rGCzEPRWOqrfSrJW_-A7RsT4qS';
-        expectedResponse = new PlaylistItemListResponse();
-        ytServiceFake.playlistItemListResponseToReturn = expectedResponse;
         component.getPlaylistItems(idStub);
         tick();
         expect(getPlaylistItemsSpy).toHaveBeenCalledWith(actualId);
         expect(component.playlistItemListResponse).toEqual(expectedResponse);
+        expect(getPlaylistSpy).toHaveBeenCalledWith(actualId);
+        expect(component.playlistListResponse).toEqual(expectedPlaylistListResponse);
   
         idStub = '  \t    PLWQB0T3rGCzEPRWOqrfSrJW_-A7RsT4qS              ';
-        expectedResponse = new PlaylistItemListResponse();
-        ytServiceFake.playlistItemListResponseToReturn = expectedResponse;
         component.getPlaylistItems(idStub);
         tick();
         expect(getPlaylistItemsSpy).toHaveBeenCalledWith(actualId);
         expect(component.playlistItemListResponse).toEqual(expectedResponse);
+        expect(getPlaylistSpy).toHaveBeenCalledWith(actualId);
+        expect(component.playlistListResponse).toEqual(expectedPlaylistListResponse);
   
         idStub = '\r\nPLWQB0T3rGCzEPRWOqrfSrJW_-A7RsT4qS\r\n\t';
-        expectedResponse = new PlaylistItemListResponse();
-        ytServiceFake.playlistItemListResponseToReturn = expectedResponse;
         component.getPlaylistItems(idStub);
         tick();
         expect(getPlaylistItemsSpy).toHaveBeenCalledWith(actualId);
         expect(component.playlistItemListResponse).toEqual(expectedResponse);
+        expect(getPlaylistSpy).toHaveBeenCalledWith(actualId);
+        expect(component.playlistListResponse).toEqual(expectedPlaylistListResponse);
       }));
   
       it('calls ytService with correct playlistId when given playlist URL', fakeAsync(() => {
         let urlStub = ' \r  https://youtube.com/playlist?list=PLWQB0T3rGCzEPRWOqrfSrJW_-A7RsT4qS&app=desktop  \n ';
         let expectedId = 'PLWQB0T3rGCzEPRWOqrfSrJW_-A7RsT4qS';
         let expectedResponse = new PlaylistItemListResponse();
+        let expectedPlaylistListResponse = ytServiceFake.fixedFakePlaylistListResponse;
+        expectedPlaylistListResponse.items = [ytServiceFake.fixedFakePlaylist];
         ytServiceFake.playlistItemListResponseToReturn = expectedResponse;
+        ytServiceFake.playlistListResponseToReturn = expectedPlaylistListResponse;
         component.getPlaylistItems(urlStub);
         tick();
         expect(getPlaylistItemsSpy).toHaveBeenCalledWith(expectedId);
         expect(component.playlistItemListResponse).toEqual(expectedResponse);
+        expect(getPlaylistSpy).toHaveBeenCalledWith(expectedId);
+        expect(component.playlistListResponse).toEqual(expectedPlaylistListResponse);
   
         urlStub = '   \t   https://www.youtube.com/playlist?list=PLWQB0T3rGCzHKoCUvt2g5uGGD5fYVywbt   ';
         expectedId = 'PLWQB0T3rGCzHKoCUvt2g5uGGD5fYVywbt';
-        expectedResponse = new PlaylistItemListResponse();
-        ytServiceFake.playlistItemListResponseToReturn = expectedResponse;
         component.getPlaylistItems(urlStub);
         tick();
         expect(getPlaylistItemsSpy).toHaveBeenCalledWith(expectedId);
         expect(component.playlistItemListResponse).toEqual(expectedResponse);
+        expect(getPlaylistSpy).toHaveBeenCalledWith(expectedId);
+        expect(component.playlistListResponse).toEqual(expectedPlaylistListResponse);
   
         urlStub = '   youtube.com/playlist?list=PLWQB0T3rGCzHXgO11UaJ1akGYPAMaZ44f\t   \n';
         expectedId = 'PLWQB0T3rGCzHXgO11UaJ1akGYPAMaZ44f';
-        expectedResponse = new PlaylistItemListResponse();
-        ytServiceFake.playlistItemListResponseToReturn = expectedResponse;
         component.getPlaylistItems(urlStub);
         tick();
         expect(getPlaylistItemsSpy).toHaveBeenCalledWith(expectedId);
         expect(component.playlistItemListResponse).toEqual(expectedResponse);
+        expect(getPlaylistSpy).toHaveBeenCalledWith(expectedId);
+        expect(component.playlistListResponse).toEqual(expectedPlaylistListResponse);
   
         urlStub = '  \t\rlist=PLWQB0T3rGCzHXgO11UaJ1akGYFJ58BJHDU\t   \n';
         expectedId = 'PLWQB0T3rGCzHXgO11UaJ1akGYFJ58BJHDU';
-        expectedResponse = new PlaylistItemListResponse();
-        ytServiceFake.playlistItemListResponseToReturn = expectedResponse;
         component.getPlaylistItems(urlStub);
         tick();
         expect(getPlaylistItemsSpy).toHaveBeenCalledWith(expectedId);
         expect(component.playlistItemListResponse).toEqual(expectedResponse);
+        expect(getPlaylistSpy).toHaveBeenCalledWith(expectedId);
+        expect(component.playlistListResponse).toEqual(expectedPlaylistListResponse);
       }));
   
       it('populates error and errorSolution and clears playlistId if ytService has a problem', fakeAsync(() => {
@@ -532,6 +546,8 @@ describe('YtComponent', () => {
         tick();
         expect(component.playlistItemListResponse).toEqual(ytServiceFake.playlistItemListResponseToReturn);
         expect(component.playlistItems).toEqual(ytServiceFake.fakeCloudPlaylist);
+        expect(component.playlistListResponse).toEqual(ytServiceFake.fixedFakePlaylistListResponse);
+        expect(component.currentPlaylist).toEqual(ytServiceFake.fixedFakePlaylist);
       }));
 
       it('resets items to be deleted', fakeAsync(() => {
@@ -591,6 +607,8 @@ describe('YtComponent', () => {
         tick();
         expect(component.playlistItemListResponse).toEqual(ytServiceFake.playlistItemListResponseToReturn);
         expect(component.playlistItems).toEqual(ytServiceFake.fakeCloudPlaylist);
+        expect(component.playlistListResponse).toEqual(ytServiceFake.fixedFakePlaylistListResponse);
+        expect(component.currentPlaylist).toEqual(ytServiceFake.fixedFakePlaylist);
       }));
       
       it('resets items to be deleted', fakeAsync(() => {
@@ -680,6 +698,14 @@ describe('YtComponent', () => {
       it('contains "Playlist View" in first row', () => {
         let firstRow: Element = toolbarRows.item(0);
         expect(firstRow.innerHTML).toContain("Playlist View");
+      });
+
+      it('contains playlist name if playlist exists', () => {
+        component.currentPlaylist = ytServiceFake.fixedFakePlaylist;
+        fixture.detectChanges();
+
+        let firstRow = toolbarRows[0];
+        expect(firstRow.innerHTML).toContain(component.currentPlaylist.id);
       });
 
       it('contains field for playlist ID and button to show playlist in second row', () => {
@@ -838,6 +864,40 @@ describe('YtComponent', () => {
             component.playlistItems = new Array<PlaylistItem>(0);
             fixture.detectChanges();
             expect(getVideoListContainer()).toBeFalsy();
+          });
+
+          it('contains Play and Delete Selected Videos buttons', () => {
+            component.playlistItems = [Object.assign({}, ytServiceFake.fixedFakePlaylistItem)];
+            component.playlistItemListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
+            component.playlistListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
+            component.currentPlaylist = Object.assign({}, ytServiceFake.fixedFakePlaylist);
+            fixture.detectChanges();
+
+            let container = getVideoListContainer();
+            let playLink = container.querySelector('a');
+            let buttons = container.querySelectorAll('button');
+            let playButton = buttons[0];
+            let deleteButton = buttons[1];
+
+            expect(playLink.href).toContain('/play/' + component.currentPlaylist.id);
+            expect(playButton.innerHTML).toContain('\u25BA');
+            expect(deleteButton.innerHTML).toContain('DELETE SELECTED VIDEOS');
+          });
+
+          it('disables Play button if current playlist is private', () => {
+            component.playlistItems = [Object.assign({}, ytServiceFake.fixedFakePlaylistItem)];
+            component.playlistItemListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistItemListResponse);
+            component.playlistListResponse = Object.assign({}, ytServiceFake.fixedFakePlaylistListResponse);
+            component.currentPlaylist = Object.assign({}, ytServiceFake.fixedFakePlaylist);
+            component.currentPlaylist.status.privacyStatus = 'private';
+            fixture.detectChanges();
+
+            let container = getVideoListContainer();
+            let buttonTooltip = container.querySelector('span');
+            let playButton = container.querySelectorAll('button')[0];
+
+            expect(buttonTooltip.getAttribute('matTooltip')).toContain('You can\'t watch private playlists');
+            expect(playButton.disabled).toBeTruthy();
           });
 
           it('contains a list of the videos in the playlist', () => {
