@@ -9,7 +9,7 @@ import { Location } from '@angular/common';
 })
 export class PlayComponent implements OnInit {
 
-  // This url is not necessarily safe; potential XSS vulnerability
+  // This url is not necessarily safe; we mark it as safe with no good reason, which is a potential XSS vulnerability
   public embedUrl: string = 'https://www.youtube.com/embed/vYb4_ARPNfo?list=PLWQB0T3rGCzEPRWOqrfSrJW_-A7RsT4qS';
 
   constructor(private route: ActivatedRoute, private location: Location) { }
@@ -20,7 +20,7 @@ export class PlayComponent implements OnInit {
 
   }
 
-  //pulls playlist ID from route and updates iframe with playlist (which will autoplay and loop back to beginning)
+  // pulls playlist ID from route and updates iframe with playlist (which will autoplay and loop back to beginning)
   private getEmbed(): void {
 
     const playlistId = this.route.snapshot.paramMap.get('id');

@@ -26,7 +26,7 @@ export class UserDetailComponent implements OnInit {
   // Gets playlists if authService reports that user is authenticated
   ngOnInit() {
 
-    //checks if user is signed-in; if so, gets a list of their playlists
+    // checks if user is signed-in; if so, gets a list of their playlists
     if (this.authService.isSignedIn()) {
       this.getPlaylists();
       this.currentChannelTitle = this.ytService.lastChannelTitle;
@@ -37,7 +37,7 @@ export class UserDetailComponent implements OnInit {
 
   }
 
-  //gets signed-in user's playlists from ytService
+  // gets signed-in user's playlists from ytService
   getPlaylists(): void {
 
     this.ytService.getPlaylists().subscribe(playlistListResponse => {
@@ -51,10 +51,10 @@ export class UserDetailComponent implements OnInit {
 
   }
 
-  //sets current playlistId in ytService and redirects to ytComponent, which will display playlistItems in the playlist with the aforementioned playlistId
+  // sets current playlistId in ytService and redirects to ytComponent, which will display playlistItems in the playlist with the aforementioned playlistId
   toPlaylist(playlistId: string): void {
 
-    //clears page token from previous playlist to prevent it from getting passed to GET call for a new playlist
+    // clears page token from previous playlist to prevent it from getting passed to GET call for a new playlist
     if (playlistId !== this.ytService.playlistId) {
       this.ytService.playlistItemPageToken = '';
     }

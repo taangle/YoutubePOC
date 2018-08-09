@@ -43,19 +43,19 @@ export class YtService {
   private PLAYLIST_ITEMS_URL = 'https://www.googleapis.com/youtube/v3/playlistItems'; //API base URL for playlistItem requests
   private PLAYLISTS_URL = 'https://www.googleapis.com/youtube/v3/playlists'; //API base URL for playlist requests
   private CHANNELS_URL = 'https://www.googleapis.com/youtube/v3/channels'; //API base URL for channel requests
-  private apiKey = Variables.API_KEY; //Will's API key
+  private apiKey = Variables.API_KEY;
   private maxResults = 50; //results returned per GET request
 
   constructor(private http: HttpClient, private storage: StorageService) { }
 
-  //gets access token from authService and stores it as an HttpHeader to be used with unauthorized requests while user is signed in to Google/YouTube; clears access token if user has signed out
+  // gets access token from authService and stores it as an HttpHeader to be used with unauthorized requests while user is signed in to Google/YouTube; clears access token if user has signed out
   private setAccessToken(): void {
 
     try {
 
       httpOptions.headers = httpOptions.headers.set('Authorization', 'Bearer ' + this.storage.getAuthToken());
 
-    } catch (Error) { //storage throws Error if there is no access token, i.e. user is signed-out
+    } catch (Error) { // storage throws Error if there is no access token, i.e. user is signed-out
 
       httpOptions.headers = httpOptions.headers.delete('Authorization');
 
@@ -63,12 +63,12 @@ export class YtService {
 
   }
 
-  //GET request for signed-in user's playlists; can only receive up to 50 Playlists at once
+  // GET request for signed-in user's playlists; can only receive up to 50 Playlists at once
   getPlaylists(): Observable<PlaylistListResponse> {
 
-    this.setAccessToken(); //authorization needed due to "mine" filter in GET request
+    this.setAccessToken(); // authorization needed due to "mine" filter in GET request
 
-    //only gets playlists of signed-in user; pageToken not needed for request to be "complete", so keeping the parameter there makes sure user stays on the correct page in user view
+    // only gets playlists of signed-in user; pageToken not needed for request to be "complete", so keeping the parameter there makes sure user stays on the correct page in user view
     return this.http.get<PlaylistListResponse>(this.PLAYLISTS_URL + '?key=' + this.apiKey + '&part=snippet,status&mine=true&maxResults=' + this.maxResults + '&pageToken=' + this.playlistPageToken, httpOptions).pipe(catchError(this.handleError));
 
   }

@@ -40,7 +40,7 @@ export class AuthService {
 
   }
 
-  //checks if access token exists; if it does, user is signed-in, otherwise, user is signed-out
+  // checks if access token exists; if it does, user is signed-in, otherwise, user is signed-out
   public isSignedIn(): boolean {
 
     try {
@@ -76,7 +76,7 @@ export class AuthService {
 
   }
 
-  //just prints error since one should only occur when user closes sign-in pop-up or Google has some error on their end
+  // just prints error since one should only occur when user closes sign-in pop-up or Google has some error on their end
   private handleAuthError(error: any) {
 
     console.error(error);

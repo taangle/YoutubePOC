@@ -7,7 +7,7 @@ import { ErrorStateMatcher } from '@angular/material/core';
 import { PlaylistItem } from '../playlistItem';
 import { YtService } from '../yt.service';
 
-//from Angular Material documentation for input form control
+// from Angular Material documentation for input form control
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isSubmitted = form && form.submitted;
@@ -27,7 +27,7 @@ export class VideoDetailComponent implements OnInit {
   error: string;
   errorSolution: string;
 
-  //the validators don't actually enforce anything, they just allow the correct errors to display on the input box
+  // the validators don't actually enforce anything, they just allow the correct errors to display on the input box
   positionFormControl = new FormControl('', [
     Validators.required,
     Validators.pattern('[0-9]*'),
@@ -43,7 +43,7 @@ export class VideoDetailComponent implements OnInit {
 
   }
 
-  //passes a PlaylistItem's ID to a GET request, which returns a PlaylistItemListResponse; first (usually only) element in playlistItemListResponse is stored in item and its info is displayed on page
+  // passes a PlaylistItem's ID to a GET request, which returns a PlaylistItemListResponse; first (usually only) element in playlistItemListResponse is stored in item and its info is displayed on page
   getPlaylistItem(): void {
 
     const id = this.route.snapshot.paramMap.get('id'); //ID also stored in PlaylistItem (i.e. item.id) so it can be pulled from there alternatively
@@ -80,7 +80,8 @@ export class VideoDetailComponent implements OnInit {
     });
 
   }
-
+   
+  // For use in template
   isNaN(num: number): boolean {
     return isNaN(num);
   }
