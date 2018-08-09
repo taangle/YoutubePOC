@@ -49,7 +49,7 @@ describe('YtService', () => {
       let expectedResponse: PlaylistListResponse;
       let unexpectedResponse;
       let pageTokenStub: string = 'page_token';
-      let GETPlaylistsUrl: string = ytPlaylistUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet&mine=true&maxResults=50&pageToken=' + pageTokenStub;
+      let GETPlaylistsUrl: string = ytPlaylistUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet,status&mine=true&maxResults=50&pageToken=' + pageTokenStub;
 
       beforeEach(() => {
         testedYtService.playlistPageToken = pageTokenStub;
@@ -64,7 +64,6 @@ describe('YtService', () => {
           },
           items: []
         }
-        unexpectedResponse = {};
       });
 
       it('returns expected playlists (one call)', async () => {
@@ -124,7 +123,69 @@ describe('YtService', () => {
       });
     });
 
-    describe('getPlaylistItems:', () => {
+    describe('getPlaylist', () => {
+      let expectedPlaylistListResponse: PlaylistListResponse;
+      let playlistIdStub = 'playlist_id';
+      let pageTokenStub: string = 'page_token';
+      let GETPlaylistUrl: string = ytPlaylistUrl + '?key=AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc&part=snippet,status&id=' + playlistIdStub + '&pageToken=' + pageTokenStub;
+
+      beforeEach(() => {
+        testedYtService.playlistPageToken = pageTokenStub;
+        expectedPlaylistListResponse = {
+          kind: "kind",
+          etag: "etag",
+          nextPageToken: "next",
+          prevPageToken: "prev",
+          pageInfo: {
+            totalResults: 1,
+            resultsPerPage: 5
+          },
+          items: []
+        }
+      });
+
+      it('returns expected playlist', async () => {
+        testedYtService.getPlaylist(playlistIdStub).subscribe((playlistListResponse: PlaylistListResponse) => {
+          expect(playlistListResponse).toBe(expectedPlaylistListResponse);
+        }, fail);
+
+        const request = httpTestingController.expectOne(GETPlaylistUrl);
+        expect(request.request.method).toEqual('GET');
+        request.flush(expectedPlaylistListResponse);
+      });
+
+      it('returns a not found error', () => {
+        let errorText: string;
+        testedYtService.getPlaylist(playlistIdStub).subscribe(
+          fail,
+          (error: string) => {
+            errorText = error;
+          }
+        );
+
+        const request = httpTestingController.expectOne(GETPlaylistUrl);
+        expect(request.request.method).toEqual('GET');
+
+        const expectedResponseBody = {
+          error: {
+            error: {
+              message: 'Not Found'
+            }
+          }
+        };
+        const expectedResponse = new HttpErrorResponse(
+          {
+            status: 404,
+            statusText: 'Not Found'
+          }
+        );
+        request.flush(expectedResponseBody, expectedResponse);
+
+        expect(errorText).toContain('404');
+      });
+    });
+
+    describe('getPlaylistItems', () => {
       let expectedPlaylistResponse: PlaylistItemListResponse;
       let unexpectedResponse;
       let playlistIdStub: string = 'playlist_id';

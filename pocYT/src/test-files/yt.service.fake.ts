@@ -208,6 +208,15 @@ export class FakeYtService extends YtService {
     });
   }
 
+  getPlaylist(): Observable<PlaylistListResponse> {
+    return new Observable((observer) => {
+      let responseToReturn = Object.assign({}, this.fixedFakePlaylistListResponse);
+      responseToReturn.items = [this.fixedFakePlaylist];
+      observer.next(responseToReturn);
+      observer.complete();
+    });
+  }
+
   updatePlaylistItem(): Observable<any> {
     return new Observable((observer) => {
       observer.next();

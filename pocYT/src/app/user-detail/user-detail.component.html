@@ -2,7 +2,7 @@
   User Overview
   <span *ngIf="currentChannelTitle">: {{currentChannelTitle}}</span>
 </mat-toolbar>
-<br />
+<br *ngIf="error&&errorSolution" />
 
 <mat-card *ngIf="error&&errorSolution">
 
@@ -33,10 +33,14 @@
       <!--lists titles of all user's Playlists; each can be clicked to view its contents-->
       <mat-list-item *ngFor="let item of playlists">
         <!--routes user to embedded playlist view-->
-        <a routerLink="/play/{{item.id}}"><button mat-mini-fab color="primary">&#9658;</button></a>&nbsp;
+        <a routerLink="/play/{{item.id}}" *ngIf="item.status.privacyStatus!=='private'; else disabledButton"><button mat-mini-fab color="primary">&#9658;</button></a>&nbsp;
+        <!--private playlists can't be embedded, so button will be disabled if status is private-->
+        <ng-template #disabledButton>
+          <span matTooltip="You can't watch private playlists in this application" matTooltipPosition="right"><button mat-mini-fab color="primary" [disabled]="true">&#9658;</button></span>
+        </ng-template>
         <!--redirects user to ytComponent, which will display contents of clicked playlist based on its ID-->
         <button mat-raised-button color="primary" (click)="toPlaylist(item.id)">VIEW/EDIT</button>&nbsp;
-        {{item.snippet.title}}
+        {{item.snippet.title}}&nbsp;&nbsp;&nbsp;&nbsp;
       </mat-list-item>
     </mat-list>
     <br />

@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import { YtService } from '../yt.service';
 import { PlaylistItem } from '../playlistItem';
 import { PlaylistItemListResponse } from '../playlistItemListResponse';
+import { Playlist } from '../playlist';
+import { PlaylistListResponse } from '../playlistListResponse';
 
 @Component({
   selector: 'app-yt',
@@ -21,6 +23,8 @@ export class YtComponent implements OnInit {
 
   playlistItems: PlaylistItem[];
   playlistItemListResponse: PlaylistItemListResponse;
+  currentPlaylist: Playlist;
+  playlistListResponse: PlaylistListResponse;
   error: string;
   errorSolution: string;
   allowPageChangeButtonClick: boolean = false;
@@ -56,6 +60,14 @@ export class YtComponent implements OnInit {
     }, () => {
       this.allowDeleteButtonClick = true;
       this.allowPageChangeButtonClick = true;
+    });
+
+    //this GET request exists to obtain info not included in a PlaylistItemListResponse, i.e. playlist name, playlist privacy status
+    this.ytService.getPlaylist(playlistId).subscribe(playlistListResponse => {
+      this.playlistListResponse = playlistListResponse;
+      this.currentPlaylist = this.playlistListResponse.items.length === 0 ? null : this.playlistListResponse.items[0];
+    }, error => {
+      console.error(error); //getPlaylistItems should produce the same errors so it will update the error/errorSolution strings; this is a placeholder
     });
 
   }

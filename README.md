@@ -3,7 +3,7 @@ Summer of 2018 Intern POC Project
 
 Proof-of-concept using Angular 6 and YouTube Data API.
 
-Allows GET, POST, PUT, DELETE requests on videos/data in a single playlist on the corresponding authorized YouTube account.
+Allows GET, POST, PUT, DELETE requests on videos/data in playlists on the corresponding authorized YouTube account.
 
 **Requires ng-gapi package and Angular Material.**<br />
 This package should be installed when the repository is cloned and set up locally properly; if not, run `npm install ng-gapi` and/or `npm install --save @angular/material @angular/cdk`. See the ng-gapi [documentation](https://github.com/rubenCodeforges/ng-gapi) and Angular Material [documentation](https://material.angular.io/guide/getting-started) for more details.
@@ -70,3 +70,9 @@ This application deals heavily with YouTube playlist IDs and video IDs.
 
 Playlist ID example: **PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG** from https://www.youtube.com/playlist?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG<br />
 Video ID example: **dQw4w9WgXcQ** from https://www.youtube.com/watch?v=dQw4w9WgXcQ
+
+#### Notes
+
+* YouTube does not support the embedding of private playlists, so you may not watch private playlists within this application.
+* YouTube Data API errors will appear in a card toward the top of the screen, showing the HTTP status code, error message, and a potential solution.
+* Please take note of this application's super cool favicon.

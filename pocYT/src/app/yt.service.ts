@@ -68,7 +68,17 @@ export class YtService {
     this.setAccessToken(); //authorization needed due to "mine" filter in GET request
 
     //only gets playlists of signed-in user; pageToken not needed for request to be "complete", so keeping the parameter there makes sure user stays on the correct page in user view
-    return this.http.get<PlaylistListResponse>(this.PLAYLISTS_URL + '?key=' + this.apiKey + '&part=snippet&mine=true&maxResults=' + this.maxResults + '&pageToken=' + this.playlistPageToken, httpOptions).pipe(catchError(this.handleError));
+    return this.http.get<PlaylistListResponse>(this.PLAYLISTS_URL + '?key=' + this.apiKey + '&part=snippet,status&mine=true&maxResults=' + this.maxResults + '&pageToken=' + this.playlistPageToken, httpOptions).pipe(catchError(this.handleError));
+
+  }
+
+  //GET request for a playlist by ID
+  getPlaylist(id: string): Observable<PlaylistListResponse> {
+
+    this.setAccessToken(); //authorization needed for GET request on private playlist (only applicable when user is signed-in)
+
+    //pageToken not needed for request to be "complete", so keeping the parameter there makes sure user stays on the correct page in user view
+    return this.http.get<PlaylistListResponse>(this.PLAYLISTS_URL + '?key=' + this.apiKey + '&part=snippet,status&id=' + id + '&pageToken=' + this.playlistPageToken, httpOptions).pipe(catchError(this.handleError));
 
   }
 

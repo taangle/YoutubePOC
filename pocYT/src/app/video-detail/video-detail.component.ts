@@ -1,9 +1,19 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
+import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
+import { ErrorStateMatcher } from '@angular/material/core';
 
 import { PlaylistItem } from '../playlistItem';
 import { YtService } from '../yt.service';
+
+//from Angular Material documentation for input form control
+export class MyErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    const isSubmitted = form && form.submitted;
+    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
+  }
+}
 
 @Component({
   selector: 'app-video-detail',
@@ -16,6 +26,14 @@ export class VideoDetailComponent implements OnInit {
 
   error: string;
   errorSolution: string;
+
+  //the validators don't actually enforce anything, they just allow the correct errors to display on the input box
+  positionFormControl = new FormControl('', [
+    Validators.required,
+    Validators.pattern('[0-9]*'),
+    Validators.min(1)
+  ]);
+  matcher = new MyErrorStateMatcher();
 
   constructor(private route: ActivatedRoute, private ytService: YtService, private location: Location) { }
 
@@ -45,7 +63,8 @@ export class VideoDetailComponent implements OnInit {
   // Asks ytService to update the current item, makes sure that ytService has an id, and calls goBack
   savePlaylistItem(position: number): void {
 
-    if (isNaN(position) || position < 1) {
+    //enforces validation rules
+    if (isNaN(position) || position < 0) {
       return;
     }
 
