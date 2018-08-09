@@ -43,6 +43,12 @@ Note: Some strange error outputs from Jasmine can be fixed by starting the tests
 
 ### Using the Application
 
+#### Application Layout
+ This application has three main sections/tabs:
+* Sign In/Out, where a user can sign in and out of their Google account
+* User Overview, where a signed-in user can easily view/watch the playlists on their YouTube channel
+* Playlist View, which displays the contents of a playlist and allows a user to view/update its contents
+
 #### Signing In
 
 By default, you may only view playlists and video descriptions. You must sign in with the correct account in order to add videos to, delete videos from, and move videos around in a playlist. In addition, only signed-in users will have access to a handy overview of their own playlists for quicker access. If the signed-in account does not have editing permissions for the playlist you wish to edit (i.e. the playlist was not created by current account), you will still be restricted to viewing only.
