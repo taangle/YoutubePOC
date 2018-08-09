@@ -67,5 +67,5 @@ Video ID example: **dQw4w9WgXcQ** from https://www.youtube.com/watch?v=dQw4w9WgX
 #### Notes
 
 * YouTube does not support the embedding of private playlists, so you may not watch private playlists within this application.
-* YouTube Data API errors will appear in a card toward the top of the screen, showing the HTTP status code, error message, and a potential solution.
+* This is not meant as a production-grade application, and has at least a couple security vulnerabilities.
 * Please take note of this application's super cool favicon.
