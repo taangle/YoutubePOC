@@ -17,7 +17,7 @@ Navigate to the desired directory location and clone the repository using:
 ```
 git clone https://github.com/LawLogix/Summer18POC.git
 ```
-You will need to add a `env.ts` file to `src` modeled after `env.example.ts`. This is where your API key will go. You can get an API key for free from the [Google Developers Console](https://console.developers.google.com/).
+You will need to add a `env.ts` file to `src` modeled after `env.example.ts`. `env.ts` is purposely ignored by git, and this is where your API key will go. You can get an API key for free from the [Google Developers Console](https://console.developers.google.com/).
 
 Next, set up Angular locally. Navigate into the `pocYT` folder and run:
 ```
