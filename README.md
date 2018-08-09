@@ -17,7 +17,9 @@ Navigate to the desired directory location and clone the repository using:
 ```
 git clone https://github.com/LawLogix/Summer18POC.git
 ```
-Then, set up Angular locally. Navigate into the `pocYT` folder and run:
+You will need to add a `env.ts` file to `src` modeled after `env.example.ts`. This is where your API key will go.
+
+Next, set up Angular locally. Navigate into the `pocYT` folder and run:
 ```
 npm install
 ```

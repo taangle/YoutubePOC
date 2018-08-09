@@ -10,6 +10,7 @@ import { Playlist } from './playlist';
 import { PlaylistListResponse } from './playlistListResponse';
 import { ChannelListResponse } from 'src/app/channelListResponse';
 import { StorageService } from 'src/app/storage.service';
+import { Variables } from 'src/env';
 
 export const httpOptions = {
 
@@ -42,7 +43,7 @@ export class YtService {
   private PLAYLIST_ITEMS_URL = 'https://www.googleapis.com/youtube/v3/playlistItems'; //API base URL for playlistItem requests
   private PLAYLISTS_URL = 'https://www.googleapis.com/youtube/v3/playlists'; //API base URL for playlist requests
   private CHANNELS_URL = 'https://www.googleapis.com/youtube/v3/channels'; //API base URL for channel requests
-  private apiKey = 'AIzaSyDmBnFCo-4j1EN9-ZCf_RZtgds-Eeweqoc'; //Will's API key
+  private apiKey = Variables.API_KEY; //Will's API key
   private maxResults = 50; //results returned per GET request
 
   constructor(private http: HttpClient, private storage: StorageService) { }
