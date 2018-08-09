@@ -160,7 +160,6 @@ export class YtService {
     this.setAccessToken();
 
     httpOptions.headers = httpOptions.headers.set('Cache-Control', 'no-cache');
-    console.log('sending channel request, options: ' + JSON.stringify(httpOptions));
     let request = this.http.get<ChannelListResponse>(this.CHANNELS_URL + '?part=snippet&mine=true&key=' + this.apiKey, httpOptions);
     httpOptions.headers = httpOptions.headers.delete('Cache-Control');
     return request;

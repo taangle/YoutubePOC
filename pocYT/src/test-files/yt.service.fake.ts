@@ -128,7 +128,6 @@ export class FakeYtService extends YtService {
   getPlaylistItems(playlistId: string): Observable<PlaylistItemListResponse> {
     this.playlistId = playlistId;
     return new Observable((observer) => {
-      // console.log("~~get subscription about to be fulfilled: " + this.playlistItemListResponseToReturn.items);
       if (this.itemsHasBeenSet) {
         this.playlistItemListResponseToReturn.items = this.itemsInPlaylistItemListResponseToReturnSliceOf;
       }
@@ -150,11 +149,9 @@ export class FakeYtService extends YtService {
 
   //POST request for new PlaylistItem using its video ID
   addPlaylistItem(videoId: string): Observable<PlaylistItem> {
-    // console.log("~~service.addPlaylistItem call with: " + videoId);
     this.fakeCloudPlaylist.push(this.playlistItemToAdd);
 
     return new Observable((observer) => {
-      // console.log("~~add subscription about to be fulfilled: " + JSON.stringify(this.playlistItemToAdd));
       observer.next(this.playlistItemToAdd);
       observer.complete();
     });
@@ -165,13 +162,10 @@ export class FakeYtService extends YtService {
     this.itemsToDelete = items;
 
     return new Observable((observer) => {
-      // console.log('~~filter about to start, list length: ' + this.fakeCloudPlaylist.length);
       this.itemsToDelete.forEach((itemToDelete) => {
         this.fakeCloudPlaylist = this.fakeCloudPlaylist.filter((itemToFilter) => {
-          // console.log("~~comparing filterId: " + itemToFilter.id + " and deleteId: " + itemToDelete.id);
           return itemToFilter.id !== itemToDelete.id;
         });
-        // console.log("~~item deleted, list length: " + this.fakeCloudPlaylist.length);
         observer.next(itemToDelete);
       });
       observer.complete();
@@ -199,7 +193,6 @@ export class FakeYtService extends YtService {
 
   getPlaylistItem(): Observable<PlaylistItemListResponse> {
     return new Observable((observer) => {
-      // console.log("~~get subscription about to be fulfilled: " + this.playlistItemListResponseToReturn.items);
 
       let responseToReturn = Object.assign({}, this.fixedFakePlaylistItemListResponse);
       responseToReturn.items = [this.playlistItemToReturn];
